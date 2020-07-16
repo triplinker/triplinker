@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager
 
 
-class TripLinkerAccountManager(BaseUserManager):
+class TLAccountManager(BaseUserManager):
 
     def create_user(self, first_name, second_name, email, sex, country, 
                     date_of_birth, password):

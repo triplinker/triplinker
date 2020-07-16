@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
-from .managers import TripLinkerAccountManager
+from .managers import TLAccountManager
 
 
-class TripLinkerAccountModel(AbstractBaseUser, PermissionsMixin):
+class TLAccount(AbstractBaseUser, PermissionsMixin):
 
     COUNTRIES = [("BY", "Belarus")]
 
@@ -18,21 +18,23 @@ class TripLinkerAccountModel(AbstractBaseUser, PermissionsMixin):
     ]
 
     # Base fields	
-    first_name = models.CharField("First name", max_length=15, null=False)
-    second_name = models.CharField("Second name", max_length=15, null=False)
-    email = models.EmailField("E-mail", unique=True, null=False)
+    first_name = models.CharField("First name", max_length=15,)
+    second_name = models.CharField("Second name", max_length=15,)
+    email = models.EmailField("E-mail", unique=True,)
     sex = models.CharField("Sex", max_length=2, choices=SEX_CHOICES)
-    date_of_birth = models.DateField("Date of birth", null=False)
+    date_of_birth = models.DateField("Date of birth",)
     country = models.CharField("Country", max_length=25, choices=COUNTRIES)
-    place_of_work = models.DateField("Place of work", null=True)
-    short_description = models.CharField("Short description",max_length=500, 
-    	null=True) 
-    hobbies = models.CharField("Hobbies", max_length=250, null=True)
+    place_of_work = models.CharField("Place of work", max_length=70, blank=True,
+        null=True)
+    short_description = models.CharField("Short description",max_length=500,
+        blank=True, null=True) 
+    hobbies = models.CharField("Hobbies", max_length=250, blank= True, 
+        null=True)
 
     # Social networks links
-    vkontakte = models.URLField(verbose_name="VKontakte")
-    twitter = models.URLField(verbose_name="Twitter")
-    facebook = models.URLField(verbose_name="Facebook")
+    vkontakte = models.URLField(verbose_name="VKontakte", blank=True, null=True)
+    twitter = models.URLField(verbose_name="Twitter", blank=True, null=True)
+    facebook = models.URLField(verbose_name="Facebook", blank=True, null=True)
 
     # Special fields
     date_joined = models.DateTimeField(default=timezone.now)
@@ -47,7 +49,7 @@ class TripLinkerAccountModel(AbstractBaseUser, PermissionsMixin):
    		'country', 'password']
 
 
-    objects = TripLinkerAccountManager()
+    objects = TLAccountManager()
 
     def __str__(self):
         return self.email
