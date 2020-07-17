@@ -1,3 +1,9 @@
+# IntelliJ IDEA files
+.idea/
+
+# Poetry files
+poetry.lock
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
