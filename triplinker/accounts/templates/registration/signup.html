@@ -2,11 +2,14 @@
 {% load static %}
 
 {% block content %}
-
-  <h2>Sign up</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form }}
-    <button type="submit">Sign Up</button>
+  <div class="container">
+    <h1 class="mt-2">Signup</h1>
+    <hr class="mt-0 mb-4">
+    <form method="post">
+      {% csrf_token %}
+      {{ form }}
+      <button type="submit" class="btn btn-primary">Signup</button>
+    </form>
+  </div>
 
 {% endblock %}
