@@ -3,14 +3,14 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import TLAccount
 
 
-class UserCreationForm(UserCreationForm):
+class CreateUser(UserCreationForm):
 
 	class Meta:
 		model = TLAccount
 
-		fields = ['first_name','second_name', 'email', 'sex', 'date_of_birth',
+		fields = ['first_name', 'second_name', 'email', 'sex', 'date_of_birth',
 			'country', 'place_of_work', 'short_description', 'hobbies',
-			'vkontakte', 'twitter', 'facebook',  
+			'vkontakte', 'twitter', 'facebook',
 		]
 
 		help_texts = {
@@ -24,7 +24,7 @@ class UserCreationForm(UserCreationForm):
 			"short_description":"Write some words about yourself",
 			"hobbies":"Tell us about your hobbies and interests!",
 			"vkontakte":"Here you can place a link to your Vkontakte profile",
-			"twitter":"Do you have a Twitter account? That's a good" +  
+			"twitter":"Do you have a Twitter account? That's a good" +
 				"opportunity to insert a link to your profile here :)",
 
 			"facebook":"Share your Facebook profile with us!",
@@ -47,8 +47,7 @@ class UserCreationForm(UserCreationForm):
 
 		for i in first_name:
 			if i.isdigit():
-				raise forms.ValidationError("The First name cannot contain"  + 
-					"numbers")
+				raise forms.ValidationError("The First name cannot contain" + "numbers")
 
 		if len(first_name) <= 15:
 			return first_name
@@ -69,6 +68,12 @@ class UserCreationForm(UserCreationForm):
 			raise forms.ValidationError("This is not a valid Second Name!")
 
 
+class UserCreationForm(UserCreationForm):
+
+	class Meta:
+		model = TLAccount
+		fields = ('email',)
+
+
 class UserChangeForm(UserChangeForm, UserCreationForm):
 	pass
-
