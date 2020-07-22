@@ -73,6 +73,10 @@ class CreateUser(UserCreationForm):
 
 
 class SignUpForm(UserCreationForm):
+	class Meta:
+		model = TLAccount
+		fields = ('email',)
+
 	def __init__(self, *args, **kwargs):
 		super(SignUpForm, self).__init__(*args, **kwargs)
 
@@ -89,10 +93,13 @@ class SignUpForm(UserCreationForm):
 
 		self.helper.add_input(Submit('send_button', u'Signup'))
 
+	def save(self, *args, **kwargs):
+		super(SignUpForm, self).save(*args, **kwargs)
+		return self
+
 
 class LoginForm(AuthenticationForm):
 	def __init__(self, *args, **kwargs):
-		# call original initializator
 		super(LoginForm, self).__init__(*args, **kwargs)
 
 		self.helper = helper.FormHelper()

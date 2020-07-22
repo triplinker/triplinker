@@ -30,6 +30,10 @@ class SignUpView(generic.FormView):
             return HttpResponseRedirect(redirect_to)
         return super().dispatch(request, *args, **kwargs)
 
+    def form_valid(self, form):
+        self.object = form.save()
+        return super().form_valid(form)
+
 class LoginView(views.LoginView):
     form_class = LoginForm
     success_url = reverse_lazy('accounts:profile')
