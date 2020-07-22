@@ -34,7 +34,7 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     facebook = models.URLField(verbose_name="Facebook", blank=True)
 
     # Special fields
-    date_joined = models.DateTimeField(default=timezone.now)
+    date_joined = models.DateTimeField(verbose_name="Date joined", default=timezone.now)
     is_admin = models.BooleanField(verbose_name="admin", default=False)
     is_active = models.BooleanField(verbose_name="active", default=True)
     is_staff = models.BooleanField(verbose_name="staff", default=False)
