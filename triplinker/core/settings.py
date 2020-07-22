@@ -93,6 +93,7 @@ DATABASES = {'default': env.db('DATABASE_URL')}
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.TLAccount'
+LOGIN_REDIRECT_URL = '/profile'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

@@ -6,7 +6,6 @@ from .forms import UserCreationForm, UserChangeForm
 
 admin.site.site_header = "TripLinker admin panel"
 
-
 class TLAccountAdmin(admin.ModelAdmin):
 	add_form = UserCreationForm
 	form = UserChangeForm

@@ -1,5 +1,11 @@
 from django import forms 
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
+from django.urls import reverse
+from django.contrib.auth.models import User
+
+from crispy_forms import helper
+from crispy_forms.layout import Submit
+
 from .models import TLAccount
 
 
@@ -68,11 +74,50 @@ class CreateUser(UserCreationForm):
 			raise forms.ValidationError("This is not a valid Second Name!")
 
 
-class UserCreationForm(UserCreationForm):
+class SignUpForm(UserCreationForm):
+	def __init__(self, *args, **kwargs):
+		super(SignUpForm, self).__init__(*args, **kwargs)
+
+		self.helper = helper.FormHelper()
+
+		self.helper.form_class = 'form-horizontal'
+		self.helper.form_method = 'post'
+		self.helper.form_action = reverse('accounts:signup')
+
+		self.helper.help_text_inline = True
+		self.helper.html5_required = True
+		self.helper.label_class = 'col-sm-3 control-label'
+		self.helper.field_class = 'col-sm-5'
+
+		self.helper.add_input(Submit('send_button', u'Signup'))
 
 	class Meta:
 		model = TLAccount
 		fields = ('email',)
+
+
+class LoginForm(AuthenticationForm):
+
+	def __init__(self, *args, **kwargs):
+		# call original initializator
+		super(LoginForm, self).__init__(*args, **kwargs)
+
+		self.helper = helper.FormHelper()
+
+		self.helper.form_class = 'form-horizontal'
+		self.helper.form_method = 'post'
+		self.helper.form_action = reverse('accounts:login')
+
+		self.helper.help_text_inline = True
+		self.helper.html5_required = True
+		self.helper.label_class = 'col-sm-3 control-label'
+		self.helper.field_class = 'col-sm-5'
+
+		self.helper.add_input(Submit('send_button', u'Login'))
+
+	class Meta:
+		model = User
+		fields = ('email', 'password',)
 
 
 class UserChangeForm(UserChangeForm, UserCreationForm):
