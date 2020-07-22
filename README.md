@@ -114,6 +114,13 @@ Country: BY
 ```
 python manage.py runserver
 ```
+## Running the tests
+
+When you get to the directory 'triplinker/triplinker' just run the command:
+
+```
+pytest -s
+```
 
 ## License
 
