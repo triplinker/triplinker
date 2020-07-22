@@ -17,7 +17,7 @@ before_script:
   - psql -c "create database test;" -U postgres
   - psql -c "create user test with encrypted password 'test';" -U postgres
   - psql -c "grant all privileges on database test to test;" -U postgres
-  - psql -c "alter user django createdb;" -U postgres
+  - psql -c "alter user test createdb;" -U postgres
 
 env:
   global:
