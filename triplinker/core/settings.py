@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import environ
+import sys
 
 
 root = environ.Path(__file__) - 2

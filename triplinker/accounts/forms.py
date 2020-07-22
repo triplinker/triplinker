@@ -30,12 +30,10 @@ class CreateUser(UserCreationForm):
 			"short_description":"Write some words about yourself",
 			"hobbies":"Tell us about your hobbies and interests!",
 			"vkontakte":"Here you can place a link to your Vkontakte profile",
-			"twitter":"Do you have a Twitter account? That's a good" +
+			"twitter":"Do you have a Twitter account? That's a good " +
 				"opportunity to insert a link to your profile here :)",
 
 			"facebook":"Share your Facebook profile with us!",
-			"password1":"Enter the password",
-			"password2":"Confirm your password",
         }
 
 	def clean(self, *args, **kwargs):
