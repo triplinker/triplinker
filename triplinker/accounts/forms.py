@@ -73,6 +73,10 @@ class CreateUser(UserCreationForm):
 
 
 class SignUpForm(UserCreationForm):
+	class Meta:
+		model = TLAccount
+		fields = ('email',)
+
 	def __init__(self, *args, **kwargs):
 		super(SignUpForm, self).__init__(*args, **kwargs)
 
@@ -89,15 +93,13 @@ class SignUpForm(UserCreationForm):
 
 		self.helper.add_input(Submit('send_button', u'Signup'))
 
-	class Meta:
-		model = TLAccount
-		fields = ('email',)
+	def save(self, *args, **kwargs):
+		super(SignUpForm, self).save(*args, **kwargs)
+		return self
 
 
 class LoginForm(AuthenticationForm):
-
 	def __init__(self, *args, **kwargs):
-		# call original initializator
 		super(LoginForm, self).__init__(*args, **kwargs)
 
 		self.helper = helper.FormHelper()
@@ -118,5 +120,34 @@ class LoginForm(AuthenticationForm):
 		fields = ('email', 'password',)
 
 
-class UserChangeForm(UserChangeForm, UserCreationForm):
-	pass
+class ProfileEditForm(UserChangeForm):
+
+	class Meta:
+		model = TLAccount
+		exclude = ('password', 'last_login', 'groups', 'user_permissions', 'date_joined',
+				   'is_superuser', 'is_active', 'is_admin', 'is_staff',)
+		# fields = ('first_name', 'second_name', 'email', 'sex',
+		# 		  'date_of_birth', 'country', 'place_of_work',
+		# 		  'short_description', 'hobbies', 'vkontakte',
+		# 		  'twitter', 'facebook',)
+
+	def __init__(self, *args, **kwargs):
+		# call original initializator
+		super(ProfileEditForm, self).__init__(*args, **kwargs)
+
+		self.helper = helper.FormHelper()
+
+		self.helper.form_class = 'form-horizontal'
+		self.helper.form_method = 'post'
+		self.helper.form_action = reverse('accounts:profile')
+
+		self.helper.help_text_inline = True
+		self.helper.html5_required = True
+		self.helper.label_class = 'col-sm-3 control-label'
+		self.helper.field_class = 'col-sm-5'
+
+		self.helper.add_input(Submit('send_button', u'Save'))
+
+	def save(self, *args, **kwargs):
+		super(ProfileEditForm, self).save(*args, **kwargs)
+		return self

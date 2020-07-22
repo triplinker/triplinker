@@ -5,8 +5,7 @@ from .helpers.manager.create_users_func import create_acc
 
 class TLAccountManager(BaseUserManager):
 
-    def create_user(self, first_name, second_name, email, sex, date_of_birth, 
-                    country, password, user_type="common_user"):
+    def create_user(self, email, password, user_type="common_user"):
 
         user = self.model(
             email=self.normalize_email(email),
