@@ -7,7 +7,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
-from .forms import SignUpForm, LoginForm
+from .forms import SignUpForm, LoginForm, ProfileEditForm
 from .models import TLAccount
 
 class SignUpView(generic.FormView):
@@ -41,6 +41,20 @@ class LogoutView(views.LogoutView):
     template_name = 'registration/logout.html'
 
 
-class ProfileView(generic.ListView):
+class ProfileView(generic.FormView):
     model = TLAccount
+    form_class = ProfileEditForm
     template_name = 'accounts/profile.html'
+    user = None
+    success_url = '/profile/'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if hasattr(self, 'user'):
+            kwargs.update({'instance': self.request.user})
+        return kwargs
+
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return super().form_valid(form)
