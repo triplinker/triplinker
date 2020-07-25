@@ -26,15 +26,20 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField("Date of birth", blank=True, null=True)
     country = models.CharField("Country", max_length=25, choices=COUNTRIES, 
         blank=True)
-    place_of_work = models.CharField("Place of work", max_length=70, blank=True)
+    place_of_work = models.CharField("Place of work", max_length=70, blank=True,
+        null=True)
     short_description = models.CharField("Short description", max_length=500, 
         blank=True)
-    hobbies = models.CharField("Hobbies", max_length=250, blank= True)
+    hobbies = models.CharField("Hobbies", max_length=250, blank= True, 
+        null=True)
 
     # Social networks links
-    vkontakte = models.URLField(verbose_name="VKontakte", blank=True)
-    twitter = models.URLField(verbose_name="Twitter", blank=True)
-    facebook = models.URLField(verbose_name="Facebook", blank=True)
+    vkontakte = models.URLField(verbose_name="VKontakte", blank=True, null=True)
+    twitter = models.URLField(verbose_name="Twitter", blank=True, null=True)
+    facebook = models.URLField(verbose_name="Facebook", blank=True, null=True)
+
+    # Friends system
+    friends = models.ManyToManyField("TLAccount", blank=True)
 
     # Special fields
     date_joined = models.DateTimeField(verbose_name="Date joined", 
@@ -66,6 +71,10 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
         else:
             return False
 
+    def flavor_verbose(self):
+        """Returns full value in tuples of CHOICES"""
+        return dict(TLAccount.COUNTRIES)[self.country]
+
     def has_perm(self, perm, obj=None):
         return self.is_admin
 
@@ -73,20 +82,11 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
         return True
 
 
-class FriendsSystem(models.Model):
-    user = models.ForeignKey(TLAccount, on_delete=models.CASCADE)
-    friends = models.ManyToManyField(TLAccount, blank=True, 
-        related_name="friends")
-
-    def __str__(self):
-        return str(self.user.email)
-
-
 class FriendRequest(models.Model):
-    from_user = models.ForeignKey(TLAccount, related_name='from_user',
-        on_delete=models.CASCADE)
-    to_user = models.ForeignKey(TLAccount, related_name='to_user',
-        on_delete=models.CASCADE)
+    from_user = models.ForeignKey(TLAccount,
+        related_name='from_user', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(TLAccount, 
+        related_name='to_user', on_delete=models.CASCADE)
     
     timestamp = models.DateTimeField(auto_now_add=True)
 

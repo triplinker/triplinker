@@ -126,8 +126,9 @@ class ProfileEditForm(UserChangeForm):
 
 	class Meta:
 		model = TLAccount
-		exclude = ('password', 'last_login', 'groups', 'user_permissions', 
-			'date_joined', 'is_superuser', 'is_active', 'is_admin', 'is_staff',)
+		exclude = ('password', 'last_login', 'groups', 'user_permissions',
+			'friends', 'date_joined', 'is_superuser', 'is_active', 'is_admin', 
+			'is_staff',)
 		# fields = ('first_name', 'second_name', 'email', 'sex',
 		# 		  'date_of_birth', 'country', 'place_of_work',
 		# 		  'short_description', 'hobbies', 'vkontakte',

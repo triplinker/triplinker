@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import TLAccount, FriendsSystem, FriendRequest
+from .models import TLAccount, FriendRequest
 from .forms import UserCreationForm, UserChangeForm
 
 
@@ -45,6 +45,8 @@ class TLAccountAdmin(admin.ModelAdmin):
 
 		('Permissions', {'fields': ('is_active','is_staff', 'is_admin')}),
 
+		(None, {'fields': ('friends',)}),
+
 		('Password', {'fields': ('password',)}),
 	)
 
@@ -53,5 +55,4 @@ class TLAccountAdmin(admin.ModelAdmin):
 	readonly_fields = ('date_joined',)
 
 admin.site.register(TLAccount, TLAccountAdmin)
-admin.site.register(FriendsSystem)
 admin.site.register(FriendRequest)
