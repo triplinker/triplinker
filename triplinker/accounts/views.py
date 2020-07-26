@@ -117,6 +117,7 @@ def detail_profile(request, user_id):
         'amount_of_frequests':amount_of_frequests,
         'status_between_users': status_between_users
     }
+
     return render(request, 'accounts/user_profile.html', context)
 
 
@@ -133,6 +134,7 @@ def friends_list(request, user_id):
         'who_makes_a_request': request.user.email,
         "user_friends": user_friends
     }
+
     return render(request, 'accounts/friends_list.html', context)
 
 
@@ -142,20 +144,7 @@ def delete_user_from_friends(request, user_id):
     user_who_deletes.friends.remove(friends_to_delete)
     friends_to_delete.friends.remove(user_who_deletes)
 
-    if resolve(request.path).url_name == 'friends-list':
-        return HttpResponseRedirect(
-            reverse_lazy(
-                'accounts:friends-list',
-                kwargs = {'user_id': request.user.id}
-            )
-        )
-    else:
-        return HttpResponseRedirect(
-            reverse_lazy(
-                'accounts:detail_profile',
-                kwargs = {'user_id': user_id}
-            )
-        )
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def send_request(request, user_id):
@@ -165,14 +154,9 @@ def send_request(request, user_id):
     friend_request = FriendRequest.objects.create(
         from_user=request_from_user,
         to_user=request_to_user
-        )
-
-    return HttpResponseRedirect(
-        reverse_lazy(
-            'accounts:detail_profile',
-            kwargs = {'user_id': user_id}
-        )
     )
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def accept_friend_request(request, user_id):
@@ -188,20 +172,7 @@ def accept_friend_request(request, user_id):
     user2.friends.add(user1)
     friend_request.delete()
 
-    if resolve(request.path).url_name == 'incoming-frequests':
-        return HttpResponseRedirect(
-            reverse_lazy(
-                'accounts:incoming-frequests',
-                kwargs = {'user_id': request.user.id}
-            )
-        )
-    else:
-        return HttpResponseRedirect(
-            reverse_lazy(
-                'accounts:detail_profile',
-                kwargs = {'user_id': user_id}
-            )
-        )
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def delete_friend_request(request, user_id):
@@ -213,20 +184,7 @@ def delete_friend_request(request, user_id):
         to_user=to_user)
     friend_request.delete()
 
-    if resolve(request.path).url_name == 'incoming-frequests':
-        return HttpResponseRedirect(
-            reverse_lazy(
-                'accounts:incoming-frequests',
-                kwargs = {'user_id': to_user.id}
-            )
-        )
-    else:
-       return HttpResponseRedirect(
-            reverse_lazy(
-                'accounts:detail_profile',
-                kwargs = {'user_id': from_user.id}
-            )
-        )
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def cancel_friend_request(request, user_id):
@@ -235,11 +193,8 @@ def cancel_friend_request(request, user_id):
 
     friend_request = FriendRequest.objects.filter(
         from_user=from_user,
-        to_user=to_user)
-    friend_request.delete()
-    return HttpResponseRedirect(
-        reverse_lazy(
-            'accounts:detail_profile',
-            kwargs = {'user_id': to_user.id}
-        )
+        to_user=to_user
     )
+    friend_request.delete()
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

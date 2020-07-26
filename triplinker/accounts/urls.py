@@ -19,9 +19,9 @@ urlpatterns = [
     path('users/<int:user_id>/delete-friend/', views.delete_user_from_friends,
         name = "delete-friend"),
 
-    path('users/<int:user_id>/send_request/', views.send_request, 
+    path('users/<int:user_id>/send-request/', views.send_request, 
     	name = "send-frequest"),
-    path('users/<int:user_id>/accept_request/', views.accept_friend_request,
+    path('users/<int:user_id>/accept-request/', views.accept_friend_request,
     	name = "accept-frequest"),
     path('users/<int:user_id>/cancel-request/', views.cancel_friend_request,
     	name = "cancel-frequest"),
