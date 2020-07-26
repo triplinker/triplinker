@@ -41,18 +41,20 @@
     <div class="col-xl-4 col-md-4 d-flex justify-content-lg-end justify-content-md-end justify-content-center">
         <div class="follow">
             {% if user_acc.email == who_makes_a_request %}
-                <a class="btn btn-shadow" href="{%url 'accounts:profile' %}"><i class="la la-user-plus"></i>Edit account</a>
+                <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:profile' %}"><i class="la la-user-plus"></i>Edit account</a>
 
             {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "Not friends" %}
-                <a class="btn btn-shadow" href="{%url 'accounts:send-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Add Friend</a>
+                <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:send-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Add Friend</a>
 
             {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "User wanna be our friend" %}
-                <a class="btn btn-shadow" href="{%url 'accounts:accept-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Accept</a>
+                <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:accept-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Accept</a>
 
-                <a class="btn btn-shadow" href="{% url 'accounts:delete-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Dismiss</a>
+                <a class="btn btn-shadow btn btn-danger" href="{% url 'accounts:delete-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Dismiss</a>
                                         
             {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "We're waiting for user confirmation" %}
-                <a class="btn btn-shadow" href="{%url 'accounts:cancel-frequest' user_acc.id %}"><i class="la la-user-plus"></i>Cancel</a>
+                <a class="btn btn-shadow btn btn-danger" href="{%url 'accounts:cancel-frequest' user_acc.id %}"><i class="la la-user-plus"></i>Cancel</a>
+            {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "Friends" %}
+                <a class="btn btn-shadow btn btn-danger" href="{% url 'accounts:delete-friend' user_acc.id%}"><i class="la la-user-plus"></i>Delete friend</a>
             {% endif %}
 
     <div class="actions dark">
