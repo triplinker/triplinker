@@ -19,7 +19,5 @@ def define_status(FriendRequest, current_user: int,
         return "We're waiting for user confirmation"
     elif (current_user in another_user.friends.all() and
         another_user in current_user.friends.all()):
-        print("Friends")
         return "Friends"
-    print(current_user.friends.all())
     return "Not friends"
