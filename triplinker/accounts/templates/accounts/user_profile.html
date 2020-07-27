@@ -1,4 +1,4 @@
-{% extends 'tl_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -41,7 +41,7 @@
     <div class="col-xl-4 col-md-4 d-flex justify-content-lg-end justify-content-md-end justify-content-center">
         <div class="follow">
             {% if user_acc.email == who_makes_a_request %}
-                <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:profile' %}"><i class="la la-user-plus"></i>Edit account</a>
+                <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:profile_edit' %}"><i class="la la-user-plus"></i>Edit account</a>
 
             {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "Not friends" %}
                 <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:send-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Add Friend</a>

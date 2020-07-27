@@ -87,7 +87,7 @@ class SignUpForm(UserCreationForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('accounts:signup')
 
-        self.helper.help_text_inline = True
+        self.helper.help_text_inline = False
         self.helper.html5_required = True
         self.helper.label_class = 'col-sm-3 control-label'
         self.helper.field_class = 'col-sm-5'
@@ -140,7 +140,7 @@ class ProfileEditForm(UserChangeForm):
 
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
-        self.helper.form_action = reverse('accounts:profile')
+        self.helper.form_action = reverse('accounts:profile_edit')
 
         self.helper.help_text_inline = True
         self.helper.html5_required = True

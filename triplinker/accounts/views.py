@@ -14,6 +14,12 @@ from .models import TLAccount, FriendRequest
 from .helpers.views.status_between_users_definer import define_status
 
 
+class IndexView(generic.ListView):
+    template_name = 'accounts/index.html'
+    def get_queryset(self):
+        return TLAccount.objects.all()
+
+
 class SignUpView(generic.FormView):
     form_class = SignUpForm
     success_url = reverse_lazy('accounts:login')
@@ -51,12 +57,37 @@ class LogoutView(views.LogoutView):
     template_name = 'registration/logout.html'
 
 
-class ProfileView(generic.FormView):
+class ProfileView(generic.ListView):
+    model = TLAccount
+    template_name = 'accounts/user_profile.html'
+    def get_context_data(self, *, object_list=None, **kwargs):
+        user_acc = self.request.user
+
+        try:
+            amount_of_friends = user_acc.friends.all().count()
+            amount_of_frequests = FriendRequest.objects.filter(
+                to_user=user_acc).count()
+
+
+        except AttributeError:
+            amount_of_friends = 0
+            amount_of_frequests = 0
+
+
+        return {
+            'user_acc': user_acc,
+            'who_makes_a_request': user_acc.email,
+            'amount_of_friends': amount_of_friends,
+            'amount_of_frequests': amount_of_frequests,
+        }
+
+
+class ProfileEditView(generic.FormView):
     model = TLAccount
     form_class = ProfileEditForm
-    template_name = 'accounts/profile.html'
+    template_name = 'accounts/profile_edit.html'
     user = None
-    success_url = 'accounts/profile/'
+    success_url = '/profile/edit/'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
