@@ -1,12 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
-from django.conf import settings
 from .managers import TLAccountManager
+import datetime
 
 
 class TLAccount(AbstractBaseUser, PermissionsMixin):
-
     COUNTRIES = [("BY", "Belarus")]
 
     SEX_CHOICES = [
@@ -18,20 +17,20 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
         ("football", "Playing football"),
     ]
 
-    # Base fields	
+    # Base fields
     first_name = models.CharField("First name", max_length=15, blank=True)
     second_name = models.CharField("Second name", max_length=15, blank=True)
     email = models.EmailField("E-mail", unique=True)
     sex = models.CharField("Sex", max_length=2, choices=SEX_CHOICES, blank=True)
     date_of_birth = models.DateField("Date of birth", blank=True, null=True)
-    country = models.CharField("Country", max_length=25, choices=COUNTRIES, 
-        blank=True)
+    country = models.CharField("Country", max_length=25, choices=COUNTRIES,
+                               blank=True)
     place_of_work = models.CharField("Place of work", max_length=70, blank=True,
-        null=True)
-    short_description = models.CharField("Short description", max_length=500, 
-        blank=True)
-    hobbies = models.CharField("Hobbies", max_length=250, blank= True, 
-        null=True)
+                                     null=True)
+    short_description = models.CharField("Short description", max_length=500,
+                                         blank=True)
+    hobbies = models.CharField("Hobbies", max_length=250, blank=True,
+                               null=True)
 
     # Social networks links
     vkontakte = models.URLField(verbose_name="VKontakte", blank=True, null=True)
@@ -42,17 +41,16 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     friends = models.ManyToManyField("TLAccount", blank=True)
 
     # Special fields
-    date_joined = models.DateTimeField(verbose_name="Date joined", 
-        default=timezone.now)
+    date_joined = models.DateTimeField(verbose_name="Date joined",
+                                       default=timezone.now)
     is_admin = models.BooleanField(verbose_name="admin", default=False)
     is_active = models.BooleanField(verbose_name="active", default=True)
     is_staff = models.BooleanField(verbose_name="staff", default=False)
 
-
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'second_name', 'sex',
-                        'date_of_birth', 'country', 'password']
+                       'date_of_birth', 'country', 'password']
 
     objects = TLAccountManager()
 
@@ -84,10 +82,12 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
 
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(TLAccount,
-        related_name='from_user', on_delete=models.CASCADE)
-    to_user = models.ForeignKey(TLAccount, 
-        related_name='to_user', on_delete=models.CASCADE)
-    
+                                  related_name='from_user',
+                                  on_delete=models.CASCADE)
+    to_user = models.ForeignKey(TLAccount,
+                                related_name='to_user',
+                                on_delete=models.CASCADE)
+
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
