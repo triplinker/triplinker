@@ -1,10 +1,7 @@
-from django.views import generic
 from django.urls import reverse_lazy
-from django.urls import resolve
 from django.contrib.auth import views
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views import generic
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -27,12 +24,13 @@ class SignUpView(generic.FormView):
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
-        if self.redirect_authenticated_user and self.request.user.is_authenticated:
+        if self.redirect_authenticated_user \
+                and self.request.user.is_authenticated:
             redirect_to = self.get_success_url()
             if redirect_to == self.request.path:
                 raise ValueError(
-                    "Redirection loop for authenticated user detected. Check that "
-                    "your LOGIN_REDIRECT_URL doesn't point to a login page."
+                 "Redirection loop for authenticated user detected. Check that "
+                 "your LOGIN_REDIRECT_URL doesn't point to a login page."
                 )
             return HttpResponseRedirect(redirect_to)
         return super().dispatch(request, *args, **kwargs)
@@ -40,6 +38,7 @@ class SignUpView(generic.FormView):
     def form_valid(self, form):
         self.object = form.save()
         return super().form_valid(form)
+
 
 class LoginView(views.LoginView):
     form_class = LoginForm
@@ -64,7 +63,6 @@ class ProfileView(generic.FormView):
         if hasattr(self, 'user'):
             kwargs.update({'instance': self.request.user})
         return kwargs
-
 
     def form_valid(self, form):
         self.object = form.save()
@@ -102,19 +100,19 @@ def detail_profile(request, user_id):
 
         current_user = request.user
         another_user = user_acc
-        
+
     except AttributeError:
         amount_of_friends = 0
         amount_of_frequests = 0
-    
+
     status_between_users = define_status(FriendRequest, current_user,
-        another_user)
+                                         another_user)
 
     context = {
         'user_acc': user_acc,
         'who_makes_a_request': request.user.email,
-        'amount_of_friends':amount_of_friends,
-        'amount_of_frequests':amount_of_frequests,
+        'amount_of_friends': amount_of_friends,
+        'amount_of_frequests': amount_of_frequests,
         'status_between_users': status_between_users
     }
 
@@ -127,8 +125,8 @@ def friends_list(request, user_id):
     try:
         user_friends = user_acc.friends.all()
     except AttributeError:
-        user_friends = 0 
-    
+        user_friends = 0
+
     context = {
         "user_acc": user_acc,
         'who_makes_a_request': request.user.email,
@@ -155,6 +153,7 @@ def send_request(request, user_id):
         from_user=request_from_user,
         to_user=request_to_user
     )
+    friend_request  # for flake8, never used
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
@@ -163,8 +162,8 @@ def accept_friend_request(request, user_id):
     from_user = get_object_or_404(TLAccount, id=user_id)
     to_user = get_object_or_404(TLAccount, id=request.user.id)
 
-    friend_request = FriendRequest.objects.filter(from_user=from_user, 
-        to_user=to_user)
+    friend_request = FriendRequest.objects.filter(from_user=from_user,
+                                                  to_user=to_user)
 
     user1 = from_user
     user2 = to_user
@@ -180,7 +179,7 @@ def delete_friend_request(request, user_id):
     to_user = get_object_or_404(TLAccount, id=request.user.id)
 
     friend_request = FriendRequest.objects.filter(
-        from_user=from_user, 
+        from_user=from_user,
         to_user=to_user)
     friend_request.delete()
 

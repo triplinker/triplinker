@@ -18,6 +18,7 @@ before_script:
   - psql -c "CREATE USER test with encrypted password 'test';" -U postgres
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE test TO test;" -U postgres
   - psql -c "ALTER USER test createdb;" -U postgres
+  - python shop/manage.py migrate --noinput
 
 env:
   global:
@@ -28,4 +29,4 @@ env:
 
 script:
   - pytest
-  - flake8 triplinker
+  - flake8
