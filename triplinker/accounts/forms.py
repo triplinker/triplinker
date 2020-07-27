@@ -1,5 +1,6 @@
 from django import forms 
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
+from django.contrib.auth.forms import (UserCreationForm, UserChangeForm, 
+	AuthenticationForm)
 from django.urls import reverse
 from django.contrib.auth.models import User
 
@@ -51,7 +52,8 @@ class CreateUser(UserCreationForm):
 
 		for i in first_name:
 			if i.isdigit():
-				raise forms.ValidationError("The First name cannot contain" + "numbers")
+				raise forms.ValidationError("The First name cannot contain" + 
+					"numbers")
 
 		if len(first_name) <= 15:
 			return first_name
@@ -124,8 +126,9 @@ class ProfileEditForm(UserChangeForm):
 
 	class Meta:
 		model = TLAccount
-		exclude = ('password', 'last_login', 'groups', 'user_permissions', 'date_joined',
-				   'is_superuser', 'is_active', 'is_admin', 'is_staff',)
+		exclude = ('password', 'last_login', 'groups', 'user_permissions',
+			'friends', 'date_joined', 'is_superuser', 'is_active', 'is_admin', 
+			'is_staff',)
 		# fields = ('first_name', 'second_name', 'email', 'sex',
 		# 		  'date_of_birth', 'country', 'place_of_work',
 		# 		  'short_description', 'hobbies', 'vkontakte',
