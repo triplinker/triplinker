@@ -87,7 +87,7 @@ class ProfileEditView(generic.FormView):
     form_class = ProfileEditForm
     template_name = 'accounts/profile_edit.html'
     user = None
-    success_url = '/profile/edit/'
+    success_url = '/profile/'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

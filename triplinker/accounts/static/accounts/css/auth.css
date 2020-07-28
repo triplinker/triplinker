@@ -1,0 +1,17 @@
+.auth-container{
+    width:300px;
+    max-width:100%;
+    margin: 20px auto;
+}
+.auth-container h1{
+    text-align:center;
+}
+
+.auth-container ul{
+    list-style: none;
+    padding: 0;
+}
+
+.auth-container small{
+    display: none;
+}

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block main %}
 <div class="container db-social">
     <div class="jumbotron jumbotron-fluid"></div>
     <div class="container-fluid">
@@ -67,9 +67,13 @@
             class="dropdown-toggle">
                 <i class="la la-ellipsis-h"></i>
             </button>
-            <div class="dropdown-menu" x-placement="bottom-start" style="display: none; position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 35px, 0px);">
+            <div class="dropdown-menu" x-placement="bottom-start">
+                {% if user_acc.email == who_makes_a_request %}
+                <a href="{% url 'accounts:logout' %}">Logout</a>
+                {% else %}
                 <a href="#" class="dropdown-item">Report</a>
                 <a href="#" class="dropdown-item">Block</a>
+                {% endif %}
             </div>
         </div>
     </div>

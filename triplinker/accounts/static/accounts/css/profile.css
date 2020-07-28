@@ -143,6 +143,10 @@ body{
     font-weight: 500;
 }
 
+.show{
+    display: block;
+}
+
 .db-social .head-profile li:first-child {
     padding-left: 0;
 }

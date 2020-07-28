@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 
 from crispy_forms import helper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Layout
+from crispy_forms.layout import Submit, Field, Fieldset, ButtonHolder
 
 from .models import TLAccount
 
@@ -79,8 +80,6 @@ class SignUpForm(UserCreationForm):
         fields = ('email',)
 
     def __init__(self, *args, **kwargs):
-        super(SignUpForm, self).__init__(*args, **kwargs)
-
         self.helper = helper.FormHelper()
 
         self.helper.form_class = 'form-horizontal'
@@ -89,10 +88,13 @@ class SignUpForm(UserCreationForm):
 
         self.helper.help_text_inline = False
         self.helper.html5_required = True
-        self.helper.label_class = 'col-sm-3 control-label'
-        self.helper.field_class = 'col-sm-5'
+        self.helper.form_show_labels = True
+        self.helper.label_class = 'col-md-12 control-label'
+        self.helper.field_class = 'col-md-12'
 
-        self.helper.add_input(Submit('send_button', u'Signup'))
+        self.helper.add_input(Submit('send_button', u'Signup', css_class='col-md-12'))
+
+        super(SignUpForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         super(SignUpForm, self).save(*args, **kwargs)
@@ -101,7 +103,6 @@ class SignUpForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
 
         self.helper = helper.FormHelper()
 
@@ -109,12 +110,15 @@ class LoginForm(AuthenticationForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('accounts:login')
 
-        self.helper.help_text_inline = True
+        self.helper.help_text_inline = False
         self.helper.html5_required = True
-        self.helper.label_class = 'col-sm-3 control-label'
-        self.helper.field_class = 'col-sm-5'
+        self.helper.form_show_labels = True
+        self.helper.label_class = 'col-md-12 control-label'
+        self.helper.field_class = 'col-md-12'
 
-        self.helper.add_input(Submit('send_button', u'Login'))
+        self.helper.add_input(Submit('send_button', u'Login', css_class='col-md-12'))
+
+        super(LoginForm, self).__init__(*args, **kwargs)
 
     class Meta:
         model = User
