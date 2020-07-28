@@ -58,7 +58,7 @@ CREATE DATABASE test;
 ### Create user in the DB 
 
 ```
-CREATE USER test with encrypted password "test";
+CREATE USER test with encrypted password 'test';
 ```
 
 Done! We have created a new user with the name "test" and password "test".
