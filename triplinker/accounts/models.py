@@ -80,6 +80,11 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
         return True
 
 
+    class Meta:
+        verbose_name = 'Account'
+        verbose_name_plural = 'Accounts'
+
+
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(TLAccount,
                                   related_name='from_user',
@@ -92,3 +97,8 @@ class FriendRequest(models.Model):
 
     def __str__(self):
         return "From {}, to {}".format(self.from_user.email, self.to_user.email)
+
+
+    class Meta:
+        verbose_name = 'Friend request'
+        verbose_name_plural = 'Friend requests'
