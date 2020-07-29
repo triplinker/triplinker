@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import widgets
 from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
                                        AuthenticationForm)
 from django.urls import reverse
@@ -7,6 +8,8 @@ from django.contrib.auth.models import User
 from crispy_forms import helper
 from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit, Field, Fieldset, ButtonHolder
+
+import datetime
 
 from .models import TLAccount
 
@@ -74,6 +77,18 @@ class CreateUser(UserCreationForm):
             raise forms.ValidationError("This is not a valid Second Name!")
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 class SignUpForm(UserCreationForm):
     class Meta:
         model = TLAccount
@@ -92,7 +107,8 @@ class SignUpForm(UserCreationForm):
         self.helper.label_class = 'col-md-12 control-label'
         self.helper.field_class = 'col-md-12'
 
-        self.helper.add_input(Submit('send_button', u'Signup', css_class='col-md-12'))
+        self.helper.add_input(
+            Submit('send_button', u'Signup', css_class='col-md-12'))
 
         super(SignUpForm, self).__init__(*args, **kwargs)
 
@@ -101,7 +117,34 @@ class SignUpForm(UserCreationForm):
         return self
 
 
+class AccountActivationForm(UserChangeForm):
+    class Meta:
+        model = TLAccount
+        fields = (
+            'first_name',
+            'second_name',
+            'sex',
+            'date_of_birth',
+            'country',
+            'place_of_work',
+            'hobbies',
+            'short_description',
+            'vkontakte',
+            'twitter',
+            'facebook',
+        )
+
+    this_year = datetime.datetime.today().year
+    years_range = range(this_year - 100, this_year)
+    date_of_birth = forms.DateField(
+            widget=forms.SelectDateWidget(years=years_range))
+
+
 class LoginForm(AuthenticationForm):
+    class Meta:
+        model = User
+        fields = ('email', 'password',)
+
     def __init__(self, *args, **kwargs):
 
         self.helper = helper.FormHelper()
@@ -116,13 +159,10 @@ class LoginForm(AuthenticationForm):
         self.helper.label_class = 'col-md-12 control-label'
         self.helper.field_class = 'col-md-12'   
 
-        self.helper.add_input(Submit('send_button', u'Login', css_class='col-md-12'))
+        self.helper.add_input(
+            Submit('send_button', u'Login', css_class='col-md-12'))
 
         super(LoginForm, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = User
-        fields = ('email', 'password',)
 
 
 class ProfileEditForm(UserChangeForm):
@@ -131,14 +171,8 @@ class ProfileEditForm(UserChangeForm):
         exclude = ('password', 'last_login', 'groups', 'user_permissions',
                    'friends', 'date_joined', 'is_superuser', 'is_active',
                    'is_admin', 'is_staff',)
-    # fields = ('first_name', 'second_name', 'email', 'sex',
-    # 		  'date_of_birth', 'country', 'place_of_work',
-    # 		  'short_description', 'hobbies', 'vkontakte',
-    # 		  'twitter', 'facebook',)
 
     def __init__(self, *args, **kwargs):
-        # call original initializator
-        super(ProfileEditForm, self).__init__(*args, **kwargs)
 
         self.helper = helper.FormHelper()
 
@@ -152,6 +186,8 @@ class ProfileEditForm(UserChangeForm):
         self.helper.field_class = 'col-sm-5'
 
         self.helper.add_input(Submit('send_button', u'Save'))
+
+        super(ProfileEditForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         super(ProfileEditForm, self).save(*args, **kwargs)

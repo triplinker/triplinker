@@ -1,9 +1,15 @@
-.auth-container{
-    width:300px;
-    max-width:100%;
+.content-container{
     margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-.auth-container h1{
+
+.auth-container {
+    width:400px;
+    max-width:100%;
+}
+.auth-container h4{
     text-align:center;
 }
 
@@ -17,21 +23,37 @@
 }
 
 #regForm {
+  width: 100%;
   padding: 40px;
-  width: 70%;
   min-width: 300px;
+  margin: 0 auto;
 }
 
+.select-date-widget{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
 
+.select-date-widget *{
+    flex-grow: 1;
+}
 
 /* Mark input boxes that gets an error on validation: */
 input.invalid {
   background-color: #ffdddd;
 }
 
+button{
+flex-grow: 1;
+min-width: 50%;
+margin: 10px 0;
+}
+
 /* Hide all steps by default: */
 .tab {
   display: none;
+  flex-direction: column;
 }
 
 /* Make circles that indicate the steps of the form: */

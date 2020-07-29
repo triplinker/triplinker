@@ -3,33 +3,43 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <h1 class="mt-2">Login</h1>
-
+<h1 class="mt-2">Hello!</h1>
+<h3>Please, let us know something about you.</h3>
+<div class="auth-container">
 <form id="regForm" action="">
 
 <div class="tab">
+  <h4>Who are you?</h4>
   {{ form.first_name.label }}
   {{ form.first_name }}
   {{ form.second_name.label }}
   {{ form.second_name }}
   {{ form.sex.label }}
   {{ form.sex }}
-  {{ form.date_of_birth.label }}
-  {{ form.date_of_birth }}
-</div>
-
-<div class="tab">Contact Info:
-  {{ form.country.label }}
-  {{ form.country }}
-  {{ form.place_of_work.label }}
-  {{ form.place_of_work }}
-  {{ form.short_description.label }}
-  {{ form.short_description }}
-  {{ form.hobbies.label }}
-  {{ form.hobbies }}
+    {{ form.date_of_birth.label }}
+  <div class="select-date-widget">
+    {{ form.date_of_birth }}
+  </div>
 </div>
 
 <div class="tab">
+  <h4>Where are you from?</h4>
+  {{ form.country.label }}
+  {{ form.country }}
+</div>
+
+<div class="tab">
+  <h4>Some words about your personality</h4>
+  {{ form.place_of_work.label }}
+  {{ form.place_of_work }}
+  {{ form.hobbies.label }}
+  {{ form.hobbies }}
+  {{ form.short_description.label }}
+  {{ form.short_description }}
+</div>
+
+<div class="tab">
+  <h4>How can other people contact you?</h4>
   {{ form.vkontakte.label }}
   {{ form.vkontakte }}
   {{ form.twitter.label }}
@@ -39,9 +49,9 @@
 </div>
 
 <div style="overflow:auto;">
-  <div style="float:right;">
-    <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-    <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+  <div style="display: flex;">
+    <button type="button" id="prevBtn" onclick="nextPrev(-1)" class="btn btn-secondary">Previous</button>
+    <button type="button" id="nextBtn" onclick="nextPrev(1)" class="btn btn-primary">Next</button>
   </div>
 </div>
 
@@ -54,4 +64,5 @@
 </div>
 
 </form>
+</div>
 {% endblock %}

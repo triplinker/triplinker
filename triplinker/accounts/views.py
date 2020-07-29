@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
 
-from .forms import SignUpForm, LoginForm, ProfileEditForm, CreateUser
+from .forms import SignUpForm, LoginForm, ProfileEditForm, AccountActivationForm
 from .models import TLAccount, FriendRequest
 
 from .helpers.views.status_between_users_definer import define_status
@@ -51,7 +51,7 @@ class SignUpView(generic.FormView):
 
 
 class ActivateView(views.FormView):
-    form_class = CreateUser
+    form_class = AccountActivationForm
     success_url = reverse_lazy('accounts:index')
     template_name = 'registration/activate.html'
     redirect_authenticated_user = True
