@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.contrib.auth import views
+from django.contrib.auth import views, authenticate, login
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views import generic
@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
 
-from .forms import SignUpForm, LoginForm, ProfileEditForm
+from .forms import SignUpForm, LoginForm, ProfileEditForm, CreateUser
 from .models import TLAccount, FriendRequest
 
 from .helpers.views.status_between_users_definer import define_status
@@ -22,7 +22,7 @@ class IndexView(generic.ListView):
 
 class SignUpView(generic.FormView):
     form_class = SignUpForm
-    success_url = reverse_lazy('accounts:login')
+    success_url = reverse_lazy('accounts:activate')
     template_name = 'registration/signup.html'
     redirect_authenticated_user = True
 
@@ -43,8 +43,22 @@ class SignUpView(generic.FormView):
 
     def form_valid(self, form):
         self.object = form.save()
+        new_user = authenticate(email=form.cleaned_data['email'],
+                                password=form.cleaned_data['password1'],
+                                )
+        login(self.request, new_user)
         return super().form_valid(form)
 
+
+class ActivateView(views.FormView):
+    form_class = SignUpForm
+    success_url = reverse_lazy('accounts:index')
+    template_name = 'registration/activate.html'
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return super().form_valid(form)
 
 class LoginView(views.LoginView):
     form_class = LoginForm

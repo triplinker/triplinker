@@ -114,7 +114,7 @@ class LoginForm(AuthenticationForm):
         self.helper.html5_required = True
         self.helper.form_show_labels = True
         self.helper.label_class = 'col-md-12 control-label'
-        self.helper.field_class = 'col-md-12'
+        self.helper.field_class = 'col-md-12'   
 
         self.helper.add_input(Submit('send_button', u'Login', css_class='col-md-12'))
 
