@@ -73,12 +73,15 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
         """Returns full value in tuples of CHOICES"""
         return dict(TLAccount.COUNTRIES)[self.country]
 
+
     def has_perm(self, perm, obj=None):
         return self.is_admin
 
     def has_module_perms(self, app_label):
         return True
 
+    def get_all_posts(self):
+        return self.post.all()
 
     class Meta:
         verbose_name = 'Account'
