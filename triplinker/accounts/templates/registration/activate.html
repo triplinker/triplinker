@@ -7,26 +7,35 @@
 
 <form id="regForm" action="">
 
-<div class="tab">Name:
-  {{ form.email }}
-  {{ form.password1 }}
-  {{ form.password2 }}
+<div class="tab">
+  {{ form.first_name.label }}
+  {{ form.first_name }}
+  {{ form.second_name.label }}
+  {{ form.second_name }}
+  {{ form.sex.label }}
+  {{ form.sex }}
+  {{ form.date_of_birth.label }}
+  {{ form.date_of_birth }}
 </div>
 
 <div class="tab">Contact Info:
-  <input placeholder="E-mail..." oninput="this.className = ''">
-  <input placeholder="Phone..." oninput="this.className = ''">
+  {{ form.country.label }}
+  {{ form.country }}
+  {{ form.place_of_work.label }}
+  {{ form.place_of_work }}
+  {{ form.short_description.label }}
+  {{ form.short_description }}
+  {{ form.hobbies.label }}
+  {{ form.hobbies }}
 </div>
 
-<div class="tab">Birthday:
-  <input placeholder="dd" oninput="this.className = ''">
-  <input placeholder="mm" oninput="this.className = ''">
-  <input placeholder="yyyy" oninput="this.className = ''">
-</div>
-
-<div class="tab">Login Info:
-  <input placeholder="Username..." oninput="this.className = ''">
-  <input placeholder="Password..." oninput="this.className = ''">
+<div class="tab">
+  {{ form.vkontakte.label }}
+  {{ form.vkontakte }}
+  {{ form.twitter.label }}
+  {{ form.twitter }}
+  {{ form.facebook.label }}
+  {{ form.facebook }}
 </div>
 
 <div style="overflow:auto;">

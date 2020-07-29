@@ -51,7 +51,7 @@ class SignUpView(generic.FormView):
 
 
 class ActivateView(views.FormView):
-    form_class = SignUpForm
+    form_class = CreateUser
     success_url = reverse_lazy('accounts:index')
     template_name = 'registration/activate.html'
     redirect_authenticated_user = True
