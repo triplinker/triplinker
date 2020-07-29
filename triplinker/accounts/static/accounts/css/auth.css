@@ -22,11 +22,22 @@
     display: none;
 }
 
-#regForm {
+#activate-form {
   width: 100%;
   padding: 40px;
   min-width: 300px;
   margin: 0 auto;
+  border: 2px #FF9900 solid;
+  border-radius: 5px;
+  height: 450px;
+  position: relative;
+}
+
+#activate-form .controls{
+    position: absolute;
+    width: 100%;
+    padding-right: 80px;
+    bottom: 10px;
 }
 
 .select-date-widget{
@@ -42,9 +53,21 @@
 /* Mark input boxes that gets an error on validation: */
 input.invalid {
   background-color: #ffdddd;
+  border-radius: 5px;
+  border-color: #a94442;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }
 
-button{
+#activate-form .switch-wrapper{
+  overflow: auto;
+}
+
+#activate-form .switch-inner{
+  display: flex;
+}
+
+#activate-form button{
 flex-grow: 1;
 min-width: 50%;
 margin: 10px 0;
@@ -56,7 +79,12 @@ margin: 10px 0;
   flex-direction: column;
 }
 
-/* Make circles that indicate the steps of the form: */
+
+#activate-form .steps{
+  text-align:center;
+  margin-top: 10px;
+}
+
 .step {
   height: 15px;
   width: 15px;

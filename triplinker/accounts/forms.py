@@ -121,6 +121,7 @@ class AccountActivationForm(UserChangeForm):
     class Meta:
         model = TLAccount
         fields = (
+            'email',
             'first_name',
             'second_name',
             'sex',
@@ -135,10 +136,21 @@ class AccountActivationForm(UserChangeForm):
         )
 
     this_year = datetime.datetime.today().year
-    years_range = range(this_year - 100, this_year)
+    years_range = range(this_year - 1, this_year - 100, -1)
+    email = forms.EmailField(widget=forms.HiddenInput)
     date_of_birth = forms.DateField(
-            widget=forms.SelectDateWidget(years=years_range))
+            initial=None,
+            widget=forms.SelectDateWidget(
+                years=years_range,
+                attrs={'required': True}))
+    first_name = forms.CharField(widget=forms.TextInput(
+        attrs={'required': True}))
+    second_name = forms.CharField(
+        widget=forms.TextInput(attrs={'required': True}))
 
+    def save(self, *args, **kwargs):
+        super(AccountActivationForm, self).save(*args, **kwargs)
+        return self
 
 class LoginForm(AuthenticationForm):
     class Meta:

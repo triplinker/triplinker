@@ -54,7 +54,15 @@ class ActivateView(views.FormView):
     form_class = AccountActivationForm
     success_url = reverse_lazy('accounts:index')
     template_name = 'registration/activate.html'
-    redirect_authenticated_user = True
+    user = None
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        print('try')
+        if hasattr(self, 'user'):
+            print(self.request.user)
+            kwargs.update({'instance': self.request.user})
+        return kwargs
 
     def form_valid(self, form):
         self.object = form.save()
