@@ -10,6 +10,7 @@ urlpatterns = [
     path('users/<int:user_id>/', views.detail_profile,
          name="detail_profile"),
 
+    # Friends system
     path('users/<int:user_id>/incoming-friend-requests/',
          views.all_incoming_friquests_list, name="incoming-frequests"),
     path('users/<int:user_id>/outgoing-friend-riquests/',
@@ -28,6 +29,19 @@ urlpatterns = [
     path('users/<int:user_id>/delete-request/', views.delete_friend_request,
          name="delete-frequest"),
 
+    # Updates tracking system (followers) 
+    path('users/<int:user_id>/follow/', views.follow_user, name="follow"),
+    path('users/<int:user_id>/unfollow/', views.unfollow_user, name="unfollow"),
+
+    path('users/<int:user_id>/followers/', views.followers_list, 
+         name="followers-list"),
+    path('users/<int:user_id>/following/', views.following_list, 
+         name="following-list"),
+
+    # Feeds
+    path('feed/', views.show_feed, name="feed"),
+
+    # Profile, reg, auth
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),

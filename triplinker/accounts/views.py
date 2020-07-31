@@ -1,15 +1,22 @@
+from datetime import timedelta
+
+from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth import views
 from django.http import HttpResponseRedirect
-from django.utils.decorators import method_decorator
+
 from django.views import generic
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
 
-from .forms import SignUpForm, LoginForm, ProfileEditForm
-from .models import TLAccount, FriendRequest
+from .forms.forms import SignUpForm, LoginForm, ProfileEditForm
+from .forms.forms_feed import AddPostForm
+
+from .models.TLAccount_frequest import TLAccount, FriendRequest
+from .models.feed import Post, Comment, Like
 
 from .helpers.views.status_between_users_definer import define_status
 
@@ -58,8 +65,10 @@ class LogoutView(views.LogoutView):
 
 
 class ProfileView(generic.ListView):
+    context = None
     model = TLAccount
     template_name = 'accounts/user_profile.html'
+
     def get_context_data(self, *, object_list=None, **kwargs):
         user_acc = self.request.user
 
@@ -68,18 +77,42 @@ class ProfileView(generic.ListView):
             amount_of_frequests = FriendRequest.objects.filter(
                 to_user=user_acc).count()
 
-
         except AttributeError:
             amount_of_friends = 0
             amount_of_frequests = 0
 
+        posts = Post.objects.filter(author=user_acc)
+        # followers = user_acc.followers.all()
+        # num_of_followers = followers.count()
 
-        return {
+        self.context = {
             'user_acc': user_acc,
             'who_makes_a_request': user_acc.email,
             'amount_of_friends': amount_of_friends,
             'amount_of_frequests': amount_of_frequests,
+            'posts': posts,
         }
+
+        form = AddPostForm()
+        self.context['form'] = form
+
+        return self.context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
+
+        content_for_form ={
+            'content': request.POST.get("content", ),
+            'author': request.user,
+        }
+        form = AddPostForm(content_for_form)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
+                                        '/'))
+        else:
+            context['form'] = form
+            return render(request, self.template_name, context)
 
 
 class ProfileEditView(generic.FormView):
@@ -123,7 +156,6 @@ def all_outgoing_friquests_list(request, user_id):
 
 def detail_profile(request, user_id):
     user_acc = get_object_or_404(TLAccount, id=user_id)
-
     try:
         amount_of_friends = user_acc.friends.all().count()
         amount_of_frequests = FriendRequest.objects.filter(
@@ -139,13 +171,30 @@ def detail_profile(request, user_id):
     status_between_users = define_status(FriendRequest, current_user,
                                          another_user)
 
+    posts = Post.objects.filter(author=user_acc)
+
     context = {
         'user_acc': user_acc,
         'who_makes_a_request': request.user.email,
         'amount_of_friends': amount_of_friends,
         'amount_of_frequests': amount_of_frequests,
-        'status_between_users': status_between_users
+        'status_between_users': status_between_users,
+        'posts': posts,
     }
+
+    if user_acc.email == request.user.email:
+        if request.method == 'POST':
+            form = AddPostForm(initial={'content': request.POST,
+                                        "author": request.user})
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
+                                            '/'))
+            else:
+                context['form'] = form
+        else:
+            form = AddPostForm()
+            context['form'] = form
 
     return render(request, 'accounts/user_profile.html', context)
 
@@ -228,3 +277,80 @@ def cancel_friend_request(request, user_id):
     friend_request.delete()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# Feed
+def show_feed(request):
+    user = TLAccount.objects.get(id=request.user.id)
+    posts_id = set()
+
+    # Creating a feed -> O(A^2 + B^2) !
+    for friend in user.friends.all():
+        friend_posts = Post.objects.filter(author=friend)
+        for post in friend_posts:
+            posts_id.add(post.id) 
+
+    for following_user in user.people_which_follow.all():
+        following_user_posts = Post.objects.filter(author=following_user)
+        for post in following_user_posts:
+            posts_id.add(post.id)
+
+    enddate = timezone.now()
+    startdate = enddate - timedelta(days=7)
+
+    feed = Post.objects.filter(pk__in=posts_id).filter(timestamp__range=[
+                                                       startdate, enddate])
+    context = {
+        'feed':feed,
+    }
+    return render(request, 'accounts/feed.html', context)
+
+
+# Followers
+def follow_user(request, user_id):
+    user_who_wanna_follow = get_object_or_404(TLAccount, id=request.user.id)
+    user_who_gets_follower = get_object_or_404(TLAccount, id=user_id)
+    user_who_wanna_follow.people_which_follow.add(user_who_gets_follower)
+    user_who_gets_follower.followers.add(user_who_wanna_follow)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+def unfollow_user(request, user_id):
+    user_who_unfollow = get_object_or_404(TLAccount, id=request.user.id)
+    user_who_loses_follower = get_object_or_404(TLAccount, id=user_id)
+    user_who_unfollow.people_which_follow.remove(user_who_loses_follower)
+    user_who_loses_follower.followers.remove(user_who_unfollow)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def followers_list(request, user_id):
+    user_acc = get_object_or_404(TLAccount, id=user_id)
+
+    try:
+        followers = user_acc.followers.all()
+    except AttributeError:
+        followers = 0
+
+    context = {
+        "user_acc": user_acc,
+        'who_makes_a_request': request.user.email,
+        "followers": followers
+    }
+
+    return render(request, 'accounts/followers_list.html', context)
+
+
+def following_list(request, user_id):
+    user_acc = get_object_or_404(TLAccount, id=user_id)
+
+    try:
+        following_users = user_acc.people_which_follow.all()
+    except AttributeError:
+        following_users = 0
+
+    context = {
+        "user_acc": user_acc,
+        'who_makes_a_request': request.user.email,
+        "following_users": following_users
+    }
+
+    return render(request, 'accounts/following_list.html', context)

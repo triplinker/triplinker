@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
-from .managers import TLAccountManager
+from accounts.managers import TLAccountManager
 import datetime
 
 
@@ -39,6 +39,12 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
 
     # Friends system
     friends = models.ManyToManyField("TLAccount", blank=True)
+
+    # Users who are being followed by current user
+    followers = models.ManyToManyField("TLAccount", blank=True, 
+        related_name='followers_of_user')
+    people_which_follow = models.ManyToManyField("TLAccount", blank=True, 
+        related_name='people_whick_follow_user')
 
     # Special fields
     date_joined = models.DateTimeField(verbose_name="Date joined",

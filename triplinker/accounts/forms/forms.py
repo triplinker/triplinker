@@ -8,7 +8,7 @@ from crispy_forms import helper
 from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit, Field, Fieldset, ButtonHolder
 
-from .models import TLAccount
+from accounts.models.TLAccount_frequest import TLAccount
 
 
 class CreateUser(UserCreationForm):

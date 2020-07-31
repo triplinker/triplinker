@@ -1,21 +1,22 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
-from accounts.models import TLAccount
+from .TLAccount_frequest import TLAccount
 
 
 class Post(models.Model):
 	content = models.TextField()
-	image = models.ImageField(upload_to='posts/', blank=True,null=True,
+	image = models.ImageField(upload_to='posts/', blank=True, null=True,
 								validators=[
 									FileExtensionValidator(
 										['png','jpg','jpeg']
 										)
 									])
 	timestamp = models.DateTimeField(auto_now_add=True)
-	author = models.ForeignKey(TLAccount, related_name='author', 
-								on_delete = models.CASCADE)
+	author = models.ForeignKey(TLAccount, related_name='author', blank=True,
+							   null=True, default=None, 
+							   on_delete = models.CASCADE)
 	likes = models.ManyToManyField(TLAccount, default=None, blank=True, 
-									related_name='likes')
+								   related_name='likes')
 
 	def __str__(self):
 		return f'Author: {self.author.email}, content: {self.content[:20]}'

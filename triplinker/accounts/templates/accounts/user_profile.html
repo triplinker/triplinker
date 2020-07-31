@@ -31,7 +31,7 @@
     </div>
     <div class="col-xl-4 col-md-4 d-flex justify-content-center">
         <div class="image-default">
-            <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="...">
+            <img class="rounded-circle" src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="...">
         </div>
         <div class="infos">
             <h2>{{user_acc.first_name}} {{user_acc.second_name}}</h2>
@@ -71,6 +71,12 @@
                 {% if user_acc.email == who_makes_a_request %}
                 <a href="{% url 'accounts:logout' %}">Logout</a>
                 {% else %}
+                    {% if request.user in user_acc.followers.all and request.user not in user_acc.friends.all %}
+                        <a href="{% url 'accounts:unfollow' user_acc.id%}" class="dropdown-item">Unfollow</a>
+                    {% elif request.user not in user_acc.followers.all and request.user not in user_acc.friends.all %}
+                        <a href="{% url 'accounts:follow' user_acc.id%}" class="dropdown-item">Follow</a>
+                    {% endif %}
+
                 <a href="#" class="dropdown-item">Report</a>
                 <a href="#" class="dropdown-item">Block</a>
                 {% endif %}
@@ -86,48 +92,160 @@
     </div>
     </div>
     <!-- feed -->
-     <div class="panel">
-            <div class="panel-heading">
-                <h3 class="panel-title">Activity Feed</h3>
-                
-            </div>
-            <div class="panel-content panel-activity">
-                <form action="#" class="panel-activity__status">
-                    <textarea name="user_activity" placeholder="Share what you've been up to..." class="form-control"></textarea>
-                    <div class="actions">
-                        <div class="btn-group">
-                            <button type="button" class="btn-link" title="" data-toggle="tooltip" data-original-title="Post an Image">
-                                <i class="fa fa-image"></i>
-                            </button>
+    <div class="container-fluid gedf-wrapper">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="h5">@LeeCross</div>
+                        <div class="h7 text-muted">Fullname : Miracles Lee Cross</div>
+                        <div class="h7">Developer of web applications, JavaScript, PHP, Java, Python, Ruby, Java, Node.js,
+                            etc.
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            Post
-                        </button>
                     </div>
-                </form>
-                <ul class="panel-activity__list">
-                    <li>
-                        <i class="activity__list__icon fa fa-question-circle-o"></i>
-                        <div class="activity__list__header">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" />
-                            <a href="#">John Doe</a> Posted the question: <a href="#">How can I change my annual reports for the better effect?</a>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="h6 text-muted"><a href="{% url 'accounts:followers-list' user_acc.id %}">Followers</a></div>
+                            <div class="h5">{{ user_acc.followers.count }}</div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="h6 text-muted"><a href="{% url 'accounts:following-list' user_acc.id %}">Following</a></div>
+                            <div class="h5">{{ user_acc.people_which_follow.count }}</div>
+                        </li>
+                        <li class="list-group-item">Vestibulum at eros</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6 gedf-main">
+                {% if user_acc.email == who_makes_a_request %}
+                <!--- \\\\\\\Post-->
+                <div class="card gedf-card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="posts-tab" data-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="true">Make
+                                    a publication</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="images-tab" data-toggle="tab" role="tab" aria-controls="images" aria-selected="false" href="#images">Images</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                                <div class="form-group">
+                                    <label class="sr-only" for="message">post</label>
+
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        {{ form.content }}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                <div class="form-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="customFile">
+                                        <label class="custom-file-label" for="customFile">Upload image</label>
+                                    </div>
+                                </div>
+                                <div class="py-4"></div>
+                            </div>
                         </div>
-                        <div class="activity__list__body entry-content">
-                            <p>
-                                <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipisicing elit. Voluptatibus ab a nostrum repudiandae dolorem ut quaerat veniam asperiores, rerum voluptatem magni dolores corporis!
-                                <em>Molestiae commodi nesciunt a, repudiandae repellendus ea.</em>
-                            </p>
+                        <div class="btn-toolbar justify-content-between">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">Share</button>
+                            </div>
+                            </form>
+                            <div class="btn-group">
+                                <button id="btnGroupDrop1" type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="fa fa-globe"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+                                    <a class="dropdown-item" href="#"><i class="fa fa-globe"></i> Public</a>
+                                    <a class="dropdown-item" href="#"><i class="fa fa-users"></i> Friends</a>
+                                    <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Just me</a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="activity__list__footer">
-                            <a href="#"> <i class="fa fa-thumbs-up"></i>123</a>
-                            <a href="#"> <i class="fa fa-comments"></i>23</a>
-                            <span> <i class="fa fa-clock"></i>2 hours ago</span>
+                    </div>
+                </div>
+                <!-- Post /////-->
+                {% endif %}
+                {% if posts %}
+                {% for post in posts %}
+                <!--- \\\\\\\Post-->
+                <div class="card gedf-card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="mr-2">
+                                    <img class="rounded-circle" width="45" src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+                                </div>
+                                <div class="ml-2">
+                                    <div class="h5 m-0">{{ user_acc.email }}</div>
+                                    <div class="h7 text-muted">Miracles Lee Cross</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="dropdown">
+                                    <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-ellipsis-h"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
+                                        <div class="h6 dropdown-header">Configuration</div>
+                                        <a class="dropdown-item" href="#">Save</a>
+                                        <a class="dropdown-item" href="#">Hide</a>
+                                        <a class="dropdown-item" href="#">Report</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </li>
-                </ul>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> {{ post.timestamp | timesince }} ago</div>
+                        <hr id="hr_content_and_time" />
+                        <p class="card-text">
+                            {{ post.content }}
+                        </p>
+                    </div>
+
+                    <div class="card-footer">
+                        <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+                        <a href="#" class="card-link"><i class="fa fa-comment"></i> Comment</a>
+                        <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
+                    </div>
+                </div>
+                <!-- Post /////-->
+                {% endfor %}
+                {% endif %}
+
+            </div>
+            <div class="col-md-3">
+                <div class="card gedf-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Card title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a href="#" class="card-link">Card link</a>
+                        <a href="#" class="card-link">Another link</a>
+                    </div>
+                </div>
+                <div class="card gedf-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                                card's content.</p>
+                            <a href="#" class="card-link">Card link</a>
+                            <a href="#" class="card-link">Another link</a>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 {% endblock %}

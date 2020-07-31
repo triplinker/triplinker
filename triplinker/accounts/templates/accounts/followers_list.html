@@ -4,38 +4,31 @@
 
 <div class="container">
   {% if user_acc.email == who_makes_a_request %}
-  <h1 class="mt-2">Your friends</h1>
+  <h1 class="mt-2">Your followers</h1>
   {% else %}
-	<h1 class="mt-2">Friends of {{ user_acc.first_name }}</h1>
+	<h1 class="mt-2">Followers of {{ user_acc.first_name }}</h1>
   {% endif %}
     <div class="row">
       <div class="col-md-8">
         <div class="people-nearby">
           {% if user_friends.count == 0 and user_acc.email == who_makes_a_request %}
-            <p>Your list of friends is empty</p>
+            <p>Your list of followers is empty</p>
 
           {% elif user_friends.count == 0 and user_acc.email != who_makes_a_request %}
-            <p>Oh, this user has no friends</p>
+            <p>{{user_add.first_name }} doesn't have followers</p>
 
           {% else %}
-   			    {% for friend in user_friends %}
+   			    {% for follower in followers %}
               <div class="nearby-user">
                 <div class="row">
                   <div class="col-md-2 col-sm-2">
                     <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="user" class="profile-photo-lg">
                   </div>
                   <div class="col-md-7 col-sm-7">
-                    <h5><a href="{% url 'accounts:detail_profile' friend.id %}" class="profile-link">{{ friend.email }}</a></h5>
-                    <p>{{friend.hobbies}}</p>
+                    <h5><a href="{% url 'accounts:detail_profile' follower.id %}" class="profile-link">{{ follower.email }}</a></h5>
+                    <p>{{follower.hobbies}}</p>
                     <p class="text-muted">500m away</p>
                   </div>
-                  {% if user_acc.email == who_makes_a_request %}
-                  <div class="col-md-3 col-sm-3">
-                    <a href="{% url 'accounts:delete-friend' friend.id%}">
-                    <button class="btn btn-danger pull-right">Delete friend</button>
-                    </a>
-                  </div>
-                  {% endif %}
               </div>
             {% endfor %}
           {% endif %}
