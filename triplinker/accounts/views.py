@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
-from django.contrib.auth import views
+from django.contrib.auth import views, authenticate, login
 from django.http import HttpResponseRedirect
 
 from django.views import generic
@@ -12,7 +12,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
 
-from .forms.forms import SignUpForm, LoginForm, ProfileEditForm
+from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm, 
+                         AccountActivationForm)
 from .forms.forms_feed import AddPostForm
 
 from .models.TLAccount_frequest import TLAccount, FriendRequest
@@ -29,7 +30,7 @@ class IndexView(generic.ListView):
 
 class SignUpView(generic.FormView):
     form_class = SignUpForm
-    success_url = reverse_lazy('accounts:login')
+    success_url = reverse_lazy('accounts:activate')
     template_name = 'registration/signup.html'
     redirect_authenticated_user = True
 
@@ -47,6 +48,29 @@ class SignUpView(generic.FormView):
                 )
             return HttpResponseRedirect(redirect_to)
         return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save()
+        new_user = authenticate(email=form.cleaned_data['email'],
+                                password=form.cleaned_data['password1'],
+                                )
+        login(self.request, new_user)
+        return super().form_valid(form)
+
+
+class ActivateView(views.FormView):
+    form_class = AccountActivationForm
+    success_url = reverse_lazy('accounts:index')
+    template_name = 'registration/activate.html'
+    user = None
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        print('try')
+        if hasattr(self, 'user'):
+            print(self.request.user)
+            kwargs.update({'instance': self.request.user})
+        return kwargs
 
     def form_valid(self, form):
         self.object = form.save()

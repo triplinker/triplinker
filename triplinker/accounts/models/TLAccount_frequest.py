@@ -18,6 +18,7 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     ]
 
     # Base fields
+     # Base fields
     first_name = models.CharField("First name", max_length=15, blank=True)
     second_name = models.CharField("Second name", max_length=15, blank=True)
     email = models.EmailField("E-mail", unique=True)
@@ -25,12 +26,10 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField("Date of birth", blank=True, null=True)
     country = models.CharField("Country", max_length=25, choices=COUNTRIES,
                                blank=True)
-    place_of_work = models.CharField("Place of work", max_length=70, blank=True,
-                                     null=True)
+    place_of_work = models.CharField("Place of work", max_length=70, blank=True)
     short_description = models.CharField("Short description", max_length=500,
                                          blank=True)
-    hobbies = models.CharField("Hobbies", max_length=250, blank=True,
-                               null=True)
+    hobbies = models.CharField("Hobbies", max_length=250, blank=True)
 
     # Social networks links
     vkontakte = models.URLField(verbose_name="VKontakte", blank=True, null=True)

@@ -1,9 +1,15 @@
-.auth-container{
-    width:300px;
-    max-width:100%;
+.content-container{
     margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-.auth-container h1{
+
+.auth-container {
+    width:400px;
+    max-width:100%;
+}
+.auth-container h4{
     text-align:center;
 }
 
@@ -15,3 +21,87 @@
 .auth-container small{
     display: none;
 }
+
+#activate-form {
+  width: 100%;
+  padding: 40px;
+  min-width: 300px;
+  margin: 0 auto;
+  border: 2px #FF9900 solid;
+  border-radius: 5px;
+  height: 450px;
+  position: relative;
+}
+
+#activate-form .controls{
+    position: absolute;
+    width: 100%;
+    padding-right: 80px;
+    bottom: 10px;
+}
+
+.select-date-widget{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.select-date-widget *{
+    flex-grow: 1;
+}
+
+/* Mark input boxes that gets an error on validation: */
+input.invalid {
+  background-color: #ffdddd;
+  border-radius: 5px;
+  border-color: #a94442;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+#activate-form .switch-wrapper{
+  overflow: auto;
+}
+
+#activate-form .switch-inner{
+  display: flex;
+}
+
+#activate-form button{
+flex-grow: 1;
+min-width: 50%;
+margin: 10px 0;
+}
+
+/* Hide all steps by default: */
+.tab {
+  display: none;
+  flex-direction: column;
+}
+
+
+#activate-form .steps{
+  text-align:center;
+  margin-top: 10px;
+}
+
+.step {
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbbbbb;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+}
+
+/* Mark the active step: */
+.step.active {
+  opacity: 1;
+}
+
+/* Mark the steps that are finished and valid: */
+.step.finish {
+  background-color: #4CAF50;
+} 
