@@ -39,9 +39,10 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     # Friends system
     friends = models.ManyToManyField("TLAccount", blank=True)
 
-    # Users who are being followed by current user
+    # Users who follow current user
     followers = models.ManyToManyField("TLAccount", blank=True, 
         related_name='followers_of_user')
+    # Users who are being followed by current user
     people_which_follow = models.ManyToManyField("TLAccount", blank=True, 
         related_name='people_whick_follow_user')
 

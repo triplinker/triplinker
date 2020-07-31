@@ -26,10 +26,7 @@
         <div class="navbar-nav">
           {% if user.is_authenticated %}
             <a class="nav-item nav-link" href="{% url 'accounts:profile' %}">Profile</a>
-<<<<<<< HEAD
             <a class="nav-item nav-link" href="{% url 'accounts:feed' %}">Feed</a>
-=======
->>>>>>> 3266cd71660a3bf7d27b206cbf6015801f01d075
             <a class="nav-item nav-link" href="{% url 'accounts:all_users_list' %}">People</a>
           {% else %}
             <a class="nav-item nav-link" href="{% url 'accounts:login' %}">login</a>

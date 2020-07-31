@@ -11,11 +11,7 @@ from crispy_forms.layout import Submit, Field, Fieldset, ButtonHolder
 
 import datetime
 
-<<<<<<< HEAD:triplinker/accounts/forms/forms.py
 from accounts.models.TLAccount_frequest import TLAccount
-=======
-from .models import TLAccount
->>>>>>> 3266cd71660a3bf7d27b206cbf6015801f01d075:triplinker/accounts/forms.py
 
 
 class CreateUser(UserCreationForm):
@@ -185,8 +181,8 @@ class ProfileEditForm(UserChangeForm):
     class Meta:
         model = TLAccount
         exclude = ('password', 'last_login', 'groups', 'user_permissions',
-                   'friends', 'date_joined', 'is_superuser', 'is_active',
-                   'is_admin', 'is_staff',)
+                   'friends', 'followers', 'people_which_follow', 'date_joined',
+                   'is_superuser', 'is_active', 'is_admin', 'is_staff',)
 
     def __init__(self, *args, **kwargs):
 
