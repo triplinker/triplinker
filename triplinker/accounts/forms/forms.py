@@ -11,7 +11,11 @@ from crispy_forms.layout import Submit, Field, Fieldset, ButtonHolder
 
 import datetime
 
+<<<<<<< HEAD:triplinker/accounts/forms/forms.py
 from accounts.models.TLAccount_frequest import TLAccount
+=======
+from .models import TLAccount
+>>>>>>> 3266cd71660a3bf7d27b206cbf6015801f01d075:triplinker/accounts/forms.py
 
 
 class CreateUser(UserCreationForm):
@@ -75,6 +79,18 @@ class CreateUser(UserCreationForm):
             return second_name
         else:
             raise forms.ValidationError("This is not a valid Second Name!")
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class SignUpForm(UserCreationForm):

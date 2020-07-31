@@ -12,12 +12,17 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
 
+<<<<<<< HEAD
 from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm, 
                          AccountActivationForm)
 from .forms.forms_feed import AddPostForm
 
 from .models.TLAccount_frequest import TLAccount, FriendRequest
 from .models.feed import Post, Comment, Like
+=======
+from .forms import SignUpForm, LoginForm, ProfileEditForm, AccountActivationForm
+from .models import TLAccount, FriendRequest
+>>>>>>> 3266cd71660a3bf7d27b206cbf6015801f01d075
 
 from .helpers.views.status_between_users_definer import define_status
 
@@ -55,6 +60,28 @@ class SignUpView(generic.FormView):
                                 password=form.cleaned_data['password1'],
                                 )
         login(self.request, new_user)
+<<<<<<< HEAD
+        return super().form_valid(form)
+
+
+class ActivateView(views.FormView):
+    form_class = AccountActivationForm
+    success_url = reverse_lazy('accounts:index')
+    template_name = 'registration/activate.html'
+    user = None
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        print('try')
+        if hasattr(self, 'user'):
+            print(self.request.user)
+            kwargs.update({'instance': self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = form.save()
+=======
+>>>>>>> 3266cd71660a3bf7d27b206cbf6015801f01d075
         return super().form_valid(form)
 
 
@@ -75,7 +102,6 @@ class ActivateView(views.FormView):
     def form_valid(self, form):
         self.object = form.save()
         return super().form_valid(form)
-
 
 class LoginView(views.LoginView):
     form_class = LoginForm

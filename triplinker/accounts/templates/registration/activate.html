@@ -1,0 +1,75 @@
+{% extends 'registration/auth.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <h1 class="mt-2">Hello!</h1>
+  <h3>Please, introduce yourself</h3>
+  <div class="auth-container">
+    <form id="activate-form"
+          action="{% url 'accounts:activate' %}" method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {{ form.field_errors }}
+      {{ form.errors }}
+      {{ form.email }}
+      <div class="tab">
+        <h4>Who are you?</h4>
+        {{ form.first_name.label }}
+        {{ form.first_name }}
+        {{ form.second_name.label }}
+        {{ form.second_name }}
+        {{ form.sex.label }}
+        {{ form.sex }}
+        {{ form.date_of_birth.label }}
+        <div class="select-date-widget">
+          {{ form.date_of_birth }}
+        </div>
+      </div>
+
+      <div class="tab">
+        <h4>Where are you from?</h4>
+        {{ form.country.label }}
+        {{ form.country }}
+      </div>
+
+      <div class="tab">
+        <h4>Some words about your personality</h4>
+        {{ form.place_of_work.label }}
+        {{ form.place_of_work }}
+        {{ form.hobbies.label }}
+        {{ form.hobbies }}
+        {{ form.short_description.label }}
+        {{ form.short_description }}
+      </div>
+
+      <div class="tab">
+        <h4>How can other people contact you?</h4>
+        {{ form.vkontakte.label }}
+        {{ form.vkontakte }}
+        {{ form.twitter.label }}
+        {{ form.twitter }}
+        {{ form.facebook.label }}
+        {{ form.facebook }}
+      </div>
+
+      <div class="controls">
+        <div class='switch-wrapper'>
+          <div class="switch-inner">
+            <button type="button" id="prev-btn" onclick="nextPrev(-1)" class="btn btn-secondary">Previous</button>
+            <button type="button" id="next-btn" onclick="nextPrev(1)" class="btn btn-primary">Next</button>
+          </div>
+        </div>
+
+        <div class="steps">
+          <span class="step"></span>
+          <span class="step"></span>
+          <span class="step"></span>
+          <span class="step"></span>
+        </div>
+      </div>
+
+    </form>
+  </div>
+{% endblock %}

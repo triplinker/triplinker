@@ -43,6 +43,7 @@ urlpatterns = [
 
     # Profile, reg, auth
     path('signup/', views.SignUpView.as_view(), name='signup'),
+    path('activate/', views.ActivateView.as_view(), name='activate'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
