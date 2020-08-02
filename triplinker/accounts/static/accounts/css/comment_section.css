@@ -1,0 +1,50 @@
+
+@media (min-width: 0) {
+    .g-mr-15 {
+        margin-right: 1.1rem !important;
+    }
+}
+@media (min-width: 0){
+    .g-mt-3 {
+        margin-top: 0.21429rem !important;
+    }
+}
+
+.g-height-50 {
+    height: 48.5px !important;
+}
+
+.g-width-50 {
+    width: 48.5px !important;
+}
+
+@media (min-width: 0){
+    .g-pa-30 {
+        padding: 0.75rem !important;
+        padding-left: 1.16rem !important;
+    }
+}
+
+.g-bg-secondary {
+    background-color: #fafafa !important;
+}
+
+.u-shadow-v18 {
+    box-shadow: 0 5px 5px -6px rgba(0, 0, 0, 0.15);
+}
+
+#comment_username{
+    padding-bottom:0.9%;
+}
+
+.g-color-gray-dark-v4 {
+    color: #777 !important;
+}
+
+.g-font-size-12 {
+    font-size: 0.35714rem !important;
+}
+
+.media-comment {
+    margin-top:10px
+}

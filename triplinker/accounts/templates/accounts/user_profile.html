@@ -91,7 +91,8 @@
     </div>
     </div>
     </div>
-    <!-- feed -->
+
+    <!-- Feed [START]-->
     <div class="container-fluid gedf-wrapper">
         <div class="row">
             <div class="col-md-3">
@@ -118,7 +119,8 @@
             </div>
             <div class="col-md-6 gedf-main">
                 {% if user_acc.email == who_makes_a_request %}
-                <!--- \\\\\\\Post-->
+                <!--- Make publication option [START]--->
+
                 <div class="card gedf-card">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
@@ -171,11 +173,12 @@
                         </div>
                     </div>
                 </div>
-                <!-- Post /////-->
                 {% endif %}
                 {% if posts %}
                 {% for post in posts %}
-                <!--- \\\\\\\Post-->
+                <!--- Make publication option [END]--->
+
+                <!--- Post [START]--->
                 <div class="card gedf-card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
@@ -202,7 +205,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="card-body">
                         <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> {{ post.timestamp | timesince }} ago</div>
@@ -214,15 +216,83 @@
 
                     <div class="card-footer">
                         <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-                        <a href="#" class="card-link"><i class="fa fa-comment"></i> Comment</a>
+
+                        <a href="javascript:void(0);" class="card-link" onclick='get_commentbox(this.id)' id="comment_link"><i  class="fa fa-comment"></i> Comments</a>
+
                         <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                     </div>
+                    <!--- Comment section [START] --->
+                    <!-- The list of comments [START]-->
+                    <div class="card-body" style="display:none !important;" id="comment_section" name = "Comments">
+
+                        {% if post.comment_set.all %}
+                        {% for comment in post.comment_set.all%}
+                        <div class="media g-mb-30 media-comment">.
+                            <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Image Description">
+                            <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30 col-9 col-sm-10 col-md-9 col-lg-9 col-xl-11">
+                              <div class="g-mb-15">
+                                <h6 class="h5 g-color-gray-dark-v1 mb-0" id="comment_username">{{ comment.user.email }}</h6>
+                              </div>
+                              <p style="max-width:43ch;"></style>{{comment.body}}</p>
+                                <hr id="comment_hr">
+                              <ul class="list-inline d-sm-flex my-0">
+                                <li class="list-inline-item g-mr-20">
+                                  <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">
+                                    <i class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3"></i>
+                                    178
+                                  </a>
+                                </li>
+                                <li class="list-inline-item g-mr-20">
+                                  <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">
+                                    <i class="fa fa-thumbs-down g-pos-rel g-top-1 g-mr-3"></i>
+                                    34
+                                  </a>
+                                </li>
+                                <li class="list-inline-item ml-auto">
+                                  <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">
+                                    <i class="fa fa-reply g-pos-rel g-top-1 g-mr-3"></i>
+                                    Reply
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                        </div>
+                    <div class="card-body" style="padding-bottom: 0.9% !important;">
+                    </div>                    
+                    {% endfor %}
+                    {% endif %}
+                    <!-- The list of comments [END]-->
+
+                    <!-- Add comment option [START] -->
+                        <hr style="visibility: hidden;margin-bottom:-1% !important;">
+                        <div class="tab-content col-xl-13" id="myTabContent"> 
+                            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                                <div class="form-group">
+                                    <label class="sr-only" for="message">post</label>
+
+                                    <form method="post">
+                                       {% csrf_token %}
+                                       {{ comment_form.body }}
+                                       <input type="hidden" name="post_id" value="{{post.id}}" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-toolbar justify-content-between">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">Comment</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <!-- Post /////-->
+                <!--- Add comment option [END] --->
+                <!--- Comment section [END]--->                
                 {% endfor %}
                 {% endif %}
-
+                <!--- Post [END]--->
             </div>
+            <!--- Feed [END]--->
+
             <div class="col-md-3">
                 <div class="card gedf-card">
                     <div class="card-body">

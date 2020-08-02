@@ -14,7 +14,7 @@ from django.shortcuts import render, get_object_or_404
 
 from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm, 
                          AccountActivationForm)
-from .forms.forms_feed import AddPostForm
+from .forms.forms_feed import AddPostForm, AddCommentForm
 
 from .models.TLAccount_frequest import TLAccount, FriendRequest
 from .models.feed import Post, Comment, Like
@@ -96,6 +96,7 @@ class ActivateView(views.FormView):
         self.object = form.save()
         return super().form_valid(form)
 
+
 class LoginView(views.LoginView):
     form_class = LoginForm
     success_url = reverse_lazy('accounts:profile')
@@ -135,27 +136,47 @@ class ProfileView(generic.ListView):
             'amount_of_frequests': amount_of_frequests,
             'posts': posts,
         }
-
         form = AddPostForm()
+        comment_form = AddCommentForm()
         self.context['form'] = form
-
+        self.context['comment_form'] = comment_form
         return self.context
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data()
 
-        content_for_form ={
+        post_id = request.POST.get("post_id", )
+        if post_id:
+            # User adds a comment.
+            content_for_comment_form = {
+                'body': request.POST.get("body", ), # Text of comment.
+                'user': request.user,
+                'post': post_id
+            }
+            comment_form = AddCommentForm(content_for_comment_form)
+            if comment_form.is_valid():
+                comment_form.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
+                                            '/'))
+            else:
+                context['comment_form'] = comment_form
+                return render(request, self.template_name, context)
+
+        else:
+            # User adds a post
+            content_for_form = {
             'content': request.POST.get("content", ),
             'author': request.user,
-        }
-        form = AddPostForm(content_for_form)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
-                                        '/'))
-        else:
-            context['form'] = form
-            return render(request, self.template_name, context)
+            }
+
+            form = AddPostForm(content_for_form)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
+                                            '/'))
+            else:
+                context['form'] = form
+                return render(request, self.template_name, context)
 
 
 class ProfileEditView(generic.FormView):
@@ -225,19 +246,41 @@ def detail_profile(request, user_id):
         'posts': posts,
     }
 
-    if user_acc.email == request.user.email:
-        if request.method == 'POST':
-            form = AddPostForm(initial={'content': request.POST,
-                                        "author": request.user})
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
+    if request.method == 'POST':
+        post_id = request.POST.get("post_id", )
+        if post_id:
+            # User adds a comment.
+            content_for_comment_form = {
+                'body': request.POST.get("body", ),
+                'user': request.user,
+                'post': post_id
+            }
+            comment_form = AddCommentForm(content_for_comment_form)
+            if comment_form.is_valid():
+                comment_form.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
                                             '/'))
             else:
-                context['form'] = form
+                context['comment_form'] = comment_form
+                return render(request, self.template_name, context)
         else:
-            form = AddPostForm()
-            context['form'] = form
+            # User adds a post.
+            form = AddPostForm(initial={'content': request.POST,
+                                            "author": request.user})
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                                '/'))
+            else:
+                context['form'] = form
+                comment_form = AddCommentForm()
+                context['comment_form'] = comment_form
+    else:
+        # HTTP method is GET.
+        form = AddPostForm()
+        comment_form = AddCommentForm()
+        context['form'] = form
+        context['comment_form'] = comment_form
 
     return render(request, 'accounts/user_profile.html', context)
 
