@@ -18,7 +18,6 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     ]
 
     # Base fields
-     # Base fields
     first_name = models.CharField("First name", max_length=15, blank=True)
     second_name = models.CharField("Second name", max_length=15, blank=True)
     email = models.EmailField("E-mail", unique=True)

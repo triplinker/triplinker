@@ -9,7 +9,7 @@ window.onload = function generate_unique_ids_for_posts(){
 		comment_sections[i].id = empty_string.concat('div_',index.toString());
 		index++;
 	}
-} 
+}
 
 
 function get_commentbox(id){

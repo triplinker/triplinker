@@ -17,7 +17,7 @@ from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm,
 from .forms.forms_feed import AddPostForm, AddCommentForm
 
 from .models.TLAccount_frequest import TLAccount, FriendRequest
-from .models.feed import Post, Comment, Like
+from .models.feed import Post, Comment
 
 
 from .helpers.views.status_between_users_definer import define_status
@@ -367,29 +367,54 @@ def cancel_friend_request(request, user_id):
 
 # Feed
 def show_feed(request):
-    user = TLAccount.objects.get(id=request.user.id)
-    posts_id = set()
+    template = 'accounts/feed.html'
 
-    # Creating a feed -> O(A^2 + B^2) !
-    for friend in user.friends.all():
-        friend_posts = Post.objects.filter(author=friend)
-        for post in friend_posts:
-            posts_id.add(post.id) 
+    if request.method == 'GET':
+        user = TLAccount.objects.get(id=request.user.id)
+        posts_id = set()
 
-    for following_user in user.people_which_follow.all():
-        following_user_posts = Post.objects.filter(author=following_user)
-        for post in following_user_posts:
-            posts_id.add(post.id)
+        # Creating a feed -> O(A^2 + B^2) !
+        for friend in user.friends.all():
+            friend_posts = Post.objects.filter(author=friend)
+            for post in friend_posts:
+                posts_id.add(post.id) 
 
-    enddate = timezone.now()
-    startdate = enddate - timedelta(days=7)
+        for following_user in user.people_which_follow.all():
+            following_user_posts = Post.objects.filter(author=following_user)
+            for post in following_user_posts:
+                posts_id.add(post.id)
 
-    feed = Post.objects.filter(pk__in=posts_id).filter(timestamp__range=[
-                                                       startdate, enddate])
-    context = {
-        'feed':feed,
-    }
-    return render(request, 'accounts/feed.html', context)
+        enddate = timezone.now()
+        startdate = enddate - timedelta(days=7)
+        
+        feed = Post.objects.filter(pk__in=posts_id).filter(timestamp__range=[
+                                                           startdate, enddate])
+        
+        context = {
+            'feed':feed
+        }
+
+        comment_form = AddCommentForm()
+        context['comment_form'] = comment_form
+
+        return render(request, template, context)
+    else:
+        post_id = request.POST.get("post_id", )
+        if post_id:
+            # User adds a comment.
+            content_for_comment_form = {
+                'body': request.POST.get("body", ),
+                'user': request.user,
+                'post': post_id
+            }
+            comment_form = AddCommentForm(content_for_comment_form)
+            if comment_form.is_valid():
+                comment_form.save()
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                            '/'))
+            else:
+                context['comment_form'] = comment_form
+                return render(request, template, context)
 
 
 # Followers
@@ -440,3 +465,33 @@ def following_list(request, user_id):
     }
 
     return render(request, 'accounts/following_list.html', context)
+
+# Likes
+def like_post(request, post_id):
+    user_acc = TLAccount.objects.get(id=request.user.id)
+    post = Post.objects.get(id=post_id)
+    post.likes.add(user_acc)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                            '/'))
+
+def unlike_post(request, post_id):
+    user_acc = TLAccount.objects.get(id=request.user.id)
+    post = Post.objects.get(id=post_id)
+    post.likes.remove(user_acc)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                            '/'))
+
+def like_comment(request, comment_id):
+    user_acc = TLAccount.objects.get(id=request.user.id)
+    comment = Comment.objects.get(id=comment_id)
+    comment.likes.add(user_acc)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                            '/'))
+
+
+def unlike_comment(request, comment_id):
+    user_acc = TLAccount.objects.get(id=request.user.id)
+    comment = Comment.objects.get(id=comment_id)
+    comment.likes.remove(user_acc)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                            '/'))

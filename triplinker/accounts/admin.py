@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models.TLAccount_frequest import TLAccount, FriendRequest
-from .models.feed import Post, Comment, Like
+from .models.feed import Post, Comment
 from .forms.forms import UserCreationForm, UserChangeForm
 
 admin.site.site_header = "TripLinker admin panel"
@@ -59,5 +59,3 @@ admin.site.register(TLAccount, TLAccountAdmin)
 admin.site.register(FriendRequest)
 admin.site.register(Post)
 admin.site.register(Comment)
-admin.site.register(Like)
-
