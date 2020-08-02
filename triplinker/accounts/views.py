@@ -163,7 +163,7 @@ class ProfileView(generic.ListView):
                 return render(request, self.template_name, context)
 
         else:
-            # User adds a post
+            # User adds a post.
             content_for_form = {
             'content': request.POST.get("content", ),
             'author': request.user,
