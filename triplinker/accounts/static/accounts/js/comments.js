@@ -1,11 +1,12 @@
 window.onload = function generate_unique_ids_for_posts(){
 	let unique_ids = [], empty_string = '';
-	let links = document.querySelectorAll('#comment_link');
+	let comment_links = document.querySelectorAll('#comment_link');
 	let comment_sections = document.querySelectorAll('#comment_section');
 	let index = 0;
 	// Creating unique ids for <a> tags and comment sections
-	for(let i = 0;i < links.length; i++){
-		links[i].id = index;
+	for(let i = 0;i < comment_links.length; i++){
+		
+		comment_links[i].id = index;
 		comment_sections[i].id = empty_string.concat('div_',index.toString());
 		index++;
 	}
@@ -21,5 +22,3 @@ function get_commentbox(id){
 		comment_section.style.setProperty("display", "none", "important");
 	}
 }
-
-

@@ -1,0 +1,143 @@
+{% extends 'accounts/profile/profile_posts_3.html' %}
+{% load static %}
+
+{% block comments %}
+
+<!--- Comment section [START] --->
+    <!-- The list of comments [START]-->
+        <div class="card-body" style="display:none !important;" id="comment_section" name = "Comments">
+
+            {% if post.comment_set.all %}
+                {% for comment in post.comment_set.all%}
+                    <div class="media g-mb-30 media-comment">.
+                        <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Image Description">
+                    <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30 col-9 col-sm-10 col-md-9 col-lg-9 col-xl-11">
+                        <div class="g-mb-15">
+                            <h6 class="h5 g-color-gray-dark-v1 mb-0" id="comment_username"><a href="{% url 'accounts:detail_profile' comment.user.id %}">{{ comment.user.email }}</a></h6>
+                        </div>
+                        <p style="max-width:43ch;"></style>{{comment.body}}</p>
+                        <hr id="comment_hr">
+                        <ul class="list-inline d-sm-flex my-0">
+                            <li class="list-inline-item g-mr-20">
+                                {% if request.user not in comment.likes.all %}
+
+                                    <a name ='like-button-not-liked' id = "comment{{comment.id}}" style="color:grey">
+                                        <i class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3"></i>
+                                        <span id="comment_span{{comment.id}}"> {{ comment.likes.all.count }}</span>      
+                                    </a>
+                                {% else %}
+                                    <a class="card-link" id = "comment{{comment.id}}" name ='like-button-liked' style="color:#0275d8">
+                                        <i class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3" ></i>
+                                        <span id="comment_span{{comment.id}}"> {{ comment.likes.all.count }}</span>     
+                                    </a>
+                                {% endif %}
+                            </li>
+                            <li class="list-inline-item g-mr-20">
+                                <div class="text-muted h7 mb-2" style="margin-top:1%;"><i class="fa fa-clock-o"></i> {{ comment.timestamp | timesince }} ago</div>
+                            </li>
+                            <li class="list-inline-item ml-auto">
+                                <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">
+                                <i class="fa fa-reply g-pos-rel g-top-1 g-mr-3"></i>
+                                        Reply
+                                </a>
+                            </li>
+                        </ul>
+                                  
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding-bottom: 0.9% !important;">
+                    </div>
+                        
+                    <!--- Script that controls the opportunity of addings likes on comments dynamically (without refreshing the page of profile) [START] --->
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            let num_of_likes =  parseInt('{{comment.likes.all.count}}'),
+                            comment_id = ''.concat('#','comment', '{{comment.id}}');
+
+                            $(comment_id).css('cursor', 'pointer')
+                            $(comment_id).on('click',function(event){
+                                let comment_id_for_backend = '{{comment.id}}' 
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{% url 'accounts:likes-api-comment' comment.id %}",
+                                    data: {"comment_id": comment_id_for_backend, 'csrfmiddlewaretoken': '{{ csrf_token}}' },
+                                    dataType: 'json',
+                                    success: function(data){
+                                        let like_button =  $(comment_id),
+                                        initial_value = parseInt('{{comment.likes.all.count}}'),       status_of_button = $(comment_id).attr('name');
+
+                                        if (data.status == true && num_of_likes === initial_value && status_of_button == 'like-button-not-liked'){  
+                                                like_button.css('color','#0275d8')
+                                                num_of_likes += 1;
+                                                document.getElementById(''.concat('comment_span', '{{comment.id}}')).textContent=(''.concat(' ', num_of_likes.toString()));
+                                                    num_of_likes = parseInt(num_of_likes)
+
+                                        } else if (data.status == false && num_of_likes === (initial_value + 1) && status_of_button === 'like-button-not-liked'){
+                                                like_button.css('color','grey')
+                                                num_of_likes -= 1;
+                                                document.getElementById(''.concat('comment_span', '{{comment.id}}')).textContent=(''.concat(' ', num_of_likes.toString()));
+                                                    num_of_likes = parseInt(num_of_likes)
+                                                                
+                                        } else if (data.status == false && num_of_likes === initial_value && status_of_button == 'like-button-liked'){
+                                                like_button.css('color','grey')
+                                                num_of_likes -= 1;
+                                                document.getElementById(''.concat('comment_span', '{{comment.id}}')).textContent=(''.concat(' ', num_of_likes.toString()));
+                                                    num_of_likes = parseInt(num_of_likes)
+
+                                        } else if (data.status == true && num_of_likes === (initial_value - 1) && status_of_button == 'like-button-liked'){
+                                                like_button.css('color','#0275d8')
+                                                num_of_likes += 1;
+                                                console.log('unliked')
+
+                                                document.getElementById(''.concat('comment_span', '{{comment.id}}')).textContent=(''.concat(' ', num_of_likes.toString()));
+                                                    num_of_likes = parseInt(num_of_likes)
+                                        }           
+                                    }
+                                });
+                                event.stopImmediatePropagation();
+                                return false;
+                            })
+                        })
+                    </script>
+                    <!--- Script that controls the opportunity of addings likes on comments dynamically (without refreshing the page of profile) [END] --->
+
+                {% endfor %}
+            {% endif %}
+
+    <!--- The list of comments [END]--->
+                    
+    <!--- Add comment option [START] --->
+        <hr style="visibility: hidden;margin-bottom:-1% !important;">
+        <div class="tab-content col-xl-13" id="myTabContent"> 
+            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                <div class="form-group">
+                    <label class="sr-only" for="message">post</label>
+
+                    <form method="post"> <!-- FORM TAG 1 -->
+                        {% csrf_token %}
+                        {{ comment_form.body }}
+                        <input type="hidden" name="post_id" value="{{post.id}}" style="display: none;">
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-toolbar justify-content-between">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Comment</button>
+            </div>
+            </form> <!-- FORM TAG 2 -->
+        </div>
+    <!--- Add comment option [END] --->
+    
+    </div>
+</div>
+
+<!--- Comment section [END]--->
+
+<!--- There are no DOM elements --->             
+{% block profile_final_child %} {% endblock %}
+<!--- There are no DOM elements --->   
+
+{% endblock %}
+
+

@@ -1,16 +1,23 @@
+import json
 from datetime import timedelta
 
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth import views, authenticate, login
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 
-from django.views import generic
+from django.views import generic # Remove: djangorestframework, django-filter, markdown
+
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
+
+from django.template.loader import render_to_string
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import authentication, permissions
 
 from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm, 
                          AccountActivationForm)
@@ -111,7 +118,7 @@ class LogoutView(views.LogoutView):
 class ProfileView(generic.ListView):
     context = None
     model = TLAccount
-    template_name = 'accounts/user_profile.html'
+    template_name = 'accounts/profile/profile_final_child_5.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         user_acc = self.request.user
@@ -220,6 +227,7 @@ def all_outgoing_friquests_list(request, user_id):
 
 def detail_profile(request, user_id):
     user_acc = get_object_or_404(TLAccount, id=user_id)
+    context = None
     try:
         amount_of_friends = user_acc.friends.all().count()
         amount_of_frequests = FriendRequest.objects.filter(
@@ -237,7 +245,7 @@ def detail_profile(request, user_id):
 
     posts = Post.objects.filter(author=user_acc)
 
-    context = {
+    context = detail_profile.context = {
         'user_acc': user_acc,
         'who_makes_a_request': request.user.email,
         'amount_of_friends': amount_of_friends,
@@ -274,7 +282,9 @@ def detail_profile(request, user_id):
             else:
                 context['form'] = form
                 comment_form = AddCommentForm()
+
                 context['comment_form'] = comment_form
+
     else:
         # HTTP method is GET.
         form = AddPostForm()
@@ -282,7 +292,9 @@ def detail_profile(request, user_id):
         context['form'] = form
         context['comment_form'] = comment_form
 
-    return render(request, 'accounts/user_profile.html', context)
+    return render(request, 
+                 'accounts/profile/profile_final_child_5.html', 
+                 context)
 
 
 def friends_list(request, user_id):
@@ -464,15 +476,80 @@ def following_list(request, user_id):
         "following_users": following_users
     }
 
+    render_to_string()
+
     return render(request, 'accounts/following_list.html', context)
+
+
+# Likes
+# class LikePostAPI(APIView):
+
+#     authentication_classes = [authentication.SessionAuthentication,]
+#     permission_classes = [permissions.IsAuthenticated,]
+
+#     def get(self, request, post_id, format=None):
+#         updated = False
+#         liked = False
+#         user_acc = TLAccount.objects.get(id=request.user.id)
+
+#         post = Post.objects.get(id=post_id)
+#         if user_acc not in post.likes.all():
+#             post.likes.add(user_acc)
+
+#             updated = True
+#             liked = True
+#         else:
+#             post.likes.remove(user_acc)
+#             updated = True
+#             liked = False
+
+#         data = {
+#             "updated": updated,
+#             "liked": liked
+#         }
+#         return Response(data)
+
 
 # Likes
 def like_post(request, post_id):
+    like = False
     user_acc = TLAccount.objects.get(id=request.user.id)
+
     post = Post.objects.get(id=post_id)
-    post.likes.add(user_acc)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                            '/'))
+    if user_acc not in post.likes.all():
+        post.likes.add(user_acc)
+        liked = True
+    else:
+        post.likes.remove(user_acc)
+        liked = False
+    
+    context = {
+        'post_id': post_id,
+        'status': liked
+    }
+    return JsonResponse(context, safe=False)
+    
+
+def likes_api_comment(request, comment_id):
+    like = False
+    user_acc = TLAccount.objects.get(id=request.user.id)
+
+    comment = Comment.objects.get(id=comment_id)
+    if user_acc not in comment.likes.all():
+        comment.likes.add(user_acc)
+        liked = True
+    else:
+        comment.likes.remove(user_acc)
+        liked = False
+    
+    context = {
+        'comment_id': comment_id,
+        'status': liked
+    }
+
+    return JsonResponse(context, safe=False)
+    # return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+    #                                          '/'))
 
 def unlike_post(request, post_id):
     user_acc = TLAccount.objects.get(id=request.user.id)
@@ -487,7 +564,6 @@ def like_comment(request, comment_id):
     comment.likes.add(user_acc)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER',
                                             '/'))
-
 
 def unlike_comment(request, comment_id):
     user_acc = TLAccount.objects.get(id=request.user.id)
