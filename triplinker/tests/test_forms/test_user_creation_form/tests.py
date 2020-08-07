@@ -1,6 +1,6 @@
 import pytest
 
-from accounts.forms import CreateUser
+from accounts.forms.forms import CreateUser
 
 
 @pytest.fixture

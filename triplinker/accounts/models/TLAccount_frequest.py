@@ -39,11 +39,13 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     friends = models.ManyToManyField("TLAccount", blank=True)
 
     # Users who follow current user
-    followers = models.ManyToManyField("TLAccount", blank=True, 
-        related_name='followers_of_user')
+    followers = models.ManyToManyField("TLAccount", blank=True,
+                                       related_name='followers_of_user')
+
     # Users who are being followed by current user
-    people_which_follow = models.ManyToManyField("TLAccount", blank=True, 
-        related_name='people_whick_follow_user')
+    rl_name = 'people_which_follow_cur_usr'  # For variable->people_which_follow
+    people_which_follow = models.ManyToManyField("TLAccount", blank=True,
+                                                 related_name=rl_name)
 
     # Special fields
     date_joined = models.DateTimeField(verbose_name="Date joined",
@@ -78,7 +80,6 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
         """Returns full value in tuples of CHOICES"""
         return dict(TLAccount.COUNTRIES)[self.country]
 
-
     def has_perm(self, perm, obj=None):
         return self.is_admin
 
@@ -105,7 +106,6 @@ class FriendRequest(models.Model):
 
     def __str__(self):
         return "From {}, to {}".format(self.from_user.email, self.to_user.email)
-
 
     class Meta:
         verbose_name = 'Friend request'

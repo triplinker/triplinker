@@ -1,13 +1,14 @@
 from django import forms
-from django.forms import widgets
+from django.forms import widgets  # noqa: F401
 from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
                                        AuthenticationForm)
 from django.urls import reverse
 from django.contrib.auth.models import User
 
 from crispy_forms import helper
-from crispy_forms.layout import Layout
-from crispy_forms.layout import Submit, Field, Fieldset, ButtonHolder
+from crispy_forms.layout import Layout  # noqa: F401
+from crispy_forms.layout import (Submit, Field, Fieldset,  # noqa: F401
+                                 ButtonHolder)  # noqa: F401
 
 import datetime
 
@@ -77,18 +78,6 @@ class CreateUser(UserCreationForm):
             raise forms.ValidationError("This is not a valid Second Name!")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 class SignUpForm(UserCreationForm):
     class Meta:
         model = TLAccount
@@ -152,6 +141,7 @@ class AccountActivationForm(UserChangeForm):
         super(AccountActivationForm, self).save(*args, **kwargs)
         return self
 
+
 class LoginForm(AuthenticationForm):
     class Meta:
         model = User
@@ -169,7 +159,7 @@ class LoginForm(AuthenticationForm):
         self.helper.html5_required = True
         self.helper.form_show_labels = True
         self.helper.label_class = 'col-md-12 control-label'
-        self.helper.field_class = 'col-md-12'   
+        self.helper.field_class = 'col-md-12'
 
         self.helper.add_input(
             Submit('send_button', u'Login', css_class='col-md-12'))
@@ -204,4 +194,3 @@ class ProfileEditForm(UserChangeForm):
     def save(self, *args, **kwargs):
         super(ProfileEditForm, self).save(*args, **kwargs)
         return self
-
