@@ -11,10 +11,10 @@
     <div class="row">
       <div class="col-md-8">
         <div class="people-nearby">
-          {% if user_friends.count == 0 and user_acc.email == who_makes_a_request %}
+          {% if not following_users and user_acc.email == who_makes_a_request %}
             <p>You don't follow anyone</p>
 
-          {% elif user_friends.count == 0 and user_acc.email != who_makes_a_request %}
+          {% elif not following_users and user_acc.email != who_makes_a_request %}
             <p>This user doesn't follow anyone</p>
 
           {% else %}

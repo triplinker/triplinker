@@ -13,9 +13,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
 
-from django.template.loader import render_to_string
-
-
 from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm,
                           AccountActivationForm)
 from .forms.forms_feed import AddPostForm, AddCommentForm
@@ -358,7 +355,7 @@ def cancel_friend_request(request, user_id):
 
 # Feed
 def show_feed(request):
-    template = 'accounts/feed.html'
+    template = 'accounts/feed/feed_final_child_3.html'
 
     if request.method == 'GET':
         user = TLAccount.objects.get(id=request.user.id)
@@ -436,7 +433,6 @@ def followers_list(request, user_id):
         'who_makes_a_request': request.user.email,
         "followers": followers
     }
-
     return render(request, 'accounts/followers_list.html', context)
 
 
@@ -453,9 +449,6 @@ def following_list(request, user_id):
         'who_makes_a_request': request.user.email,
         "following_users": following_users
     }
-
-    render_to_string()
-
     return render(request, 'accounts/following_list.html', context)
 
 
