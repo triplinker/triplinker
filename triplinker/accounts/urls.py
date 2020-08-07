@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 
+
 app_name = 'accounts'
 
 urlpatterns = [
@@ -29,28 +30,24 @@ urlpatterns = [
     path('users/<int:user_id>/delete-request/', views.delete_friend_request,
          name="delete-frequest"),
 
-    # Updates tracking system (followers) 
+    # Updates tracking system (followers)
     path('users/<int:user_id>/follow/', views.follow_user, name="follow"),
     path('users/<int:user_id>/unfollow/', views.unfollow_user, name="unfollow"),
 
-    path('users/<int:user_id>/followers/', views.followers_list, 
+    path('users/<int:user_id>/followers/', views.followers_list,
          name="followers-list"),
-    path('users/<int:user_id>/following/', views.following_list, 
+    path('users/<int:user_id>/following/', views.following_list,
          name="following-list"),
 
     # Feeds
     path('feed/', views.show_feed, name="feed"),
 
     # Like/Unlike system
-    path('likes-api-post/<int:post_id>/', views.like_post, 
+    path('likes-api-post/<int:post_id>/', views.like_post,
          name="likes-api-post"),
-    path('likes-api-comment/<int:comment_id>/', views.likes_api_comment, 
+    path('likes-api-comment/<int:comment_id>/', views.likes_api_comment,
          name="likes-api-comment"),
-    path('like-comment/<int:comment_id>', 
-         views.like_comment, name="like-comment"),
-    path('unlike-comment/<int:comment_id>', 
-         views.unlike_comment, name="unlike-comment"),
-    
+
     # Profile, reg, auth
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('activate/', views.ActivateView.as_view(), name='activate'),

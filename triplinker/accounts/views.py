@@ -1,13 +1,12 @@
-import json
 from datetime import timedelta
 
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth import views, authenticate, login
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.http import HttpResponseRedirect, JsonResponse
 
-from django.views import generic # Remove: djangorestframework, django-filter, markdown
+from django.views import generic
 
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -15,12 +14,10 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import render, get_object_or_404
 
 from django.template.loader import render_to_string
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from rest_framework import authentication, permissions
 
-from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm, 
-                         AccountActivationForm)
+
+from .forms.forms import (SignUpForm, LoginForm, ProfileEditForm,
+                          AccountActivationForm)
 from .forms.forms_feed import AddPostForm, AddCommentForm
 
 from .models.TLAccount_frequest import TLAccount, FriendRequest
@@ -32,6 +29,7 @@ from .helpers.views.status_between_users_definer import define_status
 
 class IndexView(generic.ListView):
     template_name = 'accounts/index.html'
+
     def get_queryset(self):
         return TLAccount.objects.all()
 
@@ -63,25 +61,6 @@ class SignUpView(generic.FormView):
                                 password=form.cleaned_data['password1'],
                                 )
         login(self.request, new_user)
-        return super().form_valid(form)
-
-
-class ActivateView(views.FormView):
-    form_class = AccountActivationForm
-    success_url = reverse_lazy('accounts:index')
-    template_name = 'registration/activate.html'
-    user = None
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        print('try')
-        if hasattr(self, 'user'):
-            print(self.request.user)
-            kwargs.update({'instance': self.request.user})
-        return kwargs
-
-    def form_valid(self, form):
-        self.object = form.save()
         return super().form_valid(form)
 
 
@@ -156,15 +135,15 @@ class ProfileView(generic.ListView):
         if post_id:
             # User adds a comment.
             content_for_comment_form = {
-                'body': request.POST.get("body", ), # Text of comment.
+                'body': request.POST.get("body", ),  # Text of comment.
                 'user': request.user,
                 'post': post_id
             }
             comment_form = AddCommentForm(content_for_comment_form)
             if comment_form.is_valid():
                 comment_form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
-                                            '/'))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                                             '/'))
             else:
                 context['comment_form'] = comment_form
                 return render(request, self.template_name, context)
@@ -172,15 +151,15 @@ class ProfileView(generic.ListView):
         else:
             # User adds a post.
             content_for_form = {
-            'content': request.POST.get("content", ),
-            'author': request.user,
+                'content': request.POST.get("content", ),
+                'author': request.user,
             }
 
             form = AddPostForm(content_for_form)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER', 
-                                            '/'))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                                             '/'))
             else:
                 context['form'] = form
                 return render(request, self.template_name, context)
@@ -254,6 +233,8 @@ def detail_profile(request, user_id):
         'posts': posts,
     }
 
+    template_name = 'accounts/profile/profile_final_child_5.html'
+
     if request.method == 'POST':
         post_id = request.POST.get("post_id", )
         if post_id:
@@ -267,18 +248,18 @@ def detail_profile(request, user_id):
             if comment_form.is_valid():
                 comment_form.save()
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                            '/'))
+                                                             '/'))
             else:
                 context['comment_form'] = comment_form
-                return render(request, self.template_name, context)
+                return render(request, template_name, context)
         else:
             # User adds a post.
             form = AddPostForm(initial={'content': request.POST,
-                                            "author": request.user})
+                                        'author': request.user})
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                                '/'))
+                                                             '/'))
             else:
                 context['form'] = form
                 comment_form = AddCommentForm()
@@ -292,9 +273,7 @@ def detail_profile(request, user_id):
         context['form'] = form
         context['comment_form'] = comment_form
 
-    return render(request, 
-                 'accounts/profile/profile_final_child_5.html', 
-                 context)
+    return render(request, template_name, context)
 
 
 def friends_list(request, user_id):
@@ -389,7 +368,7 @@ def show_feed(request):
         for friend in user.friends.all():
             friend_posts = Post.objects.filter(author=friend)
             for post in friend_posts:
-                posts_id.add(post.id) 
+                posts_id.add(post.id)
 
         for following_user in user.people_which_follow.all():
             following_user_posts = Post.objects.filter(author=following_user)
@@ -398,13 +377,11 @@ def show_feed(request):
 
         enddate = timezone.now()
         startdate = enddate - timedelta(days=7)
-        
+
         feed = Post.objects.filter(pk__in=posts_id).filter(timestamp__range=[
                                                            startdate, enddate])
-        
-        context = {
-            'feed':feed
-        }
+
+        context = {'feed': feed}
 
         comment_form = AddCommentForm()
         context['comment_form'] = comment_form
@@ -423,7 +400,7 @@ def show_feed(request):
             if comment_form.is_valid():
                 comment_form.save()
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                            '/'))
+                                                             '/'))
             else:
                 context['comment_form'] = comment_form
                 return render(request, template, context)
@@ -436,6 +413,7 @@ def follow_user(request, user_id):
     user_who_wanna_follow.people_which_follow.add(user_who_gets_follower)
     user_who_gets_follower.followers.add(user_who_wanna_follow)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
 
 def unfollow_user(request, user_id):
     user_who_unfollow = get_object_or_404(TLAccount, id=request.user.id)
@@ -482,37 +460,8 @@ def following_list(request, user_id):
 
 
 # Likes
-# class LikePostAPI(APIView):
-
-#     authentication_classes = [authentication.SessionAuthentication,]
-#     permission_classes = [permissions.IsAuthenticated,]
-
-#     def get(self, request, post_id, format=None):
-#         updated = False
-#         liked = False
-#         user_acc = TLAccount.objects.get(id=request.user.id)
-
-#         post = Post.objects.get(id=post_id)
-#         if user_acc not in post.likes.all():
-#             post.likes.add(user_acc)
-
-#             updated = True
-#             liked = True
-#         else:
-#             post.likes.remove(user_acc)
-#             updated = True
-#             liked = False
-
-#         data = {
-#             "updated": updated,
-#             "liked": liked
-#         }
-#         return Response(data)
-
-
-# Likes
 def like_post(request, post_id):
-    like = False
+    liked = False
     user_acc = TLAccount.objects.get(id=request.user.id)
 
     post = Post.objects.get(id=post_id)
@@ -522,16 +471,16 @@ def like_post(request, post_id):
     else:
         post.likes.remove(user_acc)
         liked = False
-    
+
     context = {
         'post_id': post_id,
         'status': liked
     }
     return JsonResponse(context, safe=False)
-    
+
 
 def likes_api_comment(request, comment_id):
-    like = False
+    liked = False
     user_acc = TLAccount.objects.get(id=request.user.id)
 
     comment = Comment.objects.get(id=comment_id)
@@ -541,33 +490,10 @@ def likes_api_comment(request, comment_id):
     else:
         comment.likes.remove(user_acc)
         liked = False
-    
+
     context = {
         'comment_id': comment_id,
         'status': liked
     }
 
     return JsonResponse(context, safe=False)
-    # return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-    #                                          '/'))
-
-def unlike_post(request, post_id):
-    user_acc = TLAccount.objects.get(id=request.user.id)
-    post = Post.objects.get(id=post_id)
-    post.likes.remove(user_acc)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                            '/'))
-
-def like_comment(request, comment_id):
-    user_acc = TLAccount.objects.get(id=request.user.id)
-    comment = Comment.objects.get(id=comment_id)
-    comment.likes.add(user_acc)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                            '/'))
-
-def unlike_comment(request, comment_id):
-    user_acc = TLAccount.objects.get(id=request.user.id)
-    comment = Comment.objects.get(id=comment_id)
-    comment.likes.remove(user_acc)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                            '/'))

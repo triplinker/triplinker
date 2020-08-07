@@ -1,5 +1,5 @@
 import pytest
-from accounts.models import TLAccount
+from accounts.models.TLAccount_frequest import TLAccount
 
 
 @pytest.mark.django_db
@@ -27,13 +27,3 @@ def test_main_fields(user_obj):
 	assert user_obj.is_admin == False
 	assert user_obj.is_superuser == False
 	assert user_obj.is_staff == False
-
-
-@pytest.mark.django_db
-def test_additional_fields_are_empty(user_obj):
-  	assert user_obj.place_of_work == None
-  	assert user_obj.short_description == "" # This field has null=False
-  	assert user_obj.hobbies == None
-  	assert user_obj.vkontakte == None
-  	assert user_obj.twitter == None
-  	assert user_obj.facebook == None
