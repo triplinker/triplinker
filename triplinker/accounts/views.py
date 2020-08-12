@@ -92,6 +92,12 @@ class LogoutView(views.LogoutView):
 
 
 class ProfileView(generic.ListView):
+    """Class provides the person with his own page on triplinker.
+    It saves posts and comments which was wrote on the page of user's own
+    profile if HTTP method is POST and rendering the final child of the chain of
+    HTML documents for profile if HTTP method is GET.
+    """
+
     context = None
     model = TLAccount
     template_name = 'accounts/profile/profile_final_child_5.html'
@@ -109,8 +115,6 @@ class ProfileView(generic.ListView):
             amount_of_frequests = 0
 
         posts = Post.objects.filter(author=user_acc)
-        # followers = user_acc.followers.all()
-        # num_of_followers = followers.count()
 
         self.context = {
             'user_acc': user_acc,
@@ -142,6 +146,7 @@ class ProfileView(generic.ListView):
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER',
                                                              '/'))
             else:
+                # Form is not valid.
                 context['comment_form'] = comment_form
                 return render(request, self.template_name, context)
 
@@ -158,6 +163,7 @@ class ProfileView(generic.ListView):
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER',
                                                              '/'))
             else:
+                # Form is not valid.
                 context['form'] = form
                 return render(request, self.template_name, context)
 
@@ -182,14 +188,21 @@ class ProfileEditView(generic.FormView):
 
 # Friends system
 class AllUsersList(generic.ListView):
+    """Renders the list of users of site without the user who makes this
+    request."""
+
     template_name = 'accounts/all_users_list.html'
     context_object_name = 'users'
 
     def get_queryset(self):
+        """Forms query set that will be used in the context of django template.
+        """
         return TLAccount.objects.exclude(id=self.request.user.id)
 
 
 def all_incoming_friquests_list(request, user_id):
+    """Shows the list of all incoming friend requests for user who makes this
+    request."""
     user = FriendRequest.objects.filter(to_user=user_id)
     context = {'incom_friquests': user}
     return render(request, 'accounts/incoming_frequests_list.html', context)
@@ -202,6 +215,9 @@ def all_outgoing_friquests_list(request, user_id):
 
 
 def detail_profile(request, user_id):
+    """Function makes the same work as ProfileView class but with other profiles
+    on site(it doesn't work with current user's profile)."""
+
     user_acc = get_object_or_404(TLAccount, id=user_id)
     context = None
     try:
@@ -269,11 +285,11 @@ def detail_profile(request, user_id):
         comment_form = AddCommentForm()
         context['form'] = form
         context['comment_form'] = comment_form
-
     return render(request, template_name, context)
 
 
 def friends_list(request, user_id):
+    """Shows the list of user's friends."""
     user_acc = get_object_or_404(TLAccount, id=user_id)
 
     try:
@@ -286,11 +302,12 @@ def friends_list(request, user_id):
         'who_makes_a_request': request.user.email,
         "user_friends": user_friends
     }
-
     return render(request, 'accounts/friends_list.html', context)
 
 
 def delete_user_from_friends(request, user_id):
+    """Deletes user from friend list (the user who will be deleted from friends
+    is already in friend list)."""
     user_who_deletes = get_object_or_404(TLAccount, id=request.user.id)
     friends_to_delete = get_object_or_404(TLAccount, id=user_id)
     user_who_deletes.friends.remove(friends_to_delete)
@@ -300,6 +317,7 @@ def delete_user_from_friends(request, user_id):
 
 
 def send_request(request, user_id):
+    """Sends friend request to user."""
     request_from_user = request.user
     request_to_user = TLAccount.objects.get(id=user_id)
 
@@ -307,12 +325,13 @@ def send_request(request, user_id):
         from_user=request_from_user,
         to_user=request_to_user
     )
-    friend_request  # for flake8, never used
+    friend_request  # for flake8, never used.
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def accept_friend_request(request, user_id):
+    """Gives the possibility to accept friend request from other users."""
     from_user = get_object_or_404(TLAccount, id=user_id)
     to_user = get_object_or_404(TLAccount, id=request.user.id)
 
@@ -324,11 +343,12 @@ def accept_friend_request(request, user_id):
     user1.friends.add(user2)
     user2.friends.add(user1)
     friend_request.delete()
-
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def delete_friend_request(request, user_id):
+    """The person who get friend request can delete it from incoming friend
+    requests."""
     from_user = get_object_or_404(TLAccount, id=user_id)
     to_user = get_object_or_404(TLAccount, id=request.user.id)
 
@@ -336,11 +356,11 @@ def delete_friend_request(request, user_id):
         from_user=from_user,
         to_user=to_user)
     friend_request.delete()
-
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def cancel_friend_request(request, user_id):
+    """The user who sends to another user friend request can cancel it."""
     from_user = get_object_or_404(TLAccount, id=request.user.id)
     to_user = get_object_or_404(TLAccount, id=user_id)
 
@@ -349,12 +369,13 @@ def cancel_friend_request(request, user_id):
         to_user=to_user
     )
     friend_request.delete()
-
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 # Feed
 def show_feed(request):
+    """Shows all posts with comments from users which are in friend list of
+    current user or which are followed by current user."""
     template = 'accounts/feed/feed_final_child_3.html'
 
     if request.method == 'GET':
@@ -372,6 +393,7 @@ def show_feed(request):
             for post in following_user_posts:
                 posts_id.add(post.id)
 
+        # Will be shown posts and comments for last 7 days.
         enddate = timezone.now()
         startdate = enddate - timedelta(days=7)
 
@@ -405,6 +427,8 @@ def show_feed(request):
 
 # Followers
 def follow_user(request, user_id):
+    """Adds user1 to followers of user2 and adds user2 to  people_which_follow
+    of user1."""
     user_who_wanna_follow = get_object_or_404(TLAccount, id=request.user.id)
     user_who_gets_follower = get_object_or_404(TLAccount, id=user_id)
     user_who_wanna_follow.people_which_follow.add(user_who_gets_follower)
@@ -413,6 +437,8 @@ def follow_user(request, user_id):
 
 
 def unfollow_user(request, user_id):
+    """Deletes user1 from followers of user2 and deletes user2 from
+    following of user1."""
     user_who_unfollow = get_object_or_404(TLAccount, id=request.user.id)
     user_who_loses_follower = get_object_or_404(TLAccount, id=user_id)
     user_who_unfollow.people_which_follow.remove(user_who_loses_follower)
@@ -421,6 +447,7 @@ def unfollow_user(request, user_id):
 
 
 def followers_list(request, user_id):
+    """Shows the list of followers of user."""
     user_acc = get_object_or_404(TLAccount, id=user_id)
 
     try:
@@ -437,6 +464,7 @@ def followers_list(request, user_id):
 
 
 def following_list(request, user_id):
+    """Shows the list of people which are followed by user."""
     user_acc = get_object_or_404(TLAccount, id=user_id)
 
     try:
@@ -454,6 +482,9 @@ def following_list(request, user_id):
 
 # Likes
 def like_post(request, post_id):
+    """Adds user to 'likes' field of Post model / deletes user from 'likes'
+    field of Post model and returns json which will be used in front end for
+    dynamical update of page without refreshing the whole page."""
     liked = False
     user_acc = TLAccount.objects.get(id=request.user.id)
 
@@ -473,6 +504,9 @@ def like_post(request, post_id):
 
 
 def likes_api_comment(request, comment_id):
+    """Adds user to 'likes' field of Comment model / deletes user from 'likes'
+    field of Comment model and returns json which will be used in front end for
+    dynamical update of page without refreshing the whole page."""
     liked = False
     user_acc = TLAccount.objects.get(id=request.user.id)
 
@@ -488,5 +522,4 @@ def likes_api_comment(request, comment_id):
         'comment_id': comment_id,
         'status': liked
     }
-
     return JsonResponse(context, safe=False)

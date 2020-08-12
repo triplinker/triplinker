@@ -1,4 +1,5 @@
 def create_acc(user_obj, arguments: dict, manager_obj, user="common_user"):
+    """Depending on the value 'user' argument creates a certain type of user."""
     user_obj.first_name = arguments["first_name"]
     user_obj.second_name = arguments["second_name"]
     user_obj.sex = arguments["sex"]

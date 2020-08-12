@@ -16,6 +16,7 @@ from accounts.models.TLAccount_frequest import TLAccount
 
 
 class CreateUser(UserCreationForm):
+    """Form for creating user account in the system."""
     class Meta:
         model = TLAccount
 
@@ -42,6 +43,8 @@ class CreateUser(UserCreationForm):
         }
 
     def clean(self, *args, **kwargs):
+        """Compare first_name and second_name fields in form, checks that their
+        value is not the same."""
         cleaned_data = super().clean()
         first_name = cleaned_data.get('first_name')
         second_name = cleaned_data.get('second_name')
@@ -52,6 +55,8 @@ class CreateUser(UserCreationForm):
         return cleaned_data
 
     def clean_first_name(self, *args, **kwargs):
+        """Checks that first_name field doesn't contain digits and field's
+        length is not over 15 characters."""
         first_name = self.cleaned_data.get('first_name')
 
         for i in first_name:
@@ -65,6 +70,8 @@ class CreateUser(UserCreationForm):
             raise forms.ValidationError("This is not a valid First Name!")
 
     def clean_second_name(self, *args, **kwargs):
+        """Checks that second_name field doesn't contain digits and field's
+        length is not over 15 characters."""
         second_name = self.cleaned_data.get('second_name')
 
         for i in second_name:

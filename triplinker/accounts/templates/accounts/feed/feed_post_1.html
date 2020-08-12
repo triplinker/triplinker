@@ -70,13 +70,25 @@
 
                     <a href="#" class="card-link" style="color:grey;"><i class="fa fa-mail-forward"></i> Share</a>
                 </div>
+
+                <!--- Script that controls the opportunity of adding likes on posts dynamically (without refreshing the whole page of profile) [START] --->
                 <script type="text/javascript">
                     $(document).ready(function(){
+                        // Getting num of likes which are associated with the particular post.
                         let num_of_likes =  parseInt('{{post.likes.all.count}}'),
+
+                        // Getting the unique id of <a> tag with thumb up for post. 
                         like_id = ''.concat('#post_', '{{post.id}}');
+
+                        // Making the behavior of <a> tag (without href attribute) close to <a> tag with href attribute.
                         $(like_id).css('cursor', 'pointer')
+
+                        // Listening the click event on like.
                         $(like_id).on('click',function(event){
-                            let post_id = '{{post.id}}' 
+                            // Getting the unique id of post itself.
+                            let post_id = '{{post.id}}'
+
+                            // Making asynchronous request to the server.
                             $.ajax({
                                 type: "POST",
                                 url: "{% url 'accounts:likes-api-post' post.id %}",
@@ -86,10 +98,17 @@
                                     let like_button =  $(like_id),
                                     initial_value = parseInt('{{post.likes.all.count}}');
 
+                                    // That's important to know if the user has already pressed the like button for a particular post before the loading of the whole page or if the user has not pressed the like button of a particular post yet.
                                     status_of_button = $(like_id).attr('name');
-                                    if (data.status == true && num_of_likes === initial_value && status_of_button == 'like-button-not-liked'){  
+
+                                    if (data.status == true && num_of_likes === initial_value && status_of_button == 'like-button-not-liked'){
+
+                                        // Changing the color of like button and the number of likes near it.  
                                         like_button.css('color','#0275d8')
+
                                         num_of_likes += 1;
+
+                                        // Changing the number of likes for a particular post if the like button for a particular post was pressed.
                                         document.getElementById(''.concat('span', '{{post.id}}')).textContent=(num_of_likes);
 
                                     } else if (data.status == false && num_of_likes === (initial_value + 1) && status_of_button === 'like-button-not-liked'){
@@ -113,7 +132,7 @@
                         })
                     })
                 </script>
-                <!--- Script that controls the opportunity of adding likes on posts dynamically (without refreshing the page of profile) [END] --->
+                <!--- Script that controls the opportunity of adding likes on posts dynamically (without refreshing the whole page of profile) [END] --->
 
         <!--- Comment section [START] --->            
             {% block comments%}{% endblock %}

@@ -4,6 +4,8 @@ from .TLAccount_frequest import TLAccount
 
 
 class Post(models.Model):
+    """Post model which provides users the possibility of posting thoughts,
+    images and etc."""
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True,
                               validators=[FileExtensionValidator(['png', 'jpg',
@@ -28,6 +30,9 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    """Model that are connected with post model because every post must have
+    it's own comments"""
+
     user = models.ForeignKey(TLAccount, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     body = models.TextField()

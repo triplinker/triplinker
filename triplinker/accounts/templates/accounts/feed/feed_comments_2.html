@@ -49,24 +49,40 @@
                 <!--- Script that controls the opportunity of adding likes on comments dynamically (without refreshing the page of profile) [START] --->
                 <script type="text/javascript">
                     $(document).ready(function(){
+                        // Getting the number of likes of a particular comment
                         let num_of_likes =  parseInt('{{comment.likes.all.count}}'),
+
+                        // Getting the unique id of <a> tag with thumb up for comment. 
                         comment_id = ''.concat('#','comment', '{{comment.id}}');
 
+                        // Making the behavior of <a> tag (without href attribute) close to <a> tag with href attribute.
                         $(comment_id).css('cursor', 'pointer')
+
+                        // Listening the click event on like.
                         $(comment_id).on('click',function(event){
+                            // Getting the unique id of comment itself.
                             let comment_id_for_backend = '{{comment.id}}' 
+
+                            // Making asynchronous request to the server.
                             $.ajax({
                                 type: "POST",
                                 url: "{% url 'accounts:likes-api-comment' comment.id %}",
                                 data: {"comment_id": comment_id_for_backend, 'csrfmiddlewaretoken': '{{ csrf_token}}' },
                                 dataType: 'json',
+
                                 success: function(data){
                                     let like_button =  $(comment_id),
-                                    initial_value = parseInt('{{comment.likes.all.count}}'),       status_of_button = $(comment_id).attr('name');
+                                    initial_value = parseInt('{{comment.likes.all.count}}'),     
 
-                                    if (data.status == true && num_of_likes === initial_value && status_of_button == 'like-button-not-liked'){  
+                                    // That's important to know if the user has already pressed the like button for a particular comment before the loading of the whole page or if the user has not pressed the like button of a particular comment yet.
+                                    status_of_button = $(comment_id).attr('name');
+
+                                    if (data.status == true && num_of_likes === initial_value && status_of_button == 'like-button-not-liked'){
+                                            // Changing the color of like button and the number of likes near it.
                                             like_button.css('color','#0275d8');
                                             num_of_likes += 1;
+
+                                            // Changing the number of likes for a particular comment if the like button for a particular comment was pressed.
                                             document.getElementById(''.concat('comment_span', '{{comment.id}}')).textContent=(''.concat(' ', num_of_likes.toString()));
                                                     num_of_likes = parseInt(num_of_likes)
 

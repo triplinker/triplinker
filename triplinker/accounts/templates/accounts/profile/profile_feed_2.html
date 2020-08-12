@@ -54,7 +54,7 @@
                                 <div class="form-group">
                                     <label class="sr-only" for="message">post</label>
 
-                                    <form method="post">
+                                    <form method="post"> <!-- Form 1 [START] -->
                                         {% csrf_token %}
                                         {{ form.content }}
                                 </div>
@@ -73,7 +73,7 @@
                             <div class="btn-group">
                                 <button type="submit" class="btn btn-primary">Share</button>
                             </div>
-                            </form>
+                            </form> <!-- Form 1 [END] -->
                             <div class="btn-group">
                                 <button id="btnGroupDrop1" type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
