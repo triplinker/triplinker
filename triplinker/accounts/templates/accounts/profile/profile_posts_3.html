@@ -7,7 +7,7 @@
     {% if posts %}
     {% for post in posts %}
 
-    <div class="card gedf-card">
+    <div class="card gedf-card" id="post-{{post.id}}-content">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex justify-content-between align-items-center">
@@ -39,7 +39,7 @@
                 <hr id="hr_content_and_time" />
                 <p class="card-text">{{ post.content }}</p>
                 </div>
-                       
+                
                 <div class="card-footer" id='like-section'>
                     {% if request.user not in post.likes.all %}
                         <a name ='like-button-not-liked' class="card-link post-like" style="color:grey;" id = 'post_{{post.id}}'><i class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3" data-status= 'not_liked' ></i> <span id='span{{post.id}}'>{{post.likes.all.count}}</span></a>
@@ -52,6 +52,10 @@
                     <a href="javascript:void(0);" class="card-link" onclick='get_commentbox(this.id)' id="comment_link" style="color:grey;"><i  class="fa fa-comment" ></i> Comments ({{post.comment_set.all.count}})</a>
 
                     <a href="#" class="card-link" style="color:grey;"><i class="fa fa-mail-forward"></i> Share</a>
+
+                    {% if post.was_published_recently %}
+                    <h6 style="float: right;margin-bottom: 0%;"><span class="badge badge-primary">New post</span></h6>
+                    {% endif %}
                 </div>
                 
                 <!--- Script that controls the opportunity of adding likes on posts dynamically (without refreshing the whole page of profile) [START] --->

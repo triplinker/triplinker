@@ -1,5 +1,8 @@
+import datetime
+from django.utils import timezone
 from django.db import models
 from django.core.validators import FileExtensionValidator
+
 from .TLAccount_frequest import TLAccount
 
 
@@ -22,6 +25,9 @@ class Post(models.Model):
 
     def number_of_likes(self):
         return self.likes.all().count()
+
+    def was_published_recently(self):
+        return self.timestamp >= timezone.now() - datetime.timedelta(minutes=59)
 
     class Meta:
         ordering = ('-timestamp',)

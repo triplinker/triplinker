@@ -11,9 +11,10 @@
                     <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Image Description">
                     <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30 col-9 col-sm-10 col-md-9 col-lg-9 col-xl-11">
                         <div class="g-mb-15">
-                            <h6 class="h5 g-color-gray-dark-v1 mb-0" id="comment_username"><a href="{% url 'accounts:detail_profile' comment.user.id %}">{{ comment.user.email }}</a></h6>
+                            <h6 class="h5 g-color-gray-dark-v1 mb-0" id="comment_username"><a href="{% url 'accounts:detail_profile' comment.user.id %}">{{ comment.user.email }}</a>
+                            </h6>
                         </div>
-                        <p style="max-width:43ch;"></style>{{comment.body}}</p>
+                        <p style="max-width:43ch;font-size:99%;"></style>{{comment.body}}</p>
                         <hr id="comment_hr">
                         <ul class="list-inline d-sm-flex my-0">
                             <li class="list-inline-item g-mr-20">
@@ -27,12 +28,12 @@
                                 {% else %}
                                     <a class="card-link" id = "comment{{comment.id}}" name ='like-button-liked' style="color:#0275d8">
                                         <i class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3" ></i>
-                                        <span id="comment_span{{comment.id}}"> {{ comment.likes.all.count }}</span>     
+                                        <span id="comment_span{{comment.id}}"> {{ comment.likes.all.count }}</span>
                                     </a>
                                 {% endif %}
                             </li>
                             <li class="list-inline-item g-mr-20">
-                              <div class="text-muted h7 mb-2" style="margin-top:1%;"><i class="fa fa-clock-o"></i> {{ comment.timestamp | timesince }} ago</div>
+                                <div class="text-muted h7 mb-2" style="margin-top:1.5%;"><i class="fa fa-clock-o"></i> {{ comment.timestamp | timesince }} ago</div>
                             </li>
                             <li class="list-inline-item ml-auto">
                                 <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">

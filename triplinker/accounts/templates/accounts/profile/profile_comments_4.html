@@ -15,12 +15,11 @@
                         <div class="g-mb-15">
                             <h6 class="h5 g-color-gray-dark-v1 mb-0" id="comment_username"><a href="{% url 'accounts:detail_profile' comment.user.id %}">{{ comment.user.email }}</a></h6>
                         </div>
-                        <p style="max-width:43ch;"></style>{{comment.body}}</p>
+                        <p style="max-width:43ch;font-size: 99%;">{{comment.body}}</p>
                         <hr id="comment_hr">
                         <ul class="list-inline d-sm-flex my-0">
                             <li class="list-inline-item g-mr-20">
                                 {% if request.user not in comment.likes.all %}
-
                                     <a name ='like-button-not-liked' id = "comment{{comment.id}}" style="color:grey">
                                         <i class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3"></i>
                                         <span id="comment_span{{comment.id}}"> {{ comment.likes.all.count }}</span>      
@@ -33,7 +32,7 @@
                                 {% endif %}
                             </li>
                             <li class="list-inline-item g-mr-20">
-                                <div class="text-muted h7 mb-2" style="margin-top:1%;"><i class="fa fa-clock-o"></i> {{ comment.timestamp | timesince }} ago</div>
+                                <div class="text-muted h7 mb-2" style="margin-top:1.5%;"><i class="fa fa-clock-o"></i> {{ comment.timestamp | timesince }} ago</div>
                             </li>
                             <li class="list-inline-item ml-auto">
                                 <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">

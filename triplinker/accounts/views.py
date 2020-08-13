@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from django.urls import reverse
+
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
@@ -143,8 +145,9 @@ class ProfileView(generic.ListView):
             comment_form = AddCommentForm(content_for_comment_form)
             if comment_form.is_valid():
                 comment_form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                                             '/'))
+                return HttpResponseRedirect(
+                       reverse('accounts:profile',) + '#post-' +
+                       str(post_id) + "-content")
             else:
                 # Form is not valid.
                 context['comment_form'] = comment_form
@@ -160,8 +163,11 @@ class ProfileView(generic.ListView):
             form = AddPostForm(content_for_form)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                                             '/'))
+                user_acc_id = request.user
+                postProfileLST = Post.objects.filter(author=user_acc_id).first()
+                return HttpResponseRedirect(
+                       reverse('accounts:profile', ) + '#post-' +
+                       str(postProfileLST.id) + "-content")
             else:
                 # Form is not valid.
                 context['form'] = form
@@ -260,8 +266,10 @@ def detail_profile(request, user_id):
             comment_form = AddCommentForm(content_for_comment_form)
             if comment_form.is_valid():
                 comment_form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                                             '/'))
+                return HttpResponseRedirect(
+                       reverse('accounts:detail_profile', 
+                       kwargs={'user_id': user_acc.id}) + '#post-' +
+                       str(post_id) + "-content")
             else:
                 context['comment_form'] = comment_form
                 return render(request, template_name, context)
@@ -271,8 +279,12 @@ def detail_profile(request, user_id):
                                         'author': request.user})
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                                             '/'))
+                user_acc = request.user
+                postProfileLST = Post.objects.filter(user=user_acc).first()
+                return HttpResponseRedirect(
+                       reverse('accounts:detail_profile', 
+                       kwargs={'user_id': user_acc.id}) + '#post-' +
+                       str(postProfileLST.id) + "-content")
             else:
                 context['form'] = form
                 comment_form = AddCommentForm()
@@ -418,8 +430,9 @@ def show_feed(request):
             comment_form = AddCommentForm(content_for_comment_form)
             if comment_form.is_valid():
                 comment_form.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER',
-                                                             '/'))
+                return HttpResponseRedirect(
+                       reverse('accounts:feed', ) + '#post-' +
+                       str(post_id) + "-content")
             else:
                 context['comment_form'] = comment_form
                 return render(request, template, context)
