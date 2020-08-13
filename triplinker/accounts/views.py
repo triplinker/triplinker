@@ -266,10 +266,10 @@ def detail_profile(request, user_id):
             comment_form = AddCommentForm(content_for_comment_form)
             if comment_form.is_valid():
                 comment_form.save()
+                html_anchor = '#post-' + str(post_id) + "-content"
                 return HttpResponseRedirect(
-                       reverse('accounts:detail_profile', 
-                       kwargs={'user_id': user_acc.id}) + '#post-' +
-                       str(post_id) + "-content")
+                       reverse('accounts:detail_profile',
+                               kwargs={'user_id': user_acc.id}) + html_anchor)
             else:
                 context['comment_form'] = comment_form
                 return render(request, template_name, context)
@@ -281,10 +281,10 @@ def detail_profile(request, user_id):
                 form.save()
                 user_acc = request.user
                 postProfileLST = Post.objects.filter(user=user_acc).first()
+                html_anchor = '#post-' + str(postProfileLST.id) + "-content"
                 return HttpResponseRedirect(
-                       reverse('accounts:detail_profile', 
-                       kwargs={'user_id': user_acc.id}) + '#post-' +
-                       str(postProfileLST.id) + "-content")
+                       reverse('accounts:detail_profile',
+                               kwargs={'user_id': user_acc.id}) + html_anchor)
             else:
                 context['form'] = form
                 comment_form = AddCommentForm()
