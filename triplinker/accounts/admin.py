@@ -1,54 +1,61 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import TLAccount
-from .forms import UserCreationForm, UserChangeForm
-
+from .models.TLAccount_frequest import TLAccount, FriendRequest
+from .models.feed import Post, Comment
+from .forms.forms import UserCreationForm, UserChangeForm
 
 admin.site.site_header = "TripLinker admin panel"
 
+
 class TLAccountAdmin(admin.ModelAdmin):
-	add_form = UserCreationForm
-	form = UserChangeForm
+    add_form = UserCreationForm
+    form = UserChangeForm
 
-	model = TLAccount
+    model = TLAccount
 
-	list_display = ('first_name','second_name', 'email', 'sex', 'date_of_birth',
-		'country', 'is_active', 'is_staff', 'is_admin',
-	)
+    list_display = (
+        'first_name', 'second_name', 'email', 'sex', 'date_of_birth',
+        'country', 'is_active', 'is_staff', 'is_admin',
+    )
 
-	list_filter = ('sex', 'date_of_birth', 'is_admin', 'is_staff', 'is_active',
-		'hobbies',
-	)
+    list_filter = ('sex', 'date_of_birth', 'is_admin', 'is_staff', 'is_active',
+                   'hobbies',
+                   )
 
-	fieldsets = (
-		('Main information', {
-			'fields': 
-				('first_name', 'second_name','email','sex','date_of_birth',
-					'country',
-				)
-			}
-		),
+    fieldsets = (
+        ('Main information', {
+            'fields':
+                ('first_name', 'second_name', 'email', 'sex', 'date_of_birth',
+                 'country',
+                 )
+        }
+         ),
 
-		('Additional information', {
-			'fields': 
-				('place_of_work', 'short_description', 'hobbies', 'date_joined'
-				)
-			}
-		),
+        ('Additional information', {
+            'fields':
+                ('place_of_work', 'short_description', 'hobbies', 'date_joined'
+                 )
+        }
+         ),
 
-		('Social networks', {
-			'fields': 
-				('vkontakte', 'twitter', 'facebook',)
-			}
-		),
+        ('Social networks', {
+            'fields':
+                ('vkontakte', 'twitter', 'facebook',)
+        }
+         ),
 
-		('Permissions', {'fields': ('is_active','is_staff', 'is_admin')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin')}),
 
-		('Passwords', {'fields': ('password1', 'password2')}),
-	)
+        (None, {'fields': ('friends',)}),
 
-	search_fields = ('first_name', 'second_name', 'email',)
-	ordering = ('email',)
-	readonly_fields = ('date_joined',)
+        ('Password', {'fields': ('password',)}),
+    )
+
+    search_fields = ('first_name', 'second_name', 'email',)
+    ordering = ('email',)
+    readonly_fields = ('date_joined',)
+
 
 admin.site.register(TLAccount, TLAccountAdmin)
+admin.site.register(FriendRequest)
+admin.site.register(Post)
+admin.site.register(Comment)

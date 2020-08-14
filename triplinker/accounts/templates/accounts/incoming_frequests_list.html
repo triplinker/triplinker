@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container">
+  <h1 class="mt-2">Incoming friend requests</h1>
+    <div class="row">
+        <div class="col-md-8">
+          <div class="people-nearby">
+            {% if incom_friquests.count == 0 %}
+              <p>No incomming friend requests</p>
+            {% else %}
+              {% for frequest in incom_friquests%}
+              <div class="nearby-user">
+                <div class="row">
+                  <div class="col-md-2 col-sm-2">
+                    <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="user" class="profile-photo-lg">
+                  </div>
+                  <div class="col-md-7 col-sm-7">
+                    <h5><a href="{% url 'accounts:detail_profile' frequest.from_user.id %}" class="profile-link">{{ frequest.from_user.email }}</a></h5>
+                    <p>{{friend.hobbies}}</p>
+                    <p class="text-muted">500m away</p>
+                  </div>
+                  <div class="col-md-3 col-sm-3">
+                    <div class="btn-group" role="group" aria-label="Button group">
+                      <a class="btn btn-primary" href="{% url 'accounts:accept-frequest' frequest.from_user.id%}"style="margin-right: 3%;border-radius: 0.2rem;" role="button">Accept
+                      </a>
+                      <a class="btn btn-danger" href="{% url 'accounts:delete-frequest' frequest.from_user.id%}" 
+                      style="border-radius: 0.2rem;"  role="button">Dismiss</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+  </div>
+</div>
+{% endblock %}

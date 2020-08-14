@@ -9,7 +9,24 @@ install:
   - pip install poetry
   - poetry install
 
-before_script: cd triplinker
-  
+services:
+  - postgresql
+
+before_script:
+  - cd triplinker
+  - psql -c "CREATE DATABASE test;" -U postgres
+  - psql -c "CREATE USER test with encrypted password 'test';" -U postgres
+  - psql -c "GRANT ALL PRIVILEGES ON DATABASE test TO test;" -U postgres
+  - psql -c "ALTER USER test createdb;" -U postgres
+  - python manage.py migrate --noinput
+
+env:
+  global:
+    - DEBUG=on
+    - SECRET_KEY="dev"
+    - DATABASE_URL=psql://test:test@127.0.0.1:5432/test
+    - STATIC_URL=/static/
+
 script:
   - pytest
+  - flake8

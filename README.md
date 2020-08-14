@@ -1,5 +1,6 @@
 # TripLinker :octocat:
 
+[![Build Status](https://travis-ci.org/triplinker/triplinker.svg?branch=master)](https://travis-ci.org/github/triplinker/triplinker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/triplinker/triplinker/blob/master/LICENSE)
 
 ---
@@ -57,7 +58,7 @@ CREATE DATABASE test;
 ### Create user in the DB 
 
 ```
-CREATE USER test with encrypted password "test";
+CREATE USER test with encrypted password 'test';
 ```
 
 Done! We have created a new user with the name "test" and password "test".
@@ -113,6 +114,13 @@ Country: BY
 
 ```
 python manage.py runserver
+```
+## Running the tests
+
+When you get to the directory 'triplinker/triplinker' just run the command:
+
+```
+pytest
 ```
 
 ## License

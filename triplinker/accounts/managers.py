@@ -1,13 +1,13 @@
-from django.db import models
 from django.contrib.auth.models import BaseUserManager
 
 from .helpers.manager.create_users_func import create_acc
 
+
 class TLAccountManager(BaseUserManager):
+    """Creates common user and super user"""
 
-    def create_user(self, first_name, second_name, email, sex, date_of_birth, 
-                    country, password, user_type="common_user"):
-
+    def create_user(self, first_name, second_name, email, sex,
+                    date_of_birth, country, password, user_type="common_user"):
         user = self.model(
             email=self.normalize_email(email),
         )
@@ -18,7 +18,9 @@ class TLAccountManager(BaseUserManager):
         return user_obj
 
     def create_superuser(self, first_name, second_name, email, sex,
-                        date_of_birth, country, password):
-        user_obj = self.create_user(first_name, second_name, email, sex, 
-            date_of_birth, country, password, user_type="super_user")
+                         date_of_birth, country, password):
+        """Creates superuser on the base of the method 'create_user'."""
+        user_obj = self.create_user(first_name, second_name, email, sex,
+                                    date_of_birth, country, password,
+                                    user_type="super_user")
         return user_obj

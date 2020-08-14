@@ -41,6 +41,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'chat.apps.ChatConfig',
     'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -59,9 +60,19 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'login_required.middleware.LoginRequiredMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+LOGIN_REQUIRED_IGNORE_PATHS = [
+    r'/signup/$',
+    r'/admin/$',
+    r'/login/$'
+]
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/profile/'
 
 ROOT_URLCONF = 'core.urls'
 
@@ -85,16 +96,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {'default': env.db('DATABASE_URL')}
 
-
 # Custom user model
 AUTH_USER_MODEL = 'accounts.TLAccount'
-LOGIN_REDIRECT_URL = '/profile'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
