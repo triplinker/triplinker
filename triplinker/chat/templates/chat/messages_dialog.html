@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="chat_window">
+    <div class="top_menu">
+        <div class="buttons">
+            <div class="button close"></div>
+            <div class="button minimize"></div>
+            <div class="button maximize"></div>
+        </div>
+        <div class="title">Chat with {{message_to_user.email}}</div>
+    </div>
+    <ul class="messages"></ul>
+    <div class="bottom_wrapper clearfix">
+        <div class="message_input_wrapper">
+            <input class="message_input" placeholder="Type your message here..." />
+        </div>
+        <div class="send_message">
+            <div class="icon"></div>
+            <div class="text">Send</div>
+        </div>
+    </div>
+</div>
+<div class="message_template">
+    <li class="message">
+        <div class="avatar"></div>
+        <div class="text_wrapper">
+            <div class="text" style="word-wrap: break-word;"></div>
+        </div>
+    </li>
+</div>
+
+
+<!--- Messages-main logic and ajax requests [START] --->
+    <script type="text/javascript">
+        
+        (function () {
+        var Message;
+        Message = function (arg) {
+            this.text = arg.text, this.message_side = arg.message_side;
+            this.draw = function (_this) {
+                return function () {
+                    var $message;
+                    $message = $($('.message_template').clone().html());
+                    $message.addClass(_this.message_side).find('.text').html(_this.text);
+                    $('.messages').append($message);
+                    return setTimeout(function () {
+                        return $message.addClass('appeared');
+                    }, 0);
+                };
+            }(this);
+            return this;
+        };
+
+        var all_messages = []; // This var is needed to sync the messages in the dialog boxes of two users. For example, if user1 wrote the message then user2 must be able to see the message just in seconds.
+
+        $(function () {
+            var getMessageText, message_side, sendMessage;
+            message_side = 'right';
+
+            // Gets the text of the message.
+            getMessageText = function () {
+                var $message_input;
+                $message_input = $('.message_input');
+                return $message_input.val();
+            };
+
+            // Draw messages in dialog boxes, if the status is 'insert-message-into-db' then before drawing makes request to the server to insert a message into DB, if the status is 'get-messages-from-db' then make request to the server to get all messages from db of current dialog.
+            sendMessage = function (text, status, author=null, anim_speed=null) {
+                if (status === 'insert-message-into-db'){
+                    // Ajax request [START]
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'chat:send-message' message_to_user.id %}",
+                        data: {"message_body": text},
+                        dataType: 'json',
+
+                        success: function(data){
+                            message_DB = data['author']
+                            all_messages.push(data['message_id'])
+                        }
+                    });
+                    // Ajax request [END]
+
+                    var $messages, message;
+                    if (text.trim() === ''){
+                        return;
+                    }
+
+                    $('.message_input').val('');
+                    $messages = $('.messages');
+                    var message_side = null;
+
+                    var current_user = '{{ request.user.email }}'
+                        receiver = '{{ message_to_user.email }}';
+
+                    if(current_user === message_DB){
+                        message = new Message({
+                        text: text,
+                        message_side: 'left'
+                        });
+
+                    }else{
+                        message = new Message({
+                        text: text,
+                        message_side: 'right'
+                        });
+                    }
+
+                    message.draw();
+                    return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+
+                }else if (status === 'get-messages-from-db'){
+                    var $messages, message, message_DB = author;
+                    if (text.trim() === '') {
+                        return;
+                    }
+
+                    $('.message_input').val('');
+                    $messages = $('.messages');
+                    var message_side = null;  // The side in message box where the message will be appeared
+
+                    var current_user = '{{ request.user.email }}'
+                        receiver = '{{ message_to_user.email }}';
+
+                    if(current_user === message_DB){
+                        message = new Message({
+                        text: text,
+                        message_side: 'right'
+                        });
+                    } else{
+                        message = new Message({
+                        text: text,
+                        message_side: 'left'
+                        });
+                    }
+
+                    message.draw();
+                    if (anim_speed){
+                        return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300); // Animation speed is 300
+                    } else{
+                        return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 0); // There is no animation speed
+                        
+                    }
+                }
+            }
+
+            // If the button 'Send' was pressed, then the message will be sent.
+            $('.send_message').click(function (e) {
+                return sendMessage(getMessageText(),'insert-message-into-db');
+            });
+
+            // If keyboard key 'ENTER' was pressed, then the message will be sent.
+            $('.message_input').keyup(function (e) {
+                if (e.which === 13) {
+                    return sendMessage(getMessageText(), 'insert-message-into-db');
+                }
+            });
+
+            // The loading of the conversation from DB then the dialog was opened.
+            window.onload = function get_comments() {
+                $.get("{% url 'chat:get-all-messages' message_to_user.id %}",
+                function (data, textStatus) {  // success callback
+
+                      for (var message_id in data){
+                      all_messages.push(message_id)
+                      sendMessage(data[message_id][1], 'get-messages-from-db', data[message_id][0])
+                }
+
+            // The function that makes ajax requests every period of time to make sure that there are no new messages within the current dialog, if so then it updates the dialog window by adding new messages into it.
+            window.setInterval(function(){
+                // Ajax request [START]
+                $.ajax({
+                    type: "POST",
+                    timeout: 15000,
+                    url: "{% url 'chat:get-all-messages' message_to_user.id %}",
+                    dataType: 'json',
+                    success: function(data){
+                        for (var message_id in data){
+                            message_id = message_id.toString()
+                            if (all_messages.includes(message_id)){
+                                {}  // If so then do nothing
+                            }else{
+                                // Update the message dialog if there are new messages in DB which are connected with the current dialog.
+                                sendMessage(data[message_id][1], 'get-messages-from-db', data[message_id][0], anim_speed=300)
+                                    all_messages.push(message_id)
+                            }
+                        }
+                    }
+                });
+                // Ajax request [END]
+                current_msgs = [] // 
+            }
+            , 5000); // The interval between ajax requests.
+
+        });
+        };
+
+        });
+    }.call(this));
+    </script>
+<!--- Messages-main logic and ajax requests [START] --->
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container" style="margin-left: 30%;">
+<div class="row">
+<div class="col-md-8">
+    <div class="chat_container">
+        <div class="job-box">
+            <div class="job-box-filter">
+                <div class="row">
+                    
+                    <div class="col-md-6 col-sm-6" style="margin-left: 50%;float: right">
+                        <div class="filter-search-box text-right">
+                            <label>Search:<input type="search" class="form-control input-sm" placeholder=""></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="inbox-message">
+                <ul>
+                    {% if ordered_messages%}
+                    {% for message in ordered_messages%}
+                    {% if message.from_user == request.user %}
+                    <li>
+                        <a href="{% url 'chat:messages-dialog' message.to_user.id%}">
+                            <div class="message-avatar">
+                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                            </div>
+                            <div class="message-body">
+                                    <div class="message-body-heading">
+                                        <h5>{{ message.to_user.email }} <span class="unread">Unread</span></h5>
+                                        <span>{{ message.timestamp | timesince }} ago</span>
+                                    </div>
+                                <p>{{ message.message }}</p>
+                            </div>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{% url 'chat:messages-dialog' message.from_user.id%}">
+                            <div class="message-avatar">
+                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                            </div>
+                            <div class="message-body">
+                                <div class="message-body-heading">
+                                    <h5>{{ message.from_user.email }} <span class="unread">Unread</span></h5>
+                                        <span>7 hours ago</span>
+                                </div>
+                                <p>{{ message.message }}</p>
+                            </div>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

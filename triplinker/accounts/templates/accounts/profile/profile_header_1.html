@@ -59,7 +59,8 @@
                 {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "We're waiting for user confirmation" %}
                     <a class="btn btn-shadow btn btn-danger" href="{%url 'accounts:cancel-frequest' user_acc.id %}"><i class="la la-user-plus"></i>Cancel</a>
                 {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "Friends" %}
-                    <a class="btn btn-shadow btn btn-danger" href="{% url 'accounts:delete-friend' user_acc.id%}"><i class="la la-user-plus"></i>Delete friend</a>
+                    <a class="btn btn-shadow btn btn-primary" href="{% url 'chat:messages-dialog' user_acc.id%}"><i class="la la-user-plus"></i>Message</a>
+                    <a class="btn btn-shadow btn btn-danger" href="{% url 'accounts:delete-friend' user_acc.id%}"><i class="la la-user-plus"></i>Delete</a>
                 {% endif %}
 
         <div class="actions dark">
