@@ -1,0 +1,11 @@
+// Ajax request
+            // var message_to_user;
+            // $.ajax({
+            //     type: "POST",
+            //     url: "{% url 'chat:likes-api-comment' comment.id %}",
+            //     data: {"message_body": text, 'csrfmiddlewaretoken': '{{ csrf_token}}' },
+            //     dataType: 'json',
+
+            //     success: function(data){
+            //     }
+            // });

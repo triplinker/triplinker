@@ -30,10 +30,13 @@
                     <p class="text-muted">500m away</p>
                   </div>
                   {% if user_acc.email == who_makes_a_request %}
-                  <div class="col-md-3 col-sm-3">
-                    <a href="{% url 'accounts:delete-friend' friend.id%}">
-                    <button class="btn btn-danger pull-right">Delete friend</button>
-                    </a>
+                  <div class="col-md-3 col-sm-3"  >
+                    
+                    <div class="btn-group" role="group" aria-label="Button group"style="margin-right:50%">
+                      <a class="btn btn-primary" href="{% url 'chat:messages-page' friend.id%}" style="margin-right: 3%;border-radius: 0.2rem;" role="button">Message
+                      </a>
+                      <a class="btn btn-danger" href="{% url 'accounts:delete-friend' friend.id%}" style="border-radius: 0.2rem;" role="button">Delete</a>
+                    </div>
                   </div>
                   {% endif %}
               </div>

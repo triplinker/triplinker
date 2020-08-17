@@ -10,3 +10,6 @@ class Message(models.Model):
 	message = models.TextField()
 	timestamp = models.DateTimeField(auto_now_add=True)
 
+	def get_author(self):
+		return self.from_user
+

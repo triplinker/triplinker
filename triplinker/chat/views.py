@@ -1,35 +1,52 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
+import json
+from itertools import chain
+from operator import attrgetter
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Message
 from accounts.models.TLAccount_frequest import TLAccount
 
 
-def messages_page(request):
+def messages_page(request, user_id):
 
-    try:
-        friends_of_user = request.user.friends.all()
-
-    except AttributeError:
-        friends_of_user = 0
+    message_to_user = get_object_or_404(TLAccount, id=user_id)
 
     context = {
-        'friends_of_user': friends_of_user,
+        'message_to_user': message_to_user,
     }
     return render(request, 'chat/messages_page.html', context)
 
-
-def send_message(request, user_id, message):
+@csrf_exempt
+def send_message(request, user_id):
     from_user = TLAccount.objects.get(id=request.user.id)
     to_user = TLAccount.objects.get(id=user_id)
-    Message.objects.create(
-        from_user=request_from_user,
-        to_user=request_to_user,
+
+    message = request.POST.get("message_body", "")
+    new_message = Message.objects.create(
+        from_user=from_user,
+        to_user=to_user,
         message = message 
     )
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    json = {'author': str(new_message.from_user), 
+            'message_id': str(new_message.id)}
+    return JsonResponse(json, safe=False)
 
 
-def delete_message(request, message_id):
-    message_to_remove = Message.objects.filter(id=message_id).delete()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+@csrf_exempt
+def get_all_messages(request, user_id):
+    from_user = get_object_or_404(TLAccount, id=request.user.id)
+    to_user = get_object_or_404(TLAccount, id=user_id)
+
+    msg = Message.objects.filter(from_user=from_user).filter(to_user=to_user)
+    msg2 = Message.objects.filter(from_user=to_user).filter(to_user=from_user)
+
+    raw_all_messages = msg | msg2  # Merge Querysets
+    ordered_messages = raw_all_messages.order_by('timestamp')
+     
+    context = {}
+    for message in ordered_messages:
+        context[message.id] = [message.from_user.email, message.message]
+
+    return JsonResponse(context, safe=False)
