@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth import views, authenticate, login
 from django.http import HttpResponseRedirect, JsonResponse
+from django.db.models import Q
 
 from django.views import generic
 
@@ -203,8 +204,15 @@ class AllUsersList(generic.ListView):
     def get_queryset(self):
         """Forms query set that will be used in the context of django template.
         """
-        return TLAccount.objects.exclude(id=self.request.user.id)
-
+        query = self.request.GET.get('q')
+        if query is None:
+            query = ''
+        users_list = TLAccount.objects.filter(
+            Q(first_name__icontains=query) |
+            Q(second_name__icontains=query) |
+            Q(email__icontains=query)
+        ).exclude(id=self.request.user.id)
+        return users_list
 
 def all_incoming_friquests_list(request, user_id):
     """Shows the list of all incoming friend requests for user who makes this
