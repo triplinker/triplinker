@@ -214,6 +214,7 @@ class AllUsersList(generic.ListView):
         ).exclude(id=self.request.user.id)
         return users_list
 
+
 def all_incoming_friquests_list(request, user_id):
     """Shows the list of all incoming friend requests for user who makes this
     request."""
