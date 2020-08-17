@@ -32,7 +32,13 @@ def messages_page(request):
 
 
 def messages_dialog_page(request, user_id):
+    current_user = get_object_or_404(TLAccount, id=request.user.id)
     message_to_user = get_object_or_404(TLAccount, id=user_id)
+
+    if (current_user not in message_to_user.friends.all() or 
+        message_to_user not in current_user.friends.all()):
+        context ={'user_that_is_not_friend': message_to_user}
+        return render (request, 'chat/message_error.html', context)
 
     context = {
         'message_to_user': message_to_user,

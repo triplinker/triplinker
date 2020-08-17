@@ -9,7 +9,7 @@
             <div class="button minimize"></div>
             <div class="button maximize"></div>
         </div>
-        <div class="title">Chat with {{message_to_user.email}}</div>
+        <div class="title">Chat with <a style='color:#bcbdc0;'href="{% url 'accounts:detail_profile' message_to_user.id %}">{{message_to_user.email}}</a></div>
     </div>
     <ul class="messages"></ul>
     <div class="bottom_wrapper clearfix">
@@ -24,7 +24,10 @@
 </div>
 <div class="message_template">
     <li class="message">
-        <div class="avatar"></div>
+        <div class="message-avatar avatar" style="width: 54px;
+    height: 54px;">
+            <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+        </div>
         <div class="text_wrapper">
             <div class="text" style="word-wrap: break-word;"></div>
         </div>
