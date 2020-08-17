@@ -7,4 +7,7 @@
   <div class="auth-container">
       {% crispy form %}
   </div>
+  <div class="text-centered">
+    <a href="{% url 'password_reset' %}" class="btn btn-primary">Forgot your password?</a>
+  </div>
 {% endblock %}

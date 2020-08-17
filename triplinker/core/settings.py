@@ -68,7 +68,11 @@ MIDDLEWARE = [
 LOGIN_REQUIRED_IGNORE_PATHS = [
     r'/signup/$',
     r'/admin/$',
-    r'/login/$'
+    r'/login/$',
+    r'/password_reset/',
+    r'/password_reset/done/',
+    r'/reset/([\w\.-]+)/([\w\.-]+)/',
+    r'/reset/done/',
 ]
 
 LOGIN_URL = '/login/'
@@ -150,3 +154,7 @@ MEDIA_URL = env.str('MEDIA_URL', default='/media/')
 
 STATIC_ROOT = public_root('static/')
 STATIC_URL = env.str('STATIC_URL', default='/static')
+
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Console backend
