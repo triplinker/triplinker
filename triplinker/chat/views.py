@@ -1,9 +1,10 @@
+import datetime
 import json
-from itertools import chain
-from operator import attrgetter
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from chat.tasks import get_associated_messages_task
+
 
 from .models import Message
 from accounts.models.TLAccount_frequest import TLAccount
@@ -19,15 +20,18 @@ def messages_page(request):
         last_msg = message_with_frnd.order_by('-timestamp').first()
         last_messages.append(last_msg)
 
-    for obj in last_messages:
-        if obj != None:
-            continue
-        else:
-            index_of_element = last_messages.index(obj)
-            last_messages.pop(index_of_element)
+    last_messages = filter(None, last_messages)
 
-    msges = sorted(last_messages, key=lambda msg: msg.timestamp, reverse=True)
-    context = {'ordered_messages': msges}
+    try:
+        msg = sorted(last_messages, key=lambda msg: msg.timestamp, reverse=True)
+    # If user doesn't have friends and list 'last_messages' is empty
+    except AttributeError:
+        msg = None
+
+    context = {
+        'ordered_messages': msg,
+        'time': str(int(datetime.datetime.now().timestamp()))
+    }
     return render(request, 'chat/messages_page.html', context)
 
 
@@ -35,10 +39,10 @@ def messages_dialog_page(request, user_id):
     current_user = get_object_or_404(TLAccount, id=request.user.id)
     message_to_user = get_object_or_404(TLAccount, id=user_id)
 
-    if (current_user not in message_to_user.friends.all() or 
-        message_to_user not in current_user.friends.all()):
-        context ={'user_that_is_not_friend': message_to_user}
-        return render (request, 'chat/message_error.html', context)
+    if (current_user not in message_to_user.friends.all() or
+            message_to_user not in current_user.friends.all()):
+        context = {'user_that_is_not_friend': message_to_user}
+        return render(request, 'chat/message_error.html', context)
 
     context = {
         'message_to_user': message_to_user,
@@ -55,26 +59,14 @@ def send_message(request, user_id):
     new_message = Message.objects.create(
         from_user=from_user,
         to_user=to_user,
-        message = message 
+        message=message
     )
-    json = {'author': str(new_message.from_user), 
+    json = {'author': str(new_message.from_user),
             'message_id': str(new_message.id)}
     return JsonResponse(json, safe=False)
 
 
-@csrf_exempt
 def get_all_messages(request, user_id):
-    from_user = get_object_or_404(TLAccount, id=request.user.id)
-    to_user = get_object_or_404(TLAccount, id=user_id)
-
-    msg = Message.objects.filter(from_user=from_user).filter(to_user=to_user)
-    msg2 = Message.objects.filter(from_user=to_user).filter(to_user=from_user)
-
-    raw_all_messages = msg | msg2  # Merge Querysets
-    ordered_messages = raw_all_messages.order_by('timestamp')
-     
-    context = {}
-    for message in ordered_messages:
-        context[message.id] = [message.from_user.email, message.message]
-
-    return JsonResponse(context, safe=False)
+    messages = get_associated_messages_task.delay(request.user.id, user_id)
+    parsed_json = json.loads(messages.get())
+    return JsonResponse(parsed_json, safe=False)

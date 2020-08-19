@@ -23,7 +23,7 @@
                     {% for message in ordered_messages%}
                     {% if message.from_user == request.user %}
                     <li>
-                        <a href="{% url 'chat:messages-dialog' message.to_user.id%}">
+                        <a href="{% url 'chat:messages-dialog' message.to_user.id %}">
                             <div class="message-avatar">
                                 <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
                             </div>
@@ -37,8 +37,8 @@
                         </a>
                     </li>
                     {% else %}
-                    <li>
-                        <a href="{% url 'chat:messages-dialog' message.from_user.id%}">
+                    <li> 
+                        <a href="{% url 'chat:messages-dialog' message.from_user.id %}">
                             <div class="message-avatar">
                                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
                             </div>

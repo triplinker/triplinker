@@ -108,6 +108,14 @@ Country: BY
 
 **BY** means **Belarus**. That's just the Alpha-2 code for the country.
 
+### Run Celery
+
+Some applications in our project needs Celery, so before you run the server please write this command:
+```
+celery -A core worker --loglevel=info
+
+```
+
 ### Run server
 
 ***Note:*** make sure that you're in the same directory where the file manage.py is located.

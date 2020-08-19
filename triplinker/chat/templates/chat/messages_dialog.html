@@ -36,8 +36,7 @@
 
 
 <!--- Messages-main logic and ajax requests [START] --->
-    <script type="text/javascript">
-        
+    <script>
         (function () {
         var Message;
         Message = function (arg) {
@@ -59,6 +58,7 @@
         var all_messages = []; // This var is needed to sync the messages in the dialog boxes of two users. For example, if user1 wrote the message then user2 must be able to see the message just in seconds.
 
         $(function () {
+
             var getMessageText, message_side, sendMessage;
             message_side = 'right';
 
@@ -76,6 +76,7 @@
                     $.ajax({
                         type: "POST",
                         url: "{% url 'chat:send-message' message_to_user.id %}",
+                        async:true,
                         data: {"message_body": text},
                         dataType: 'json',
 
@@ -162,45 +163,47 @@
             });
 
             // The loading of the conversation from DB then the dialog was opened.
-            window.onload = function get_comments() {
-                $.get("{% url 'chat:get-all-messages' message_to_user.id %}",
+            function get_comments(){
+                var date = new Date();
+                var milliseconds = date.getSeconds();
+                var url = "{% url 'chat:get-all-messages' message_to_user.id %}";  
+                $.get(url,
                 function (data, textStatus) {  // success callback
 
                       for (var message_id in data){
                       all_messages.push(message_id)
                       sendMessage(data[message_id][1], 'get-messages-from-db', data[message_id][0])
                 }
-
+            
             // The function that makes ajax requests every period of time to make sure that there are no new messages within the current dialog, if so then it updates the dialog window by adding new messages into it.
             window.setInterval(function(){
-                // Ajax request [START]
-                $.ajax({
-                    type: "POST",
-                    timeout: 15000,
-                    url: "{% url 'chat:get-all-messages' message_to_user.id %}",
-                    dataType: 'json',
-                    success: function(data){
-                        for (var message_id in data){
+                var date = new Date();
+                var milliseconds = date.getSeconds();
+
+                var url = "{% url 'chat:get-all-messages' message_to_user.id %}";
+                axios.get(url).then((response) => {
+                    data = response.data 
+                    for (var message_id in data){
                             message_id = message_id.toString()
                             if (all_messages.includes(message_id)){
-                                {}  // If so then do nothing
+                                var nothing = 1;  // If so then do nothing
                             }else{
                                 // Update the message dialog if there are new messages in DB which are connected with the current dialog.
                                 sendMessage(data[message_id][1], 'get-messages-from-db', data[message_id][0], anim_speed=300)
                                     all_messages.push(message_id)
                             }
                         }
-                    }
-                });
+                });                
+                // Ajax request [START]
                 // Ajax request [END]
                 current_msgs = [] // 
             }
             , 5000); // The interval between ajax requests.
-
+        
         });
         };
 
-        });
+        get_comments()});
     }.call(this));
     </script>
 <!--- Messages-main logic and ajax requests [START] --->

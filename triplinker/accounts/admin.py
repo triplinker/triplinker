@@ -45,7 +45,7 @@ class TLAccountAdmin(admin.ModelAdmin):
 
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin')}),
 
-        (None, {'fields': ('friends',)}),
+        (None, {'fields': ('friends', 'followers', 'people_which_follow')}),
 
         ('Password', {'fields': ('password',)}),
     )
