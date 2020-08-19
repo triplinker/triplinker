@@ -113,7 +113,6 @@ Country: BY
 Some applications in our project needs Celery, so before you run the server please write this command:
 ```
 celery -A core worker --loglevel=info
-
 ```
 
 ### Run server
