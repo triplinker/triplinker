@@ -18,11 +18,11 @@ environ.Env.read_env(env_file=os.path.join(root, '.env'))
 SITE_ROOT = root()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# REDIS related settings 
+# REDIS related settings
 REDIS_HOST = 'localhost'
 REDIS_PORT = '6379'
 BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
-BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600} 
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 
 # Quick-start development settings - unsuitable for production
@@ -157,4 +157,13 @@ STATIC_URL = env.str('STATIC_URL', default='/static')
 
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Console backend
+MAILHOG = env.bool('MAILHOG', default=False)
+if MAILHOG:
+    EMAIL_HOST = '0.0.0.0'
+    EMAIL_PORT = 1025
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'Triplinker'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Console backend
