@@ -9,6 +9,8 @@ class Message(models.Model):
     to_user = models.ForeignKey(TLAccount, on_delete=models.CASCADE,
                                 related_name='message_to_user')
     message = models.TextField()
+    users_who_read_message = models.ManyToManyField(TLAccount, blank=True,
+                                                    related_name='readersOfMsg')
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

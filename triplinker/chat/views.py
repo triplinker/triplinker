@@ -1,4 +1,3 @@
-import datetime
 import json
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
@@ -16,7 +15,9 @@ def messages_page(request):
 
     last_messages = []
     for frnd in the_friends_of_user:
-        message_with_frnd = Message.objects.filter(from_user=usr, to_user=frnd)
+        message_to_frnd = Message.objects.filter(from_user=usr, to_user=frnd)
+        messages_from_frnd = Message.objects.filter(from_user=frnd, to_user=usr)
+        message_with_frnd = message_to_frnd | messages_from_frnd
         last_msg = message_with_frnd.order_by('-timestamp').first()
         last_messages.append(last_msg)
 
@@ -24,13 +25,16 @@ def messages_page(request):
 
     try:
         msg = sorted(last_messages, key=lambda msg: msg.timestamp, reverse=True)
+        for message in msg:
+            if message.from_user.email == usr.email:
+                message.users_who_read_message.add(usr)
+
     # If user doesn't have friends and list 'last_messages' is empty
     except AttributeError:
         msg = None
 
     context = {
         'ordered_messages': msg,
-        'time': str(int(datetime.datetime.now().timestamp()))
     }
     return render(request, 'chat/messages_page.html', context)
 
