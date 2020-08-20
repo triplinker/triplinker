@@ -108,6 +108,13 @@ Country: BY
 
 **BY** means **Belarus**. That's just the Alpha-2 code for the country.
 
+### Run Celery
+
+Some applications in our project needs Celery, so before you run the server please write this command:
+```
+celery -A core worker --loglevel=info
+```
+
 ### Run server
 
 ***Note:*** make sure that you're in the same directory where the file manage.py is located.
@@ -115,6 +122,16 @@ Country: BY
 ```
 python manage.py runserver
 ```
+
+### Email
+***By default there is a console backend***.
+But, you can also use ***[MailHog](https://github.com/mailhog/MailHog)***.
+Just add this to your ***.env*** file.
+
+```
+MAILHOG=on
+```
+
 ## Running the tests
 
 When you get to the directory 'triplinker/triplinker' just run the command:
@@ -126,3 +143,4 @@ pytest
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/triplinker/triplinker/blob/master/LICENSE) file for details.
+

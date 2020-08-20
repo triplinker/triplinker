@@ -1,24 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block main %}
-
 <div class="container">
   {% if user_acc.email == who_makes_a_request %}
   <h1 class="mt-2">Your friends</h1>
   {% else %}
-	<h1 class="mt-2">Friends of {{ user_acc.first_name }}</h1>
+  <h1 class="mt-2">Friends of {{ user_acc.first_name }}</h1>
   {% endif %}
     <div class="row">
       <div class="col-md-8">
         <div class="people-nearby">
-          {% if user_friends.count == 0 and user_acc.email == who_makes_a_request %}
+          {% if not user_friends and user_acc.email == request.user.email %}
             <p>Your list of friends is empty</p>
 
-          {% elif user_friends.count == 0 and user_acc.email != who_makes_a_request %}
+          {% elif not user_friends and user_acc.email != request.user.email %}
             <p>Oh, this user has no friends</p>
 
           {% else %}
-   			    {% for friend in user_friends %}
+            {% for friend in user_friends %}
               <div class="nearby-user">
                 <div class="row">
                   <div class="col-md-2 col-sm-2">
@@ -31,15 +30,18 @@
                   </div>
                   {% if user_acc.email == who_makes_a_request %}
                   <div class="col-md-3 col-sm-3">
-                    <a href="{% url 'accounts:delete-friend' friend.id%}">
-                    <button class="btn btn-danger pull-right">Delete friend</button>
-                    </a>
+                    
+                    <div class="btn-group" role="group" aria-label="Button group"style="margin-right:50%">
+                      <a class="btn btn-primary" href="{% url 'chat:messages-dialog' friend.id%}" style="margin-right: 3%;border-radius: 0.2rem;" role="button">Message
+                      </a>
+                      <a class="btn btn-danger" href="{% url 'accounts:delete-friend' friend.id%}" style="border-radius: 0.2rem;" role="button">Delete</a>
+                    </div>
                   </div>
                   {% endif %}
               </div>
-            {% endfor %}
-          {% endif %}
-        </div>  
+          </div>
+        {% endfor %}
+        {% endif %}  
       </div>
     </div>
   </div>
