@@ -3,11 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <h1 class="mt-2">Login</h1>
+    <h3 class="mt-2">Login</h3>
   <div class="auth-container">
       {% crispy form %}
   </div>
   <div class="text-centered">
-    <a href="{% url 'password_reset' %}" class="btn btn-primary">Forgot your password?</a>
+    <a href="{% url 'password_reset' %}">Forgot your password?</a>
   </div>
 {% endblock %}
