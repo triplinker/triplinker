@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 
-from .models import Message
 from accounts.models.TLAccount_frequest import TLAccount
+from .helpers.get_last_messages_with_friends import get_last_mssges_from_dialogs
 
 
 def new_messages_notification(request):
@@ -12,17 +12,8 @@ def new_messages_notification(request):
         return context
 
     usr = get_object_or_404(TLAccount, id=request.user.id)
-    the_friends_of_user = usr.friends.all()
 
-    last_messages = []
-    for frnd in the_friends_of_user:
-        message_to_frnd = Message.objects.filter(from_user=usr, to_user=frnd)
-        messages_from_frnd = Message.objects.filter(from_user=frnd, to_user=usr)
-        message_with_frnd = message_to_frnd | messages_from_frnd
-        last_msg = message_with_frnd.order_by('-timestamp').first()
-        last_messages.append(last_msg)
-
-    last_messages = list(filter(None, last_messages))
+    last_messages = get_last_mssges_from_dialogs(usr)
     new_messages = []
 
     if len(last_messages) == 0:

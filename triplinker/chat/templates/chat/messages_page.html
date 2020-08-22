@@ -33,7 +33,11 @@
                                         <h5>{{ message.to_user.email }} <span class="unread">Unread</span></h5>
                                         <span>{{ message.timestamp | timesince }} ago</span>
                                     </div>
+                                    {% if message.message|length > 38 %}
+                                <p>{{ message.message|slice:":38" }}...</p>
+                                    {% else %}
                                 <p>{{ message.message }}</p>
+                                    {% endif %}
                             </div>
                         </a>
                     </li>
@@ -48,7 +52,11 @@
                                         <h5>{{ message.to_user.email }}</h5>
                                         <span>{{ message.timestamp | timesince }} ago</span>
                                     </div>
+                                {% if message.message|length > 38 %}
+                                <p>{{ message.message|slice:":38" }}...</p>
+                                    {% else %}
                                 <p>{{ message.message }}</p>
+                                    {% endif %}
                             </div>
                         </a>
                     </li>
@@ -65,7 +73,11 @@
                                     <h5>{{ message.from_user.email }} <span class="unread">Unread</span></h5>
                                         <span>7 hours ago</span>
                                 </div>
+                                {% if message.message|length > 38 %}
+                                <p>{{ message.message|slice:":38" }}...</p>
+                                    {% else %}
                                 <p>{{ message.message }}</p>
+                                    {% endif %}
                             </div>
                         </a>
                     </li>
@@ -80,7 +92,11 @@
                                     <h5>{{ message.from_user.email }}</h5>
                                         <span>7 hours ago</span>
                                 </div>
+                                {% if message.message|length > 38 %}
+                                <p>{{ message.message|slice:":38" }}...</p>
+                                    {% else %}
                                 <p>{{ message.message }}</p>
+                                    {% endif %}
                             </div>
                         </a>
                     </li>

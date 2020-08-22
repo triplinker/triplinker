@@ -1,27 +1,18 @@
 import json
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseNotFound
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
 from chat.tasks import get_associated_messages_task
-
-
 from .models import Message
 from accounts.models.TLAccount_frequest import TLAccount
+from .helpers.get_last_messages_with_friends import get_last_mssges_from_dialogs
 
 
 def messages_page(request):
     usr = get_object_or_404(TLAccount, id=request.user.id)
-    the_friends_of_user = usr.friends.all()
-
-    last_messages = []
-    for frnd in the_friends_of_user:
-        message_to_frnd = Message.objects.filter(from_user=usr, to_user=frnd)
-        messages_from_frnd = Message.objects.filter(from_user=frnd, to_user=usr)
-        message_with_frnd = message_to_frnd | messages_from_frnd
-        last_msg = message_with_frnd.order_by('-timestamp').first()
-        last_messages.append(last_msg)
-
-    last_messages = filter(None, last_messages)
+    last_messages = get_last_mssges_from_dialogs(usr)
 
     try:
         msg = sorted(last_messages, key=lambda msg: msg.timestamp, reverse=True)
@@ -47,6 +38,9 @@ def messages_dialog_page(request, user_id):
             message_to_user not in current_user.friends.all()):
         context = {'user_that_is_not_friend': message_to_user}
         return render(request, 'chat/message_error.html', context)
+
+    elif current_user.id == message_to_user.id:
+        return HttpResponseNotFound()
 
     context = {
         'message_to_user': message_to_user,
