@@ -17,7 +17,7 @@ def new_messages_notification(request):
     new_messages = []
 
     if len(last_messages) == 0:
-        new_messages = None
+        new_messages = []
     else:
         for message in last_messages:
             if usr not in message.users_who_read_message.all():
