@@ -123,6 +123,7 @@ class AccountActivationForm(UserChangeForm):
             'sex',
             'date_of_birth',
             'country',
+            'can_get_message_from',
             'place_of_work',
             'hobbies',
             'short_description',
@@ -178,8 +179,9 @@ class ProfileEditForm(UserChangeForm):
     class Meta:
         model = TLAccount
         exclude = ('password', 'last_login', 'groups', 'user_permissions',
-                   'friends', 'followers', 'people_which_follow', 'date_joined',
-                   'is_superuser', 'is_active', 'is_admin', 'is_staff',)
+                   'friends', 'followers', 'strangers', 'people_which_follow',
+                   'date_joined', 'is_superuser', 'is_active', 'is_admin',
+                   'is_staff',)
 
     def __init__(self, *args, **kwargs):
 

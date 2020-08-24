@@ -43,9 +43,11 @@ class TLAccountAdmin(admin.ModelAdmin):
         }
          ),
 
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin')}),
+        (None, {'fields': ('can_get_message_from',)}),
 
         (None, {'fields': ('friends', 'followers', 'people_which_follow')}),
+
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin')}),
 
         ('Password', {'fields': ('password',)}),
     )

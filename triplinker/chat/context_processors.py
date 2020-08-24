@@ -16,15 +16,17 @@ def new_messages_notification(request):
     last_messages = get_last_mssges_from_dialogs(usr)
     new_messages = []
 
-    if len(last_messages) == 0:
-        new_messages = []
-    else:
+    if len(last_messages) != 0:
         for message in last_messages:
             if usr not in message.users_who_read_message.all():
                 new_messages.append(message)
 
+        new_messages = len(new_messages)
+    else:
+        new_messages = None
+
     context = {
         'new_messages': new_messages,
-        'number_of_new_messages': len(new_messages),
+        'number_of_new_messages': new_messages,
     }
     return context

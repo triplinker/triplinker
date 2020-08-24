@@ -24,6 +24,11 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
         ("football", "Playing football"),
     ]
 
+    CAN_GET_MSSGES_FROM_CHOICES = [
+        ("Friends", "Friends only"),
+        ("All", "All users"),
+    ]
+
     # Base fields
     first_name = models.CharField("First name", max_length=15, blank=True)
     second_name = models.CharField("Second name", max_length=15, blank=True)
@@ -56,6 +61,15 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     people_which_follow = models.ManyToManyField("TLAccount", blank=True,
                                                  related_name=rl_name)
 
+    # Messages
+    can_get_message_from = models.CharField("Get messages from",
+                                            max_length=12,
+                                            choices=CAN_GET_MSSGES_FROM_CHOICES,
+                                            blank=False, default='All')
+
+    # Users which are not friends of user but they can send messages to him,
+    strangers = models.ManyToManyField("TLAccount", blank=True,
+                                       related_name='messages_strangers')
     # Special fields
     date_joined = models.DateTimeField(verbose_name="Date joined",
                                        default=timezone.now)
