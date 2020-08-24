@@ -34,18 +34,43 @@ def messages_dialog_page(request, user_id):
     current_user = get_object_or_404(TLAccount, id=request.user.id)
     message_to_user = get_object_or_404(TLAccount, id=user_id)
 
-    if (current_user not in message_to_user.friends.all() or
-            message_to_user not in current_user.friends.all()):
-        context = {'user_that_is_not_friend': message_to_user}
-        return render(request, 'chat/message_error.html', context)
-
-    elif current_user.id == message_to_user.id:
+    if current_user.id == message_to_user.id:
         return HttpResponseNotFound()
 
-    context = {
-        'message_to_user': message_to_user,
-    }
-    return render(request, 'chat/messages_dialog.html', context)
+    elif message_to_user.can_get_message_from == 'All':
+        context = {
+            'message_to_user': message_to_user,
+        }
+        return render(request, 'chat/messages_dialog.html', context)
+
+    elif message_to_user.can_get_message_from == 'Friends':
+        if (current_user not in message_to_user.friends.all() and
+           message_to_user not in current_user.friends.all() and
+           current_user not in message_to_user.strangers.all() and
+           message_to_user not in current_user.strangers.all()):
+
+            context = {
+                'user_that_is_not_friend': message_to_user
+            }
+            return render(request, 'chat/message_error.html', context)
+
+        elif (current_user not in message_to_user.friends.all() and
+              message_to_user not in current_user.friends.all() and
+              current_user in message_to_user.strangers.all() and
+              message_to_user in current_user.strangers.all()):
+
+            context = {
+                'message_to_user': message_to_user,
+            }
+            return render(request, 'chat/messages_dialog.html', context)
+
+        context = {
+            'message_to_user': message_to_user,
+        }
+        return render(request, 'chat/messages_dialog.html', context)
+
+    else:
+        return HttpResponseNotFound()
 
 
 @csrf_exempt
@@ -54,11 +79,23 @@ def send_message(request, user_id):
     to_user = TLAccount.objects.get(id=user_id)
 
     message = request.POST.get("message_body", "")
-    new_message = Message.objects.create(
-        from_user=from_user,
-        to_user=to_user,
-        message=message
-    )
+
+    if from_user in to_user.friends.all():
+        new_message = Message.objects.create(
+            from_user=from_user,
+            to_user=to_user,
+            message=message
+        )
+    elif (from_user not in to_user.friends.all() and
+          to_user not in from_user.friends.all()):
+
+        from_user.strangers.add(to_user)
+        to_user.strangers.add(from_user)
+        new_message = Message.objects.create(
+            from_user=from_user,
+            to_user=to_user,
+            message=message
+        )
     json = {'author': str(new_message.from_user),
             'message_id': str(new_message.id)}
     return JsonResponse(json, safe=False)

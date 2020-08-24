@@ -41,23 +41,27 @@
 
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a href="{% url 'accounts:index' %}" class="navbar-brand">Triplinker</a>
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'accounts:feed' %}" class="navbar-brand">Triplinker</a>
+      {% else %}
+      <span class="navbar-brand">Triplinker</span>
+      {% endif %}
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
           {% if user.is_authenticated %}
-            <a class="nav-item nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+            <a class="nav-item nav-link" href="{% url 'accounts:profile' %}"><h5 style="display:inline;"><i class="fa fa-user" aria-hidden="true"></i></h5> Profile</a>
 
             {% if new_messages %}
-              <a class="nav-item nav-link" href="{% url 'chat:messages-page' %}">Messages <span style = 'color:white;background-color: #d15b47!important;' class="badge badge-important">{{number_of_new_messages}}</span></a>
+              <a class="nav-item nav-link" href="{% url 'chat:messages-page' %}"><h5 style="display:inline;"><i class="fa fa-comments" aria-hidden="true"></i></h5> Messages <span style = 'color:white;background-color: #d15b47!important;' class="badge badge-important">{{number_of_new_messages}}</span></a>
             {% else %}
-              <a class="nav-item nav-link" href="{% url 'chat:messages-page' %}">Messages</span></a>
+              <a class="nav-item nav-link" href="{% url 'chat:messages-page' %}"><h5 style="display:inline;"><i class="fa fa-comments" aria-hidden="true"></i></h5> Messages</a>
             {% endif %}
 
-            <a class="nav-item nav-link" href="{% url 'accounts:feed' %}">Feed</a>
-            <a class="nav-item nav-link" href="{% url 'accounts:all_users_list' %}">People</a>
+            <a class="nav-item nav-link" href="{% url 'accounts:feed' %}"><h5 style="display:inline;"><i class="fa fa-globe" aria-hidden="true"></i></h5> Feed</a>
+            <a class="nav-item nav-link" href="{% url 'accounts:all_users_list' %}"><h5 style="display:inline;"><i class="fa fa-users" aria-hidden="true"></i></h5> People</a>
             
           {% else %}
             <a class="nav-item nav-link" href="{% url 'accounts:login' %}">login</a>
