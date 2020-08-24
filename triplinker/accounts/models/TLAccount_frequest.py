@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from accounts.managers import TLAccountManager
+from django.db.models import Q
+
+import django_filters
 import datetime
 
 
@@ -101,6 +104,19 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
+
+
+class UserFilter(django_filters.FilterSet):
+    q = django_filters.CharFilter(method='full_name_filter', label='Name')
+
+    class Meta:
+        model = TLAccount
+        fields = ['q', 'sex', 'country']
+
+    def full_name_filter(self, queryset, name, value):
+        return queryset.filter(Q(first_name__icontains=value) |
+            Q(second_name__icontains=value) |
+            Q(email__icontains=value))
 
 
 class FriendRequest(models.Model):

@@ -10,7 +10,7 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
 
     # All users list.
-    path('users/', views.AllUsersList.as_view(), name='all_users_list'),
+    path('users/', views.all_users_list, name='all_users_list'),
 
     # A particular profile of user.
     path('users/<int:user_id>/', views.detail_profile,
