@@ -5,6 +5,7 @@ from accounts.managers import TLAccountManager
 from django.db.models import Q
 
 import django_filters
+from django_filters.widgets import RangeWidget
 import datetime
 
 
@@ -121,16 +122,30 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
 
 
 class UserFilter(django_filters.FilterSet):
-    q = django_filters.CharFilter(method='full_name_filter', label='Name')
+    q = django_filters.CharFilter(
+        method='full_name_filter',
+        label='Name')
+    age = django_filters.RangeFilter(
+        method='age_filter',
+        widget=RangeWidget,
+        label='Age')
 
     class Meta:
         model = TLAccount
-        fields = ['q', 'sex', 'country']
+        fields = ['q', 'sex', 'age', 'country']
 
     def full_name_filter(self, queryset, name, value):
         return queryset.filter(Q(first_name__icontains=value) |
             Q(second_name__icontains=value) |
             Q(email__icontains=value))
+
+    def age_filter(self, queryset, name, value):
+        birth_after = (datetime.date.today() - datetime.timedelta(
+            days=float(value.stop)*365.25))
+        birth_before = (datetime.date.today() - datetime.timedelta(
+            days=float(value.start)*365.25))
+        return queryset.filter(Q(date_of_birth__gte=birth_after) &
+                               Q(date_of_birth__lte=birth_before))
 
 
 class FriendRequest(models.Model):
