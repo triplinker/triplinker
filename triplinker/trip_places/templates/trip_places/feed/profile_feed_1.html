@@ -21,6 +21,9 @@
                         </div>
 
                         <ul class="list-group list-group-flush">
+                            <li class="list-group-item {% if user in place.followers.all %} bg-warning {% endif %}" id="follow-div">
+                                <div id="follow" class="h5" style="text-align: center;"> <h6 style="display: inline;">Follow <i class="fa fa-star" aria-hidden="true"></i></h6></div>
+                            </li>
                             <li class="list-group-item">
                                 <div class="h5" style="text-align: center;">Rating <h6 style="display: inline;"><i class="fa fa-star" aria-hidden="true"></i></h6></div>
                                 <div class="h6" style="text-align: center;">{{place.rating}} star{{place.rating|pluralize}}</div>
@@ -28,7 +31,7 @@
                             <li class="list-group-item">
                                 <div class="h5" style="text-align: center;"><a href="#" style="color: inherit;">
                                 Followers <h6 style="display: inline;"><i class="fa fa-user-circle" aria-hidden="true"></i></h6></a></div>
-                                <div class="h6" style="text-align: center;">4 user</div>
+                                <div class="h6" style="text-align: center;" id="number_of_followers">{{ place.number_of_followers }}</div>
                             </li>
                             <li class="list-group-item">
                                 <div class="h5" style="text-align: center;">Description <h6 style="display: inline;"><i class="fa fa-pencil" aria-hidden="true"></i></h6></div>
@@ -37,13 +40,41 @@
                         </ul>
                     </div>
                 </div>
+                <!--- Follow script [START] --->
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        // Listening the click event on follow.
+                        $("#follow").click(function(){
+                          let place_id = '{{ place.id }}';
+                          $.ajax({
+                            type: "POST",
+                            url: "{% url 'trip_places:favourite' place.id %}",
+                            data: {'place_id': place_id, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                            dataType: "json",
+                            success: function(response) {
+                              if (response.status) {
+                                $("#follow-div").addClass("bg-warning");
+                              } else {
+                                $("#follow-div").removeClass("bg-warning");
+                              }
+                              $("#number_of_followers").html(response.number_of_followers)
+                            },
+                            error: function(rs, e) {
+                              alert(rs.responseText);
+                            }
+                          });
+                        })
+                    })
+                </script>
+                <!--- Follow script [END] --->
+
     <!-- Left block of cards [END]-->
 
     <!--- Central part of feed [START] --->
         <!--- Make publication option [START]--->
             <div class="col-md-6 gedf-main">
                 {% if request.user.email == place.who_added_place_on_site.email %}
-                
+
                 <div class="card gedf-card">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
@@ -98,7 +129,7 @@
                 </div>
                 {% endif %}
         <!--- Make publication option [END]--->
-    
+
         <!--- Post [START]--->
             {% block posts %} {% endblock %}
         <!--- Post [END]--->
@@ -106,7 +137,7 @@
     <!--- Central part of feed [END] --->
 
     </div>
-    
+
     <!--- Right block of cards [START] --->
         <div class="col-md-3">
             <div class="card gedf-card">

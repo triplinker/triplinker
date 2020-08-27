@@ -40,6 +40,10 @@ class Place(models.Model):
                                                 blank=True, null=True,
                                                 default=None,
                                                 on_delete=models.CASCADE)
+    followers = models.ManyToManyField(TLAccount,
+                                       related_name='favourite_places',
+                                       blank=True, null=True,
+                                       default=None)
 
     def __str__(self):
         return self.name_of_place
@@ -51,6 +55,10 @@ class Place(models.Model):
     def get_full_value_location_of_place(self):
         """Returns full value in tuples of CHOICES"""
         return self.get_location_display()
+
+    def number_of_followers(self):
+        """Returns number of followers"""
+        return self.followers.all().count()
 
     class Meta:
         app_label = 'trip_places'

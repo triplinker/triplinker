@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 
 from feed.models import Post
@@ -99,3 +99,23 @@ def place_page(request, place_id):
     # If HTTP method is GET...
     else:
         return render(request, 'trip_places/feed/final_child_4.html', context)
+
+
+# Favourite
+def favourite_api(request, place_id):
+    follow = False
+    user = request.user
+
+    place = Place.objects.get(id=place_id)
+    if user not in place.followers.all():
+        place.followers.add(user)
+        follow = True
+    else:
+        place.followers.remove(user)
+        follow = False
+
+    context = {
+        'number_of_followers': place.number_of_followers(),
+        'status': follow,
+    }
+    return JsonResponse(context, safe=False)
