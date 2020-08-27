@@ -1,6 +1,6 @@
-from django.db.models import Q
+from django.db.models import Q  # noqa: F401
 
-from django.views import generic
+from django.views import generic  # noqa: F401
 from django.shortcuts import render
 
 from accounts.models.TLAccount_frequest import UserFilter
@@ -15,7 +15,7 @@ from accounts.models.TLAccount_frequest import TLAccount
 #     context_object_name = 'users'
 #
 #     def get_queryset(self):
-#         """Forms query set that will be used in the context of django template.
+#         """Forms query set that will be used in the context of django template. # noqa: E501
 #         """
 #         query = self.request.GET.get('q')
 #         if query is None:

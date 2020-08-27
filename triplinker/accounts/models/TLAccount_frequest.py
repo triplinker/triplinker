@@ -136,8 +136,8 @@ class UserFilter(django_filters.FilterSet):
 
     def full_name_filter(self, queryset, name, value):
         return queryset.filter(Q(first_name__icontains=value) |
-            Q(second_name__icontains=value) |
-            Q(email__icontains=value))
+                               Q(second_name__icontains=value) |
+                               Q(email__icontains=value))
 
     def age_filter(self, queryset, name, value):
         birth_after = (datetime.date.today() - datetime.timedelta(
