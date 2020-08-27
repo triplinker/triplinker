@@ -42,8 +42,7 @@ class Place(models.Model):
                                                 on_delete=models.CASCADE)
     followers = models.ManyToManyField(TLAccount,
                                        related_name='favourite_places',
-                                       blank=True, null=True,
-                                       default=None)
+                                       blank=True, default=None)
 
     def __str__(self):
         return self.name_of_place
