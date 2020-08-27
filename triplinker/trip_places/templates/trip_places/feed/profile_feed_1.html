@@ -22,7 +22,7 @@
 
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item {% if user in place.followers.all %} bg-warning {% endif %}" id="follow-div">
-                                <div id="follow" class="h5" style="text-align: center;"> <h6 style="display: inline;">Follow <i class="fa fa-star" aria-hidden="true"></i></h6></div>
+                                <div class="h5" style="text-align: center;"> <h6 style="display: inline;">Follow <i class="fa fa-star" aria-hidden="true"></i></h6></div>
                             </li>
                             <li class="list-group-item">
                                 <div class="h5" style="text-align: center;">Rating <h6 style="display: inline;"><i class="fa fa-star" aria-hidden="true"></i></h6></div>
@@ -44,7 +44,7 @@
                 <script type="text/javascript">
                     $(document).ready(function(){
                         // Listening the click event on follow.
-                        $("#follow").click(function(){
+                        $("#follow-div").click(function(){
                           let place_id = '{{ place.id }}';
                           $.ajax({
                             type: "POST",
