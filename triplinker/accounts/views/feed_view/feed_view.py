@@ -1,16 +1,13 @@
 from datetime import timedelta
 
 from django.urls import reverse
-
 from django.utils import timezone
 from django.http import HttpResponseRedirect
-
 from django.shortcuts import render
 
-from accounts.forms.forms_feed import AddCommentForm
-
 from accounts.models.TLAccount_frequest import TLAccount
-from accounts.models.feed import Post
+from accounts.feed_app_link import AddCommentForm
+from accounts.feed_app_link import Post
 
 
 # Feed
@@ -25,12 +22,13 @@ def show_feed(request):
 
         # Creating a feed -> O(A^2 + B^2) !
         for friend in user.friends.all():
-            friend_posts = Post.objects.filter(author=friend)
+            friend_posts = Post.objects.filter(author=friend, is_place=False)
             for post in friend_posts:
                 posts_id.add(post.id)
 
         for following_user in user.people_which_follow.all():
-            following_user_posts = Post.objects.filter(author=following_user)
+            following_user_posts = Post.objects.filter(author=following_user,
+                                                       is_place=False)
             for post in following_user_posts:
                 posts_id.add(post.id)
 

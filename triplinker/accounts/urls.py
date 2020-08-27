@@ -47,12 +47,6 @@ urlpatterns = [
     # Feed.
     path('feed/', views.show_feed, name="feed"),
 
-    # Like/Unlike system.
-    path('likes-api-post/<int:post_id>/', views.like_post_api,
-         name="likes-api-post"),
-    path('likes-api-comment/<int:comment_id>/', views.like_comment_api,
-         name="likes-api-comment"),
-
     # Profile, reg, auth.
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('activate/', views.ActivateView.as_view(), name='activate'),

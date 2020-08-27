@@ -4,7 +4,6 @@ from accounts.views.followers_following_views.followers_following_views import *
 from accounts.views.friends_system_views.friends_system_views import *
 from accounts.views.followers_following_views.followers_following_views import *
 from accounts.views.index_view.index_view import *
-from accounts.views.likes_views.likes_views import *
 
 # Profile views
 from accounts.views.profile_views.additional_profile_views import *

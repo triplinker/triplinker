@@ -1,6 +1,6 @@
 from .status_between_users_definer import define_status
 from accounts.models.TLAccount_frequest import FriendRequest
-from accounts.models.feed import Post
+from accounts.feed_app_link import Post
 
 
 def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
@@ -22,7 +22,7 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
         status_between_users = define_status(FriendRequest, current_user,
                                              another_user)
 
-    posts = Post.objects.filter(author=user_acc)
+    posts = Post.objects.filter(author=user_acc, is_place=False)
 
     context = {
         'user_acc': user_acc,

@@ -79,7 +79,7 @@
                             // Making asynchronous request to the server.
                             $.ajax({
                                 type: "POST",
-                                url: "{% url 'accounts:likes-api-post' post.id %}",
+                                url: "{% url 'feed:likes-api-post' post.id %}",
                                 data: {"post_id": post_id, 'csrfmiddlewaretoken': '{{ csrf_token}}' },
                                 dataType: 'json',
 

@@ -41,7 +41,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'trip_places.apps.TripPlacesConfig',
     'chat.apps.ChatConfig',
+    'feed.apps.FeedConfig',
     'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',

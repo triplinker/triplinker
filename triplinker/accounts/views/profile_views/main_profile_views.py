@@ -3,9 +3,9 @@ from django.http import HttpResponseRedirect
 from django.views import generic
 from django.shortcuts import render, get_object_or_404
 
-from accounts.forms.forms_feed import AddPostForm, AddCommentForm
+from accounts.feed_app_link import AddPostToProfileForm, AddCommentForm
 from accounts.models.TLAccount_frequest import TLAccount
-from accounts.models.feed import Post
+from accounts.feed_app_link import Post
 from accounts.helpers.views.get_context_profile import get_context_for_profile
 
 
@@ -24,7 +24,7 @@ class ProfileView(generic.ListView):
         user_acc = self.request.user
         self.context = get_context_for_profile(self.request, user_acc,
                                                accType='profile')
-        form = AddPostForm()
+        form = AddPostToProfileForm()
         comment_form = AddCommentForm()
         self.context['form'] = form
         self.context['comment_form'] = comment_form
@@ -59,7 +59,7 @@ class ProfileView(generic.ListView):
                 'author': request.user,
             }
 
-            form = AddPostForm(content_for_form)
+            form = AddPostToProfileForm(content_for_form)
             if form.is_valid():
                 form.save()
                 user_acc_id = request.user
@@ -106,7 +106,7 @@ def detail_profile(request, user_id):
                 return render(request, template_name, context)
         else:
             # User adds a post.
-            form = AddPostForm(initial={'content': request.POST,
+            form = AddPostToProfileForm(initial={'content': request.POST,
                                         'author': request.user})
             if form.is_valid():
                 form.save()
@@ -124,7 +124,7 @@ def detail_profile(request, user_id):
 
     else:
         # HTTP method is GET.
-        form = AddPostForm()
+        form = AddPostToProfileForm()
         comment_form = AddCommentForm()
         context['form'] = form
         context['comment_form'] = comment_form

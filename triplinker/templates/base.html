@@ -62,7 +62,8 @@
 
             <a class="nav-item nav-link" href="{% url 'accounts:feed' %}"><h5 style="display:inline;"><i class="fa fa-globe" aria-hidden="true"></i></h5> Feed</a>
             <a class="nav-item nav-link" href="{% url 'accounts:all_users_list' %}"><h5 style="display:inline;"><i class="fa fa-users" aria-hidden="true"></i></h5> People</a>
-            
+
+            <a class="nav-item nav-link" href="{% url 'trip_places:all-places' %}"><h5 style="display:inline;"><i class="fa fa-map-marker" aria-hidden="true"></i></h5> Places</a>
           {% else %}
             <a class="nav-item nav-link" href="{% url 'accounts:login' %}">login</a>
             <a class="nav-item nav-link" href="{% url 'accounts:signup' %}">signup</a>
