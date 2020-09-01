@@ -25,6 +25,10 @@
                                 <div class="h6 text-muted"><a href="{% url 'accounts:following-list' user_acc.id %}">Following</a></div>
                                 <div class="h5">{{ user_acc.people_which_follow.count }}</div>
                             </li>
+                            <li class="list-group-item">
+                                <div class="h6 text-muted"><a href="{% url 'trip_places:favourite-places' user_acc.id %}">Favourite places</a></div>
+                                <div class="h5">{{ user.favourite_places.count }}</div>
+                            </li>
                             <li class="list-group-item">Vestibulum at eros</li>
                         </ul>
                     </div>
@@ -35,7 +39,7 @@
         <!--- Make publication option [START]--->
             <div class="col-md-6 gedf-main">
                 {% if user_acc.email == who_makes_a_request %}
-                
+
                 <div class="card gedf-card">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
@@ -90,7 +94,7 @@
                 </div>
                 {% endif %}
         <!--- Make publication option [END]--->
-    
+
         <!--- Post [START]--->
             {% block posts %} {% endblock %}
         <!--- Post [END]--->
@@ -98,7 +102,7 @@
     <!--- Central part of feed [END] --->
 
     </div>
-    
+
     <!--- Right block of cards [START] --->
         <div class="col-md-3">
             <div class="card gedf-card">

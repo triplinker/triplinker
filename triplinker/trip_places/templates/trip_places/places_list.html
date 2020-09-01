@@ -1,0 +1,23 @@
+{% if not places %}
+    <p>The list of places is empty</p>
+
+{% else %}
+{% for place in places%}
+  <div class="nearby-user">
+    <div class="row">
+      <div class="col-md-2 col-sm-2">
+        {% if place.place_pic %}
+        <img src="{{ place.place_pic.url }}" alt="user" class="profile-photo-lg">
+        {% else %}
+        <img src="https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/10657202191586787135-512.png" alt="user" class="profile-photo-lg">
+        {% endif %}
+      </div>
+      <div class="col-md-7 col-sm-7">
+        <h5><a href="{% url 'trip_places:place-page' place.id %}" class="profile-link">{{ place.name_of_place }}</a></h5>
+        <p>{{ place.location }}</p>
+        <p class="text-muted">{{place.rating}}</p>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% endif %}

@@ -7,6 +7,8 @@ app_name = 'trip_places'
 
 urlpatterns = [
     path('', views.all_places, name='all-places'),
+    path('favourite-list/<int:user_id>/', views.favourite_places,
+         name='favourite-places'),
     path('add-place/', views.add_place, name='add-place'),
     path('<int:place_id>', views.place_page, name='place-page'),
     path('<int:place_id>/photos', views.photos_of_place,

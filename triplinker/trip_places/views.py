@@ -22,6 +22,15 @@ def all_places(request):
     return render(request, 'trip_places/all_places.html', context)
 
 
+def favourite_places(request, user_id):
+    places = Place.objects.filter(followers=user_id)
+
+    context = {
+        'places': places,
+    }
+    return render(request, 'trip_places/favourite_places.html', context)
+
+
 def add_place(request):
     if request.method == 'POST':
         form = AddPlaceForm(request.POST, request.FILES)
