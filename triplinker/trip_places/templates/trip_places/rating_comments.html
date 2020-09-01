@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+{% block static %}
+<link rel="stylesheet" type="text/css" href="{% static 'trip_places/rating_comments.css'%}">
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+<div class="container" style="text-align: center;margin-top: 2%;margin-bottom: 0.5%;">
+<h1 class="mt-2">· {{ place.name_of_place}} · feedback</h1>
+</div>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="text-align: center;">
+  Write you own feedback!
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Write your own feedback!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="text-center border border-light p-6" method="post" style="margin-top: -2%;">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.comment }}
+            </div>
+
+        <label>Your rating for this place</label>
+        {{ form.rating}}
+
+    <!-- Send button -->
+    
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Send feedback">
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<div class="container" style="margin-top: 2%;margin-left: 25%;padding-bottom: 3%">   
+<div class="row">
+    {% for feedback in feedbacks%}
+    <div class="col-md-8" style="margin-bottom: 2%;overflow: hidden;">
+        <div class="media g-mb-30 media-comment">
+            <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="Image Description">
+            <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+              <div class="g-mb-15">
+                <h5 class="h5 g-color-gray-dark-v1 mb-0">{{ feedback.author }}</h5>
+                <h5 class="h5 g-color-gray-dark-v1 mb-0" style="float: right;">{{ feedback.get_rating_to_place_from_user }}</h5>
+                <span class="g-color-gray-dark-v4 g-font-size-12">{{feedback.timestamp | timesince }} ago</span>
+              </div>
+        
+              <p>{{ feedback.comment }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
+
+

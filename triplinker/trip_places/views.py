@@ -1,13 +1,16 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
+from accounts.models.TLAccount_frequest import TLAccount
 from feed.models import Post
 from feed.forms import AddPostToPlacePageForm, AddCommentForm
 
+from .helpers.views.get_rating_of_place import get_rating
 from .models import Place
-from .forms import AddPlaceForm
+from .forms import (AddPlaceForm, AddPhotoToPlaceGalleryForm,
+                    AddFeedbackForm)
 
 
 def all_places(request):
@@ -48,11 +51,14 @@ def place_page(request, place_id):
 
     form = AddPostToPlacePageForm()
     comment_form = AddCommentForm()
+
+    place_rating = get_rating(place)
     context = {
         'place': place,
         'feed_of_place': feed_of_place,
         'form': form,
-        'comment_form': comment_form
+        'comment_form': comment_form,
+        'place_rating': place_rating
     }
 
     if request.method == 'POST':
@@ -99,6 +105,116 @@ def place_page(request, place_id):
     # If HTTP method is GET...
     else:
         return render(request, 'trip_places/feed/final_child_4.html', context)
+
+
+def edit_place_inf(request, place_id):
+    place = Place.objects.get(id=place_id)
+
+    if request.user.email != place.who_added_place_on_site.email:
+        return HttpResponseNotFound()
+
+    initial = {
+        'name_of_place': place.name_of_place,
+        'type_of_place': place.type_of_place,
+        'place_description': place.place_description,
+        'location': place.location
+    }
+
+    context = {
+        'form': AddPlaceForm(initial=initial),
+        'place_pic': place.place_pic
+    }
+
+    if request.method == 'POST':
+
+        main_photo = request.FILES.get('place_pic', None)
+
+        new_photo = False
+        if main_photo:
+            form = AddPlaceForm(request.POST,)
+            new_photo = True
+        else:
+            form = AddPlaceForm(request.POST,)
+
+        if form.is_valid():
+            place.name_of_place = request.POST.get("name_of_place", None)
+            place.type_of_place = request.POST.get("type_of_place", None)
+
+            description = request.POST.get("place_description", None)
+            place.place_description = description
+
+            place.location = request.POST.get("location", None)
+
+            if new_photo:
+                place.place_pic = main_photo
+
+            place.save()
+            return HttpResponseRedirect(reverse('trip_places:place-page',
+                                                args=(place_id, )))
+
+        return render(request, 'trip_places/edit_place_form.html', context)
+    else:
+        return render(request, 'trip_places/edit_place_form.html', context)
+
+
+# Photos of place
+def photos_of_place(request, place_id):
+    user_acc = get_object_or_404(TLAccount, id=request.user.id)
+    place = get_object_or_404(Place, id=place_id)
+
+    photos = place.photos_of_place.all()  # Custom related name
+
+    context = {
+        'place': place,
+        'photos': photos
+    }
+
+    if request.method == 'POST':
+        initial = {
+            'place_pic': request.FILES['photo_with_current_place']
+        }
+        form = AddPhotoToPlaceGalleryForm(request.POST, initial)
+        if form.is_valid():
+            final_form = form.save(commit=False)
+            final_form.place = place
+            final_form.author = user_acc
+            final_form.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return render(request, 'trip_places/photos_gallery.html', context)
+
+    # If HTTP method is GET...
+    else:
+        return render(request, 'trip_places/photos_gallery.html', context)
+
+
+# Comments to place page
+def comments_rating_page(request, place_id):
+    place = get_object_or_404(Place, id=place_id)
+    author_of_feedback = get_object_or_404(TLAccount, id=request.user.id)
+    feedbacks = place.place_feedback.all()
+    context = {
+        'form': AddFeedbackForm(),
+        'place': place,
+        'feedbacks': feedbacks,
+    }
+
+    if request.method == 'POST':
+        form = AddFeedbackForm(request.POST)
+
+        if form.is_valid():
+            final_form = form.save(commit=False)
+            final_form.place = place
+            final_form.author = author_of_feedback
+            final_form.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            context['form'] = form
+            return render(request, 'trip_places/rating_comments.html', context)
+
+    # If HTTP method is GET...
+    else:
+        return render(request, 'trip_places/rating_comments.html', context)
 
 
 # Favourite
