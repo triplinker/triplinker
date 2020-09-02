@@ -23,12 +23,18 @@ def show_feed(request):
         # Creating a feed -> O(A^2 + B^2) !
         for friend in user.friends.all():
             friend_posts = Post.objects.filter(author=friend, is_place=False)
+            notification_posts = Post.objects.filter(author=friend,
+                                                     notification_post=True)
+            friend_posts = friend_posts | notification_posts
             for post in friend_posts:
                 posts_id.add(post.id)
 
         for following_user in user.people_which_follow.all():
             following_user_posts = Post.objects.filter(author=following_user,
                                                        is_place=False)
+            notification_posts = Post.objects.filter(author=following_user,
+                                                     notification_post=True)
+            following_user_posts = following_user_posts | notification_posts
             for post in following_user_posts:
                 posts_id.add(post.id)
 

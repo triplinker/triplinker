@@ -1,7 +1,18 @@
 from django.http import JsonResponse
 
 from accounts.models.TLAccount_frequest import TLAccount
-from .models import Post, Comment
+from .models import Post, Comment, Notification
+from django.shortcuts import render
+
+
+# Notifications
+def notifications_list(request):
+    user = request.user
+    notifications = Notification.objects.filter(users__in=[user])
+    for n in notifications:
+        n.is_seen.add(user)
+    return render(request, "feed/notifications.html",
+                  {"notifications": notifications})
 
 
 # Likes

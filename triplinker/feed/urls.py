@@ -11,4 +11,6 @@ urlpatterns = [
          name="likes-api-post"),
     path('likes-api-comment/<int:comment_id>/', views.like_comment_api,
          name="likes-api-comment"),
+    path('notifications/', views.notifications_list,
+         name="notifications"),
 ]
