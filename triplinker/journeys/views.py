@@ -58,7 +58,7 @@ def sort_journeys_by_rating_of_place(request, user_id):
     user = get_object_or_404(TLAccount, id=user_id)
     journeys = Journey.objects.filter(particapants=user)
     sort = sorted(journeys,
-                  key=lambda journey: journey.place.get_rating_of_place,
+                  key=lambda journey: journey.place.get_rating_of_place(),
                   reverse=False)
 
     context = {
