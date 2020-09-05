@@ -41,6 +41,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'journeys.apps.JourneysConfig',
     'trip_places.apps.TripPlacesConfig',
     'chat.apps.ChatConfig',
     'feed.apps.FeedConfig',

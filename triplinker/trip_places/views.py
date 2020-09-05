@@ -7,7 +7,6 @@ from accounts.models.TLAccount_frequest import TLAccount
 from feed.models import Post
 from feed.forms import AddPostToPlacePageForm, AddCommentForm
 
-from .helpers.views.get_rating_of_place import get_rating
 from .models import Place
 from .forms import (AddPlaceForm, AddPhotoToPlaceGalleryForm,
                     AddFeedbackForm)
@@ -61,13 +60,11 @@ def place_page(request, place_id):
     form = AddPostToPlacePageForm()
     comment_form = AddCommentForm()
 
-    place_rating = get_rating(place)
     context = {
         'place': place,
         'feed_of_place': feed_of_place,
         'form': form,
         'comment_form': comment_form,
-        'place_rating': place_rating
     }
 
     if request.method == 'POST':

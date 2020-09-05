@@ -55,6 +55,22 @@ class Place(models.Model):
         verbose_name = 'Place'
         verbose_name_plural = 'Places'
 
+    def get_rating_of_place(self):
+        all_feedbacks = self.place_feedback.all()
+
+        if len(all_feedbacks) == 0:
+            return 0
+
+        rating_array = []
+        for feedback in all_feedbacks:
+            if feedback.rating.isdigit():
+                rating_array.append(int(feedback.rating))
+
+        accamulator = 0
+        for num in rating_array:
+            accamulator += num
+        return round(accamulator / len(rating_array), 1)
+
 
 class Photo(models.Model):
     place = models.ForeignKey('Place', related_name='photos_of_place',

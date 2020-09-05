@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+  <div class="container"> 
+    <h1 class="mt-2">Create new journey</h1>
+    <hr class="mt-0 mb-4">
+      <form class="form-horizontal" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.field_errors }}
+        {{ form.errors }}
+
+        <div class='form-group row'>
+          <div class="col-form-label col-sm-3 control-label">
+            {{ form.journey_from.label }}
+          </div>
+          <div class="col-sm-5">
+            {{ form.journey_from}}
+          </div>
+        </div>
+
+        <div class='form-group row'>
+          <div class="col-form-label col-sm-3 control-label">
+            {{ form.date_of_start.label }}
+          </div>
+          <div class="col-sm-5">
+            {{ form.date_of_start }}
+          </div>
+        </div>
+
+        <div class='form-group row'>
+          <div class="col-form-label col-sm-3 control-label">
+            {{ form.journey_to.label }}
+          </div>
+          <div class="col-sm-5">
+            {{ form.journey_to }}
+          </div>
+        </div>
+
+        <div class='form-group row'>
+          <div class="col-form-label col-sm-3 control-label">
+          {{ form.date_of_end.label }}
+          </div>
+          <div class="col-sm-5">
+            {{ form.date_of_end }}
+          </div>
+        </div>
+
+        <div class='form-group row'>
+          <div class="col-form-label col-sm-3 control-label">
+            {{ form.particapants.label }}
+          </div>
+          <div class="col-sm-5">
+            {{ form.particapants }}
+          </div>
+        </div>
+
+        <div class='form-group row'>
+          <div class="col-form-label col-sm-3 control-label">
+            {{ form.place.label }}
+          </div>
+          <div class="col-sm-5">
+          {{ form.place }}
+          </div>
+        </div>
+
+        <div class='form-group row'>
+          <div class="col-form-label col-sm-3 control-label">
+            {{ form.description.label }}
+          </div>
+          <div class="col-sm-5">
+          {{ form.description }}
+          </div>
+        </div>
+
+      <input type="submit" class="btn btn-primary" value="Add new place!" style="margin-left: 53.5%;margin-top: -1.5%;">
+    </form>
+  </div>
+
+{% endblock %}
