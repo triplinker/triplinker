@@ -23,6 +23,9 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
                                              another_user)
 
     posts = Post.objects.filter(author=user_acc, is_place=False)
+    notification_posts = Post.objects.filter(author=user_acc,
+                                             notification_post=True)
+    posts = posts | notification_posts
 
     context = {
         'user_acc': user_acc,

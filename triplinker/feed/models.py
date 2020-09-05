@@ -24,6 +24,7 @@ class Post(models.Model):
                                    related_name='like_system_post')
 
     is_place = models.BooleanField(default=False)
+    notification_post = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Author: {self.author}, content: {self.content[:20]}'
@@ -60,3 +61,23 @@ class Comment(models.Model):
     def __str__(self):
         return ("User: {} | To post: {} |".format(self.user, self.post.author) +
                 " Body: {}".format(self.body[:20]))
+
+
+class Notification(models.Model):
+
+    post = models.ForeignKey(Post, related_name="notifications",
+                             on_delete=models.CASCADE)
+    users = models.ManyToManyField(TLAccount, related_name="notifications")
+    text = models.CharField("Notification text", max_length=250)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_seen = models.ManyToManyField(TLAccount, blank=True,
+                                     related_name='seen_notifications')
+
+    def __str__(self):
+        return f"Post {self.post}"
+
+    class Meta:
+        ordering = ('-timestamp',)
+        app_label = 'feed'
+        verbose_name = 'Notification'
+        verbose_name_plural = 'Notifications'

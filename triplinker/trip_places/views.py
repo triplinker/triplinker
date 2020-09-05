@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
 from accounts.models.TLAccount_frequest import TLAccount
-from feed.models import Post
+from feed.models import Post, Notification
 from feed.forms import AddPostToPlacePageForm, AddCommentForm
 
 from .models import Place
@@ -228,11 +228,24 @@ def favourite_api(request, place_id):
     follow = False
     user = request.user
 
+    ADD_PLACE_TEXT_POST = "Hey, I want to visit this place!"
+    ADD_PLACE_TEXT_NOT = f"Your friend, {user}, add new favourite place"
+
     place = Place.objects.get(id=place_id)
     if user not in place.followers.all():
         place.followers.add(user)
+        post = Post.objects.create(is_place=True, content=ADD_PLACE_TEXT_POST,
+                                   author=user, place=place,
+                                   notification_post=True)
+        post.save()
+        notification = Notification.objects.create(post=post,
+                                                   text=ADD_PLACE_TEXT_NOT)
+        notification.users.set(user.friends.all())
+        notification.save()
         follow = True
     else:
+        post = Post.objects.filter(author=user, is_place=True, place=place)
+        post.delete()
         place.followers.remove(user)
         follow = False
 

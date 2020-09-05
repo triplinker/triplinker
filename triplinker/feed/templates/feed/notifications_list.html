@@ -1,0 +1,10 @@
+{% if not notifications %}
+    <p>The list of notifications is empty</p>
+
+{% else %}
+{% for notification in notifications%}
+  <div class="alert alert-primary" role="alert">
+    {{ notification.text }} <a href="{% url 'accounts:detail_profile' notification.post.author.id %}" class="alert-link float-right">See more</a>
+  </div>
+{% endfor %}
+{% endif %}
