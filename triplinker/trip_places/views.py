@@ -132,7 +132,7 @@ def edit_place_inf(request, place_id):
 
     context = {
             'form': AddPlaceForm(initial=initial),
-            'place_pic': place.place_pic 
+            'place_pic': place.place_pic
     }
 
     if request.method == 'POST':
