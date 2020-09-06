@@ -37,6 +37,10 @@ def add_place(request):
             final_form = form.save(commit=False)
             final_form.who_added_place_on_site = request.user
             final_form.save()
+
+            places = Place.objects.filter(who_added_place_on_site=request.user)
+            last_added_place = places.order_by('-timestamp').first()
+            last_added_place.followers.add(request.user)
             return HttpResponseRedirect(reverse('trip_places:all-places'))
         else:
             context = {
@@ -127,8 +131,8 @@ def edit_place_inf(request, place_id):
     }
 
     context = {
-        'form': AddPlaceForm(initial=initial),
-        'place_pic': place.place_pic
+            'form': AddPlaceForm(initial=initial),
+            'place_pic': place.place_pic 
     }
 
     if request.method == 'POST':

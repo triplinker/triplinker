@@ -38,14 +38,35 @@
           </div>
         </div>
 
-        <div class='form-group row'>
+        <div class='form-group row' style="margin-top: 2%;margin-bottom: 2%;">
           <div class="col-form-label col-sm-3 control-label">
           {{ form.place_pic.label }}
           </div>
-          <div class="col-sm-5">
-            {{ form.place_pic }}
+          <div class="avatar avatar-xxl" style="margin-left: 1.5%;">
+            <img src="https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/10657202191586787135-512.png" alt="Default picture from" class="avatar-img rounded-circle" height="140" width="140" id="imgshow">
           </div>
+          
+          <div class="col-sm-5" style="margin-top: 5%;">
+            <input type="file" name="place_pic" id="imgload">
+          </div>
+
         </div>
+
+        <!--- Update photo on the page [START] --->
+          <script type="text/javascript">
+            $('document').ready(function () {
+              $("#imgload").change(function () {
+                if (this.files && this.files[0]) {
+                  var reader = new FileReader();
+                  reader.onload = function (e) {
+                    $('#imgshow').attr('src', e.target.result);
+                    }
+                  reader.readAsDataURL(this.files[0]);
+                }
+              });
+            });
+          </script>
+        <!--- Update photo on the page [END] --->
 
         <div class='form-group row'>
           <div class="col-form-label col-sm-3 control-label">

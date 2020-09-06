@@ -51,6 +51,11 @@
 </div>
 </form>
 <div class="container" style="margin-top: 2%;margin-left: 25%;padding-bottom: 3%">   
+  {% if not feedbacks %}
+    <div class="row">
+      <p>The list of feedbacks is empty. Be the first!</p>
+    </div>
+  {% endif %}
 <div class="row">
     {% for feedback in feedbacks%}
     <div class="col-md-8" style="margin-bottom: 2%;overflow: hidden;">

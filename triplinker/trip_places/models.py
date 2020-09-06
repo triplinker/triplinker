@@ -31,6 +31,7 @@ class Place(models.Model):
                                                 blank=True, null=True,
                                                 default=None,
                                                 on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
     followers = models.ManyToManyField(TLAccount,
                                        related_name='favourite_places',
                                        blank=True, default=None)

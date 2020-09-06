@@ -157,19 +157,13 @@
             <div class="card gedf-card">
                 <div class="card-body">
                     <h5 class="card-title"><a href="{% url 'trip_places:photos-of-place' place.id%}">Photos</a></h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                            card's content.</p>
+                    <p class="card-text">View the photo's gallery of {{place.name_of_place}}! Also you can upload your own photos which are connected with the place.</p>
                 </div>
             </div>
             <div class="card gedf-card">
                     <div class="card-body">
                         <h5 class="card-title"><a href="{% url 'trip_places:rating-comments' place.id%}">Feedbacks</a></h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                                card's content.</p>
-                            <a href="#" class="card-link">Card link</a>
-                            <a href="#" class="card-link">Another link</a>
+                        <p class="card-text">Check feedbacks out. Here you'll find different comments and opinions about {{place.name_of_place}}. You can add your own opinion and rating for the place! Then your feedback can influence on the rating of this place.</p>
                         </div>
                     </div>
             </div>
