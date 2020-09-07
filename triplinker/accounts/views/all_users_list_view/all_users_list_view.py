@@ -10,4 +10,3 @@ from accounts.models.TLAccount_frequest import TLAccount
 def all_users_list(request):
     f = UserFilter(request.GET, queryset=TLAccount.objects.all())
     return render(request, 'accounts/all_users_list.html', {'filter': f})
-    

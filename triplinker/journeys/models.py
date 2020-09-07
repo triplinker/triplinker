@@ -40,5 +40,5 @@ class Journey(models.Model):
 
 
 class Participant(models.Model):
-  journey = models.ForeignKey(Journey, on_delete=models.CASCADE)
-  participant = models.ForeignKey(TLAccount, on_delete=models.CASCADE)
+    journey = models.ForeignKey(Journey, on_delete=models.CASCADE)
+    participant = models.ForeignKey(TLAccount, on_delete=models.CASCADE)
