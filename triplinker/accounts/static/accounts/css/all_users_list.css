@@ -32,3 +32,8 @@ img.profile-photo-lg{
   width: 80px;
   border-radius: 50%;
 }
+
+input[id^="id_age_"]{
+  width: 35px;
+  margin-left: 5px;
+}

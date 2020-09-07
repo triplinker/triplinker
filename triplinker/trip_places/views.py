@@ -7,18 +7,14 @@ from accounts.models.TLAccount_frequest import TLAccount
 from feed.models import Post, Notification
 from feed.forms import AddPostToPlacePageForm, AddCommentForm
 
-from .models import Place
+from .models import Place, PlaceFilter
 from .forms import (AddPlaceForm, AddPhotoToPlaceGalleryForm,
                     AddFeedbackForm)
 
 
 def all_places(request):
-    places = Place.objects.all()
-
-    context = {
-        'places': places,
-    }
-    return render(request, 'trip_places/all_places.html', context)
+    f = PlaceFilter(request.GET, queryset=Place.objects.all())
+    return render(request, 'trip_places/all_places.html', {'filter': f})
 
 
 def favourite_places(request, user_id):

@@ -1,4 +1,6 @@
 from django.db import models
+import django_filters
+from django.db.models import Q
 
 from accounts.models.TLAccount_frequest import TLAccount
 
@@ -142,3 +144,16 @@ class Feedback(models.Model):
         app_label = 'trip_places'
         verbose_name = 'Feedback'
         verbose_name_plural = 'Feedbacks'
+
+
+class PlaceFilter(django_filters.FilterSet):
+    q = django_filters.CharFilter(
+        method='name_filter',
+        label='Name')
+
+    class Meta:
+        model = Place
+        fields = ['q', 'type_of_place', 'location']
+
+    def name_filter(self, queryset, name, value):
+        return queryset.filter(Q(name_of_place__icontains=value))

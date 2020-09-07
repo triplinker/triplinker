@@ -140,12 +140,15 @@ class UserFilter(django_filters.FilterSet):
                                Q(email__icontains=value))
 
     def age_filter(self, queryset, name, value):
-        birth_after = (datetime.date.today() - datetime.timedelta(
-            days=float(value.stop)*365.25))
-        birth_before = (datetime.date.today() - datetime.timedelta(
-            days=float(value.start)*365.25))
-        return queryset.filter(Q(date_of_birth__gte=birth_after) &
-                               Q(date_of_birth__lte=birth_before))
+        if value.stop is not None:
+            birth_after = (datetime.date.today() - datetime.timedelta(
+                days=float(value.stop)*365.25))
+            queryset = queryset.filter(date_of_birth__gte=birth_after)
+        if value.start is not None:
+            birth_before = (datetime.date.today() - datetime.timedelta(
+                days=float(value.start)*365.25))
+            queryset = queryset.filter(date_of_birth__lte=birth_before)
+        return queryset
 
 
 class FriendRequest(models.Model):

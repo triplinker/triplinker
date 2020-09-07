@@ -11,9 +11,15 @@
     </h3>
   </a>
   <div class="row" style="margin-top: 1%;">
-    <div class="col-md-8">
+          <div class="col-md-3">
+          <form method="get">
+            {{ filter.form.as_p }}
+            <input type="submit" value="Search">
+          </form>
+      </div>
+    <div class="col-md-9">
       <div class="people-nearby">
-        {% include "trip_places/places_list.html" with places=places %}
+        {% include "trip_places/places_list.html" with places=filter.qs %}
       </div>
     </div>
   </div>
