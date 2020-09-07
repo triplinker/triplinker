@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey, Participant
+from .models import Journey
 from .forms import AddJourneyForm
 
 
