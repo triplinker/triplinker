@@ -21,4 +21,4 @@ class AddJourneyForm(forms.ModelForm):
     class Meta:
         model = Journey
         fields = ['journey_from', 'date_of_start', 'journey_to', 'date_of_end',
-                  'particapants', 'place', 'description']
+                  'participants', 'place', 'description']

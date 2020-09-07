@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey
+from .models import Journey, Participant
 from .forms import AddJourneyForm
 
 
@@ -47,9 +47,11 @@ def user_journey_list(request, user_id):
 def journey_page(request, journey_id):
     journey = get_object_or_404(Journey, id=journey_id)
     creator_of_journeys_page = journey.who_added_the_journey
+    participants = journey.participants.all()
     context = {
         'journey': journey,
         'creator_of_journeys_page': creator_of_journeys_page,
+        'participants': participants,
     }
     return render(request, 'journeys/journey_page.html', context)
 
@@ -77,3 +79,21 @@ def sort_journeys_by_date(request, user_id):
         'journeys': jrnes,
     }
     return render(request, 'journeys/user_journeys_list.html', context)
+    
+
+def join_journey(request, journey_id):
+    user = TLAccount.objects.get(pk=request.user.id)
+    journey = Journey.objects.get(pk=journey_id)
+    journey_participant = Participant(journey=journey, participant=user)
+    journey_participant.save()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                   kwargs={'journey_id': journey_id}))
+
+
+def leave_journey(request, journey_id):
+    user = TLAccount.objects.get(pk=request.user.id)
+    journey = Journey.objects.get(pk=journey_id)
+    journey.participants.remove(user)
+    journey.save()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                   kwargs={'journey_id': journey_id}))
