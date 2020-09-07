@@ -21,7 +21,8 @@ def add_new_journey(request):
             final_form.save()
             journ = Journey.objects.filter(who_added_the_journey=request.user)
             last_journey = journ.order_by('-timestamp').first()
-            last_journey.particapants.add(request.user)
+            last_journey.participants.add(request.user)
+            last_journey.save()
 
             return HttpResponseRedirect(
                            reverse('journeys:journey-list',
@@ -36,7 +37,7 @@ def add_new_journey(request):
 
 def user_journey_list(request, user_id):
     user = get_object_or_404(TLAccount, id=request.user.id)
-    journeys = Journey.objects.filter(particapants=user)
+    journeys = Journey.objects.filter(participants=user)
     context = {
         'user_acc': user,
         'journeys': journeys
@@ -82,18 +83,16 @@ def sort_journeys_by_date(request, user_id):
     
 
 def join_journey(request, journey_id):
-    user = TLAccount.objects.get(pk=request.user.id)
     journey = Journey.objects.get(pk=journey_id)
-    journey_participant = Participant(journey=journey, participant=user)
-    journey_participant.save()
+    journey.participants.add(request.user)
+    journey.save()
     return HttpResponseRedirect(reverse('journeys:journey-page',
                                    kwargs={'journey_id': journey_id}))
 
 
 def leave_journey(request, journey_id):
-    user = TLAccount.objects.get(pk=request.user.id)
     journey = Journey.objects.get(pk=journey_id)
-    journey.participants.remove(user)
+    journey.participants.remove(request.user)
     journey.save()
     return HttpResponseRedirect(reverse('journeys:journey-page',
                                    kwargs={'journey_id': journey_id}))
