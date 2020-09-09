@@ -21,4 +21,8 @@ urlpatterns = [
          name="sort-journeys-by-date"),
     path('sort-by-rating/<int:user_id>', views.sort_journeys_by_rating_of_place,
          name="sort-journeys-by-rating-of-place"),
+    path('journey-form-api/', views.journey_form_api,
+         name="journey-form-api"),
+    path('activity-form-api/', views.activity_form_api,
+         name="activity-form-api"),
 ]
