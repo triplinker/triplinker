@@ -41,4 +41,11 @@ class Journey(models.Model):
 
 class Participant(models.Model):
     journey = models.ForeignKey(Journey, on_delete=models.CASCADE)
-    participant = models.ForeignKey(TLAccount, on_delete=models.CASCADE)
+    participant = models.ForeignKey(TLAccount, on_delete=models.CASCADE,
+                                    related_name='participant_set')
+
+    def __str__(self):
+        jrn_s = self.journey.journey_from
+        jrn_f = self.journey.journey_from
+        partic = self.participant.email
+        return "Journey: {} - {}, participant: {}".format(jrn_s, jrn_f, partic)

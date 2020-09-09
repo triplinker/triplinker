@@ -9,7 +9,7 @@ from .helpers.views.rating_getter import get_rating
 def similar_jouneys(request):
     user = get_object_or_404(TLAccount, id=request.user.id)
 
-    journeys_of_user_raw = Journey.objects.filter(particapants=user)
+    journeys_of_user_raw = Journey.objects.filter(participants=user)
 
     final_dict = get_rating(user, journeys_of_user_raw)
     context = {
