@@ -46,8 +46,17 @@
         </div> <!-- end card-box-->
 
         <div class="card-box">
-            <h4 class="header-title">Particapants</h4>
+            <h4 class="header-title">Participants</h4>
             <p class="mb-3">View the list of people who participated in this journey!</p>
+
+            {% for participant in participants %}
+                <p><a href="{% url 'accounts:detail_profile' user.id %}" class="profile-link">{{ user.email }}</a></p>
+            {% endfor %}
+            {% if request.user in participants %}
+                <a href="{% url 'journeys:leave' journey.id %}" class="btn btn-danger btn-xs waves-effect mb-2 waves-light">Leave</a>
+            {% else %}
+                <a href="{% url 'journeys:join' journey.id %}" class="btn btn-success btn-xs waves-effect mb-2 waves-light">Join</a>
+            {% endif %}
 
         </div> <!-- end card-box-->
     </div> <!-- end col-->

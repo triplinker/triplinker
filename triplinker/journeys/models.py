@@ -13,8 +13,8 @@ class Journey(models.Model):
     date_of_end = models.DateField(null=True)
 
     vb_name_p = 'Particapants of the journey'
-    particapants = models.ManyToManyField(TLAccount, verbose_name=vb_name_p,
-                                          blank=True)
+    participants = models.ManyToManyField(TLAccount, verbose_name=vb_name_p,
+                                          blank=True, through='Participant')
     vb_name_place = u'Place that is connected with the journey'
     place = models.ForeignKey(Place, verbose_name=vb_name_place,
                               on_delete=models.CASCADE)
@@ -37,3 +37,8 @@ class Journey(models.Model):
         app_label = 'journeys'
         verbose_name = 'Journey'
         verbose_name_plural = 'Journeys'
+
+
+class Participant(models.Model):
+    journey = models.ForeignKey(Journey, on_delete=models.CASCADE)
+    participant = models.ForeignKey(TLAccount, on_delete=models.CASCADE)
