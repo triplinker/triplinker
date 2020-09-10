@@ -1,17 +1,51 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
+from django.http import JsonResponse
 from accounts.models.TLAccount_frequest import TLAccount
 from .models import Journey
-from .forms import AddJourneyForm
+from .forms import AddJourneyForm, AddActivityForm
+
+
+def activity_form_api(request):
+    print(request.POST)
+    form = AddActivityForm(request.POST)
+    if form.is_valid():
+        activity = form.save(commit=False)
+        activity.journey = Journey.objects.get(id=request.POST['journey_id'])
+        activity.save()
+        context = {
+            'status': True,
+        }
+        return JsonResponse(context, safe=False)
+    return JsonResponse({'status': False}, safe=False)
+
+
+def journey_form_api(request):
+    form = AddJourneyForm(request.POST)
+    if form.is_valid():
+        journey = form.save(commit=False)
+        journey.who_added_the_journey = request.user
+        journey.save()
+        journey.participants.add(request.user)
+        journey.save()
+        context = {
+            'journey_id': journey.id,
+            'status': True,
+        }
+        return JsonResponse(context, safe=False)
+    return JsonResponse({'status': False}, safe=False)
 
 from .helpers.views.get_allowed_journeys import get_allowed_journeys
 
 
 def add_new_journey(request):
+    if request.method == 'POST':
+        return HttpResponseRedirect(reverse('journeys:journey-list',
+                                    kwargs={'user_id': request.user.id}))
     context = {
-        'form': AddJourneyForm()
+        'form': AddJourneyForm(),
+        'activity_form': AddActivityForm(),
     }
 
     if request.method == 'POST':
