@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models.TLAccount_frequest import TLAccount, FriendRequest
-from .models.feed import Post, Comment
 from .forms.forms import UserCreationForm, UserChangeForm
 
 admin.site.site_header = "TripLinker admin panel"
@@ -43,9 +42,11 @@ class TLAccountAdmin(admin.ModelAdmin):
         }
          ),
 
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin')}),
+        (None, {'fields': ('can_get_message_from',)}),
 
-        (None, {'fields': ('friends',)}),
+        (None, {'fields': ('friends', 'followers', 'people_which_follow')}),
+
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin')}),
 
         ('Password', {'fields': ('password',)}),
     )
@@ -57,5 +58,3 @@ class TLAccountAdmin(admin.ModelAdmin):
 
 admin.site.register(TLAccount, TLAccountAdmin)
 admin.site.register(FriendRequest)
-admin.site.register(Post)
-admin.site.register(Comment)

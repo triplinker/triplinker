@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+{% block css%}
+<link rel="stylesheet" type="text/css" href="{% static 'journeys/journey_page.css' %}">
+{% endblock %}
+
+<div class="container" style="margin-top: 5%;">
+<div class="row">
+    <div class="col-lg-4 col-xl-4">
+        <div class="card-box text-center">
+            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="rounded-circle avatar-xl img-thumbnail" alt="profile-image">
+
+            <h4 class="mb-0">{{creator_of_journeys_page.email}}</h4>
+
+            <button type="button" class="btn btn-success btn-xs waves-effect mb-2 waves-light">Follow</button>
+            <button type="button" class="btn btn-danger btn-xs waves-effect mb-2 waves-light">Message</button>
+
+            <div class="text-left mt-3">
+                <h4 class="font-13 text-uppercase">Description :</h4>
+                <p class="text-muted font-13 mb-3">
+                  {{journey.description}}
+                </p>
+                <p class="text-muted mb-2 font-13"><strong>From:</strong> <span class="ml-2">{{journey.journey_from}}</span></p>
+
+                <p class="text-muted mb-2 font-13"><strong>To:</strong><span class="ml-2">{{journey.journey_to}}</span></p>
+            </div>
+        </div> <!-- end card-box -->
+
+        <div class="card-box" style="text-align: center;">
+            <h4 class="header-title">Main place of the journey</h4>
+
+          <div style="margin-top: 4%;">
+          {% if journey.place.place_pic %}
+            <img src="{{ journey.place.place_pic.url }}" alt="user" class="profile-photo-lg">
+          {% else %}
+            <img src="https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/10657202191586787135-512.png" alt="user" class="profile-photo-lg">
+          {% endif %}
+        </div>
+        <div style="margin-top: 2%; margin-bottom: -4%!important;">
+          <h5><a href="{% url 'trip_places:place-page' journey.place.id %}" class="profile-link">{{ journey.place.name_of_place }}</a></h5>
+          <p>{{ journey.place.location }}</p>
+          <p class="text-muted" style="margin-top: -2%;">{{journey.place.get_rating_of_place}} star{{journey.place.get_rating_of_place|pluralize}}</p>
+        </div>
+        </div> <!-- end card-box-->
+
+        <div class="card-box">
+            <h4 class="header-title">Participants</h4>
+            <p class="mb-3">View the list of people who participated in this journey!</p>
+
+            {% for participant in participants %}
+                <p><a href="{% url 'accounts:detail_profile' user.id %}" class="profile-link">{{ user.email }}</a></p>
+            {% endfor %}
+            {% if request.user in participants %}
+                <a href="{% url 'journeys:leave' journey.id %}" class="btn btn-danger btn-xs waves-effect mb-2 waves-light">Leave</a>
+            {% else %}
+                <a href="{% url 'journeys:join' journey.id %}" class="btn btn-success btn-xs waves-effect mb-2 waves-light">Join</a>
+            {% endif %}
+
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+
+    <div class="col-lg-8 col-xl-8">
+
+        <div class="card-box">
+          {% if request.user.email == journey.who_added_the_journey.email%}
+            <ul class="nav nav-pills navtab-bg">
+                <li class="nav-item">
+                    <a href="#about-me" data-toggle="tab" aria-expanded="true" class="nav-link ml-0 active">
+                        <i class="mdi mdi-face-profile mr-1"></i>About journey
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        <i class="mdi mdi-settings-outline mr-1"></i>Settings
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
+            <div class="tab-content">
+                
+                <div class="tab-pane show active" id="about-me">
+
+                    <img style="text-align: center;" class="img-thumbnail" src="https://avatars.mds.yandex.net/get-pdb/2022479/325b70e6-af92-4e6e-a172-7d479a85dcdb/s1200?webp=false">
+                    <hr>
+                    <h5 class="mb-4 text-uppercase"><i class="mdi mdi-briefcase mr-1"></i>
+                        Journey's route</h5>
+
+                    <ul class="list-unstyled timeline-sm">
+                        <li class="timeline-sm-item">
+                            <span class="timeline-sm-date">{{journey.date_of_start|date:"SHORT_DATE_FORMAT"}}</span>
+                            <h5 class="mt-0 mb-1">{{journey.journey_from}}</h5>
+
+                        </li>
+                        <li class="timeline-sm-item">
+                            <span class="timeline-sm-date">{{journey.date_of_end|date:"SHORT_DATE_FORMAT"}}</span>
+                            <h5 class="mt-0 mb-1">{{journey.journey_to}}</h5>
+                        </li>
+                    </ul>                   
+                </div>
+                <!-- end timeline content-->
+
+                <div class="tab-pane" id="settings">
+                    <form>
+                        <h5 class="mb-3 text-uppercase bg-light p-2"><i class="mdi mdi-account-circle mr-1"></i> Personal Info</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="firstname">First Name</label>
+                                    <input type="text" class="form-control" id="firstname" placeholder="Enter first name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lastname">Last Name</label>
+                                    <input type="text" class="form-control" id="lastname" placeholder="Enter last name">
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="userbio">Bio</label>
+                                    <textarea class="form-control" id="userbio" rows="4" placeholder="Write something..."></textarea>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="useremail">Email Address</label>
+                                    <input type="email" class="form-control" id="useremail" placeholder="Enter email">
+                                    <span class="form-text text-muted"><small>If you want to change email please <a href="javascript: void(0);">click</a> here.</small></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="userpassword">Password</label>
+                                    <input type="password" class="form-control" id="userpassword" placeholder="Enter password">
+                                    <span class="form-text text-muted"><small>If you want to change password please <a href="javascript: void(0);">click</a> here.</small></span>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                        <h5 class="mb-3 text-uppercase bg-light p-2"><i class="mdi mdi-office-building mr-1"></i> Company Info</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="companyname">Company Name</label>
+                                    <input type="text" class="form-control" id="companyname" placeholder="Enter company name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cwebsite">Website</label>
+                                    <input type="text" class="form-control" id="cwebsite" placeholder="Enter website url">
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                        <h5 class="mb-3 text-uppercase bg-light p-2"><i class="mdi mdi-earth mr-1"></i> Social</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="social-fb">Facebook</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fab fa-facebook-square"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="social-fb" placeholder="Url">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="social-tw">Twitter</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="social-tw" placeholder="Username">
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="social-insta">Instagram</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="social-insta" placeholder="Url">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="social-lin">Linkedin</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fab fa-linkedin"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="social-lin" placeholder="Url">
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="social-sky">Skype</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fab fa-skype"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="social-sky" placeholder="@username">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="social-gh">Github</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fab fa-github"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="social-gh" placeholder="Username">
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+                        
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-success waves-effect waves-light mt-2"><i class="mdi mdi-content-save"></i> Save</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- end settings content-->
+
+            </div> <!-- end tab-content -->
+        </div> <!-- end card-box-->
+
+    </div> <!-- end col -->
+</div>
+</div>
+{% endblock %}

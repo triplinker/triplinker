@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from .views import all_views as views
 
 
 app_name = 'accounts'
@@ -10,7 +10,7 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
 
     # All users list.
-    path('users/', views.AllUsersList.as_view(), name='all_users_list'),
+    path('users/', views.all_users_list, name='all_users_list'),
 
     # A particular profile of user.
     path('users/<int:user_id>/', views.detail_profile,
@@ -47,17 +47,12 @@ urlpatterns = [
     # Feed.
     path('feed/', views.show_feed, name="feed"),
 
-    # Like/Unlike system.
-    path('likes-api-post/<int:post_id>/', views.like_post,
-         name="likes-api-post"),
-    path('likes-api-comment/<int:comment_id>/', views.likes_api_comment,
-         name="likes-api-comment"),
-
     # Profile, reg, auth.
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('activate/', views.ActivateView.as_view(), name='activate'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
-    path('profile/edit/', views.ProfileEditView.as_view(), name='profile_edit'),
+    path('profile/edit/', views.ProfileEditView.as_view(),
+         name='profile_edit')
 ]

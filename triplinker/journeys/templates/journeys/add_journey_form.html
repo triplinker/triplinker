@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+  <div class="container">
+    <h1 class="mt-2">Create new journey</h1>
+    <hr class="mt-0 mb-4">
+      <form class="form-horizontal" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.field_errors }}
+        {{ form.errors }}
+        <div id="main">
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.journey_from.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.journey_from}}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.place_from.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.place_from}}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.date_of_start.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.date_of_start }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.journey_to.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.journey_to }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.place_to.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.place_to}}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.date_of_end.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.date_of_end }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.particapants.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.particapants }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ form.description.label }}
+            </div>
+            <div class="col-sm-5">
+            {{ form.description }}
+            </div>
+          </div>
+
+          <hr>
+        </div>
+
+
+        <div id="activities">
+
+        </div>
+
+        <div class="clone">
+          <div class="btn btn-danger float-right fa fa-times" id="cancel" aria-hidden="true"></div>
+          <h3></h3>
+          <hr>
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ activity_form.description.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ activity_form.description }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ activity_form.place.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ activity_form.place }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ activity_form.date_of_start.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ activity_form.date_of_start }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
+              {{ activity_form.date_of_end.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ activity_form.date_of_end }}
+            </div>
+          </div>
+          <hr>
+        </div>
+        <div class="float-left">
+          <a id="add-activity" class="btn btn-primary float-left text-light">Add one more activity</a>
+          <script type="text/javascript">
+            $(document).ready(function(){
+                let activity = $(".clone").clone();
+                $(".clone").remove();
+                let n = 0;
+                $("#add-activity").on('click',function(event){
+                  n++;
+                  let c_activity = activity.clone();
+                  c_activity.removeClass("clone").addClass("activities");
+                  c_activity.attr("id", "activity" + n);
+                  c_activity.children("h3").text(n + " activity");
+                  if (n > 1) {
+                    $("#activity" + (n - 1)).children("#cancel").remove();
+                  }
+                  $("#activities").append(c_activity);
+                });
+                $(document).on('click', "#cancel",function(event){
+                  $("#activity" + n).remove();
+                  n--;
+                  $("#activity" + n).prepend("<div class='btn btn-danger float-right fa fa-times' id='cancel' aria-hidden='true'></div>");
+                });
+                let j_id = -1;
+                $("#submit-form").on('click',function(event){
+                  // Making asynchronous request to the server.
+                  $.ajax({
+                    type: "POST",
+                    url: "{% url 'journeys:journey-form-api' %}",
+                    data: {'journey_from': $('#id_journey_from').val(), 'place_from': $('#id_place_from').find(':selected').val(), 'date_of_start': $('#main').find('#id_date_of_start').val(), 'journey_to': $('#id_journey_to').val(),
+                    'place_to': $('#id_place_to').find(':selected').val(), 'date_of_end': $('#main').find('#id_date_of_end').val(), 'description': $('#id_description').val(), 'csrfmiddlewaretoken': '{{ csrf_token }}' },
+                    dataType: 'json',
+
+                    success: function(data){
+                      j_id = data['journey_id'];
+                      if (data['status']) {
+                        for (let i = 1; i <= n; i++) {
+                          $.ajax({
+                            type: "POST",
+                            url: "{% url 'journeys:activity-form-api' %}",
+                            data: {'place': $('#activity' + i).find('#id_place').find(':selected').val(), 'date_of_start':  $('#activity' + i).find('#id_date_of_start').val(), 'journey_id': j_id,
+                            'date_of_end':  $('#activity' + i).find('#id_date_of_end').val(), 'description':  $('#activity' + i).find('#id_description').val(), 'csrfmiddlewaretoken': '{{ csrf_token }}' },
+                            dataType: 'json',
+                            success: function(data){
+                            },
+                            error: function(rs, e) {
+                              alert(rs.responseText);
+                            }
+                          });
+                        }
+                      }
+                    },
+                    error: function(rs, e) {
+                      alert(rs.responseText);
+                    }
+                  });
+                });
+            })
+          </script>
+        </div>
+      <button id="submit-form" class="btn btn-primary float-right text-light">Add new place!</button>
+    </form>
+  </div>
+
+{% endblock %}

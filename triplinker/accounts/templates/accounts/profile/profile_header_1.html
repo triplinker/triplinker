@@ -48,8 +48,16 @@
                 {% if user_acc.email == who_makes_a_request %}
                     <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:profile_edit' %}"><i class="la la-user-plus"></i>Edit account</a>
 
-                {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "Not friends" %}
-                    <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:send-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Add Friend</a>
+                {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "Not friends"%}
+
+                    {% ifnotequal user_acc.can_get_message_from "Friends" %}
+                        <a class="btn btn-shadow btn btn-primary" href="{% url 'chat:messages-dialog' user_acc.id%}"><i class="la la-user-plus"></i>Message</a>
+                        <a title="Add this user to my friendlist" class="btn btn-shadow btn btn-dark" href="{%url 'accounts:send-frequest' user_acc.id%}"><i class="la la-user-plus" ></i>Add</a>
+                    {% endifnotequal %}
+
+                    {% ifnotequal user_acc.can_get_message_from "All" %}
+                        <a title="Add this user to my friendlist" class="btn btn-shadow btn btn-dark" href="{%url 'accounts:send-frequest' user_acc.id%}"><i class="la la-user-plus" ></i>Add</a>
+                    {% endifnotequal %}
 
                 {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "User wanna be our friend" %}
                     <a class="btn btn-shadow btn btn-primary" href="{%url 'accounts:accept-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Accept</a>
@@ -57,9 +65,18 @@
                     <a class="btn btn-shadow btn btn-danger" href="{% url 'accounts:delete-frequest' user_acc.id%}"><i class="la la-user-plus"></i>Dismiss</a>
                                             
                 {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "We're waiting for user confirmation" %}
-                    <a class="btn btn-shadow btn btn-danger" href="{%url 'accounts:cancel-frequest' user_acc.id %}"><i class="la la-user-plus"></i>Cancel</a>
+
+                    {% ifnotequal user_acc.can_get_message_from 'Friends' %}
+                        <a class="btn btn-shadow btn btn-primary" href="{% url 'chat:messages-dialog' user_acc.id%}"><i class="la la-user-plus"></i>Message</a>
+                        <a class="btn btn-shadow btn btn-danger" href="{%url 'accounts:cancel-frequest' user_acc.id %}"><i class="la la-user-plus"></i>Cancel</a>
+                    {% endifnotequal %}
+
+                    {% ifnotequal user_acc.can_get_message_from 'All' %}
+                        <a class="btn btn-shadow btn btn-danger" href="{%url 'accounts:cancel-frequest' user_acc.id %}"><i class="la la-user-plus"></i>Cancel</a>
+                    {% endifnotequal %}
+
                 {% elif user_acc.is_authenticated and user_acc.email != who_makes_a_request and status_between_users == "Friends" %}
-                    <a class="btn btn-shadow btn btn-primary" href="{% url 'chat:messages-page' user_acc.id%}"><i class="la la-user-plus"></i>Message</a>
+                    <a class="btn btn-shadow btn btn-primary" href="{% url 'chat:messages-dialog' user_acc.id%}"><i class="la la-user-plus"></i>Message</a>
                     <a class="btn btn-shadow btn btn-danger" href="{% url 'accounts:delete-friend' user_acc.id%}"><i class="la la-user-plus"></i>Delete</a>
                 {% endif %}
 

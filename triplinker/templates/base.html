@@ -13,11 +13,17 @@
   <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/profile_head.css'%}">
   <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/comment_section.css'%}">
   <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/profile_feed.css'%}">
+
+  <!--- Notification bell [END] --->
   <script type="text/javascript" src="{% static 'accounts/js/comments.js'%}"></script>
   <!--- accounts app [END] --->
 
   <!--- chat app [START] --->
-  <link rel="stylesheet" type="text/css" href="{% static 'chat/css/style.css'%}">
+  <link rel="stylesheet" type="text/css" href="{% static 'chat/css/all_messages_page.css'%}">
+  <link rel="stylesheet" type="text/css" href="{% static 'chat/css/messages_dialog.css'%}">
+
+  <link rel="stylesheet" type="text/css" href="{% static 'chat/css/message_error.css'%}">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!--- chat app [END] --->
 
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -30,30 +36,51 @@
 
   {% block css %}
   {% endblock %}
+
+  {% block additional_links%}
+  {% endblock%}
+
 </head>
 <body>
 
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a href="{% url 'accounts:index' %}" class="navbar-brand">Triplinker</a>
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'accounts:feed' %}" class="navbar-brand">Triplinker</a>
+      {% else %}
+      <span class="navbar-brand">Triplinker</span>
+      {% endif %}
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
           {% if user.is_authenticated %}
-            <a class="nav-item nav-link" href="{% url 'accounts:profile' %}">Profile</a>
-            <a class="nav-item nav-link" href="{% url 'accounts:feed' %}">Feed</a>
-            <a class="nav-item nav-link" href="{% url 'accounts:all_users_list' %}">People</a>
+            <a class="nav-item nav-link" href="{% url 'accounts:profile' %}"><h5 style="display:inline;"><i class="fa fa-user" aria-hidden="true"></i></h5> Profile</a>
+
+            {% if new_messages %}
+              <a class="nav-item nav-link" href="{% url 'chat:messages-page' %}"><h5 style="display:inline;"><i class="fa fa-comments" aria-hidden="true"></i></h5> Messages <span style = 'color:white;background-color: #d15b47!important;' class="badge badge-important">{{number_of_new_messages}}</span></a>
+            {% else %}
+              <a class="nav-item nav-link" href="{% url 'chat:messages-page' %}"><h5 style="display:inline;"><i class="fa fa-comments" aria-hidden="true"></i></h5> Messages</a>
+            {% endif %}
+
+            <a class="nav-item nav-link" href="{% url 'accounts:feed' %}"><h5 style="display:inline;"><i class="fa fa-globe" aria-hidden="true"></i></h5> Feed</a>
+            <a class="nav-item nav-link" href="{% url 'accounts:all_users_list' %}"><h5 style="display:inline;"><i class="fa fa-users" aria-hidden="true"></i></h5> People</a>
+
+            <a class="nav-item nav-link" href="{% url 'trip_places:all-places' %}"><h5 style="display:inline;"><i class="fa fa-map-marker" aria-hidden="true"></i></h5> Places</a>
+            <a class="nav-item nav-link" href="{% url 'recommendations:similar-journeys' %}"><h5 style="display:inline;"><i class="fa fa-suitcase" aria-hidden="true"></i></h5> Friends' journeys</a>
+            <a class="nav-item nav-link {% if user not in user.notifications.last.is_seen.all %} text-danger {% endif %}" href="{% url 'feed:notifications' %}"><h5 style="display:inline;"><i class="fa fa-bell" aria-hidden="true"></i></h5> Notifications</a>
           {% else %}
             <a class="nav-item nav-link" href="{% url 'accounts:login' %}">login</a>
             <a class="nav-item nav-link" href="{% url 'accounts:signup' %}">signup</a>
           {% endif %}
         </div>
-        <form class="form-inline ml-auto">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        {% if user.is_authenticated %}
+        <form class="form-inline ml-auto" action="{% url 'accounts:all_users_list' %}" method="get">
+          <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q" placeholder="Search...">
           <button class="btn btn-outline-light my-sm-0" type="submit">Search</button>
         </form>
+        {% endif %}
       </div>
     </nav>
   </header>

@@ -5,15 +5,25 @@
 <div class="container">
 	<h1 class="mt-2">People</h1>
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-3">
+          <form method="get">
+            {{ filter.form.as_p }}
+            <input type="submit" value="Search">
+          </form>
+      </div>
+      <div class="col-md-9">
         <div class="people-nearby">
-   			{% for user in users%}
+            {% if not filter.qs %}
+              <p>No users found.</p>
+            {% endif %}
+   			{% for user in filter.qs %}
           <div class="nearby-user">
             <div class="row">
               <div class="col-md-2 col-sm-2">
                 <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="user" class="profile-photo-lg">
               </div>
               <div class="col-md-7 col-sm-7">
+                <h5>{{user.first_name}} {{user.second_name}}</h5>
                 <h5><a href="{% url 'accounts:detail_profile' user.id %}" class="profile-link">{{ user.email }}</a></h5>
                 <p>{{user.hobbies }}</p>
                 <p class="text-muted">500m away</p>
@@ -25,4 +35,5 @@
     </div>
 	</div>
 </div>
+
 {% endblock %}

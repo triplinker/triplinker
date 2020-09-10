@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+
+<!--- Feed [START] --->
+    <!-- Left block of cards [START]-->
+        <div class="container-fluid gedf-wrapper">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            {% if place.place_pic %}
+                                <img style="margin-left: 19%;" src="{{place.place_pic.url}}" alt="Place's picture" class="avatar-xl rounded-circle" width="140" height="140">
+                            {% else %}
+                                <img style="margin-left: 20%;" src="https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/10657202191586787135-512.png" alt="Place's picture" class="img-fluid rounded-circle mb-2" width="128" height="128">
+                            {% endif %}
+                            <div class="h2" style="margin-top: 5%;  margin-bottom:1%; text-align: center; ">· {{place.name_of_place}} ·</div>
+                            <div class="h6" style="margin-top: 5%;  margin-bottom:1%; text-align: center;"> {{place.get_full_value_type_of_place}}</div>
+                            <div class="h6" style="margin-top: 5%;  margin-bottom:1%; text-align: center;"> {{place.get_full_value_location_of_place}}</div>
+                        </div>
+
+                        <ul class="list-group list-group-flush">
+                            {% if request.user.email == place.who_added_place_on_site.email %}
+                            <li style="text-align: center;" class="list-group-item"><a href="{% url 'trip_places:edit-place' place.id%}" class="btn btn-primary">Edit information</a></li>
+                            {% endif%}
+                            <li class="list-group-item {% if user in place.followers.all %} bg-warning {% endif %}" id="follow-div">
+                                {% if request.user in place.followers.all %}
+                                <div class="h5" style="text-align: center;" id="follow-dynamic"> <h6 style="display: inline;" id="follow-text" name="followed">You're following <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                                </h6></div>
+                                {% else %}
+                                <div class="h5" style="text-align: center;" id="follow-dynamic"> <h6 style="display: inline;" id="follow-text" name="not-followed">Follow <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                                </h6></div>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item">
+                                <div class="h5" style="text-align: center;">Rating <h6 style="display: inline;"><i class="fa fa-star" aria-hidden="true"></i></h6></div>
+                                <div class="h6" style="text-align: center;">{{place.get_rating_of_place}} star{{place.get_rating_of_place|pluralize}}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="h5" style="text-align: center;"><a href="#" style="color: inherit;">
+                                Followers <h6 style="display: inline;"><i class="fa fa-user-circle" aria-hidden="true"></i></h6></a></div>
+                                <div class="h6" style="text-align: center;" id="number_of_followers">{{ place.number_of_followers }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="h5" style="text-align: center;">Description <h6 style="display: inline;"><i class="fa fa-pencil" aria-hidden="true"></i></h6></div>
+                                <div class="h6">{{place.place_description}}</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--- Follow script [START] --->
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        $('#follow-div').css('cursor', 'pointer');
+                    
+                        // Listening the click event on follow.
+                        $("#follow-div").click(function(){
+                          let place_id = '{{ place.id }}';
+                          $.ajax({
+                            type: "POST",
+                            url: "{% url 'trip_places:favourite' place.id %}",
+                            data: {'place_id': place_id, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                            dataType: "json",
+                            success: function(response) {
+                              if (response.status) {
+                                $("#follow-div").addClass("bg-warning");
+                                $("#follow-text").html("<div class='h5' style='text-align: center;'' id='follow-dynamic'> <h6 style='display: inline;' id='follow-text' name='followed'>You're following <i class='fa fa-location-arrow' aria-hidden='true'</i>");
+                              } else {
+                                $("#follow-div").removeClass("bg-warning");
+                                $("#follow-text").html("<div class='h5' style='text-align: center;'' id='follow-dynamic'> <h6 style='display: inline;' id='follow-text' name='followed'>Follow <i class='fa fa-location-arrow' aria-hidden='true'</i>");
+                              }
+                              $("#number_of_followers").html(response.number_of_followers)
+                            },
+                            error: function(rs, e) {
+                              alert(rs.responseText);
+                            }
+                          });
+                        })
+
+                    })
+                </script>
+                <!--- Follow script [END] --->
+
+    <!-- Left block of cards [END]-->
+
+    <!--- Central part of feed [START] --->
+        <!--- Make publication option [START]--->
+            <div class="col-md-6 gedf-main">
+                {% if request.user.email == place.who_added_place_on_site.email %}
+
+                <div class="card gedf-card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="posts-tab" data-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="true">Make
+                                    a publication</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="images-tab" data-toggle="tab" role="tab" aria-controls="images" aria-selected="false" href="#images">Images</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                                <div class="form-group">
+                                    <label class="sr-only" for="message">post</label>
+
+                                    <form method="post"> <!-- Form 1 [START] -->
+                                        {% csrf_token %}
+                                        {{ form.content }}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                <div class="form-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="customFile">
+                                        <label class="custom-file-label" for="customFile">Upload image</label>
+                                    </div>
+                                </div>
+                                <div class="py-4"></div>
+                            </div>
+                        </div>
+                        <div class="btn-toolbar justify-content-between">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">Share</button>
+                            </div>
+                            </form> <!-- Form 1 [END] -->
+                            <div class="btn-group">
+                                <button id="btnGroupDrop1" type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="fa fa-globe"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+                                    <a class="dropdown-item" href="#"><i class="fa fa-globe"></i> Public</a>
+                                    <a class="dropdown-item" href="#"><i class="fa fa-users"></i> Friends</a>
+                                    <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Just me</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+        <!--- Make publication option [END]--->
+
+        <!--- Post [START]--->
+            {% block posts %} {% endblock %}
+        <!--- Post [END]--->
+
+    <!--- Central part of feed [END] --->
+
+    </div>
+
+    <!--- Right block of cards [START] --->
+        <div class="col-md-3">
+            <div class="card gedf-card">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'trip_places:photos-of-place' place.id%}">Photos</a></h5>
+                    <p class="card-text">View the photo's gallery of {{place.name_of_place}}! Also you can upload your own photos which are connected with the place.</p>
+                </div>
+            </div>
+            <div class="card gedf-card">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'trip_places:rating-comments' place.id%}">Feedbacks</a></h5>
+                        <p class="card-text">Check feedbacks out. Here you'll find different comments and opinions about {{place.name_of_place}}. You can add your own opinion and rating for the place! Then your feedback can influence on the rating of this place.</p>
+                        </div>
+                    </div>
+            </div>
+    <!--- Right block of cards [END] --->
+<!--- Feed [END] --->
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+{% block css%}
+<link rel="stylesheet" type="text/css" href="{% static 'recommendations/recommendations_list.css'%}">
+
+{% endblock %}
+
+<div class="container" style="text-align: center;margin-top: 1%;">
+  <h1 class="mt-2" style=" display: inline;">Your recommendations</h1>
+</div>
+
+</div>
+
+{% if recommendations %}
+<div class="container" style="margin-top: 2%;">
+  <div class="row">
+  {% for journey,rating in recommendations.items %}
+  <div class="col-sm-4 py-2">
+    <div class="card text-white bg-primary">
+      <div class="card-body">
+          <h3 class="card-title">{{ journey.journey_from}} - {{ journey.journey_to }}</h3>
+            <p class="card-text">{{ journey.description }}</p>
+            <hr>
+            <p class="card-text">Started: {{ journey.date_of_start }}</p>
+            <p class="card-text">Ended: {{ journey.date_of_end }}</p>
+            <p class="card-text">Place: <a href="{% url 'trip_places:place-page' journey.place.id%}" style="color: inherit;">{{ journey.place.name_of_place }}</a></p>
+            <p class="card-text">Location: {{ journey.place.location }}</p>
+            <p class="card-text">Rating: {{ journey.place.get_rating_of_place }}</p>
+            {% if journey.participant_set.all %}
+            <hr>
+            <p class="card-text" style="text-align: center;">Particapants: </p>
+            {% for participant in journey.participant_set.all %}
+            <p class="card-text">• <a style="color: inherit;" href="{% url 'accounts:detail_profile' participant.participant.id %}">{{participant.participant.first_name}} {{participant.participant.second_name}} </a></p>
+            {% endfor %}
+            {%endif %}
+
+            <a href="{% url 'journeys:journey-page' journey.id %}" class="btn btn-outline-light">Check it out</a>
+            <span style="float: right;">Mathes: {{ rating }} / 3</span>
+            </div>
+            </div>
+        </div>
+  {% endfor %}
+    </div>
+</div>
+{% elif not journeys %}
+<p style="text-align: center; margin-top: 3%;">There are no recommendations from our system yet.</p>
+{% endif %}
+{% endblock %}

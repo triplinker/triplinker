@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from accounts.managers import TLAccountManager
+from django.db.models import Q
+
+import django_filters
+from django_filters.widgets import RangeWidget
 import datetime
 
 
@@ -19,6 +23,11 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
 
     HOBBIES = [
         ("football", "Playing football"),
+    ]
+
+    CAN_GET_MSSGES_FROM_CHOICES = [
+        ("Friends", "Friends only"),
+        ("All", "All users"),
     ]
 
     # Base fields
@@ -53,6 +62,15 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     people_which_follow = models.ManyToManyField("TLAccount", blank=True,
                                                  related_name=rl_name)
 
+    # Messages
+    can_get_message_from = models.CharField("Get messages from",
+                                            max_length=12,
+                                            choices=CAN_GET_MSSGES_FROM_CHOICES,
+                                            blank=False, default='All')
+
+    # Users which are not friends of user but they can send messages to him,
+    strangers = models.ManyToManyField("TLAccount", blank=True,
+                                       related_name='messages_strangers')
     # Special fields
     date_joined = models.DateTimeField(verbose_name="Date joined",
                                        default=timezone.now)
@@ -101,6 +119,36 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
+
+
+class UserFilter(django_filters.FilterSet):
+    q = django_filters.CharFilter(
+        method='full_name_filter',
+        label='Name')
+    age = django_filters.RangeFilter(
+        method='age_filter',
+        widget=RangeWidget,
+        label='Age')
+
+    class Meta:
+        model = TLAccount
+        fields = ['q', 'sex', 'age', 'country']
+
+    def full_name_filter(self, queryset, name, value):
+        return queryset.filter(Q(first_name__icontains=value) |
+                               Q(second_name__icontains=value) |
+                               Q(email__icontains=value))
+
+    def age_filter(self, queryset, name, value):
+        if value.stop is not None:
+            birth_after = (datetime.date.today() - datetime.timedelta(
+                days=float(value.stop)*365.25))
+            queryset = queryset.filter(date_of_birth__gte=birth_after)
+        if value.start is not None:
+            birth_before = (datetime.date.today() - datetime.timedelta(
+                days=float(value.start)*365.25))
+            queryset = queryset.filter(date_of_birth__lte=birth_before)
+        return queryset
 
 
 class FriendRequest(models.Model):
