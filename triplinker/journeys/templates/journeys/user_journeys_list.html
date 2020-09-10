@@ -29,8 +29,10 @@
   <a href="{% url 'journeys:sort-journeys-by-rating-of-place' user_acc.id %}"><button class="btn btn-dark">Sort by rating of place</button></a>
 
 </div>
+{% if journeys %}
 <div class="container" style="margin-top: 2%;">
   <div class="row">
+  
   {% for journey in journeys %}
   <div class="col-sm-4 py-2">
     <div class="card text-white bg-primary">
@@ -51,5 +53,10 @@
         </div>
   {% endfor %}
     </div>
+
 </div>
+
+{% else %}
+  <p style="text-align: center;margin-top: 2%;">There are no journeys here.</p>
+{% endif %}
 {% endblock %}

@@ -6,6 +6,8 @@ from accounts.models.TLAccount_frequest import TLAccount
 from .models import Journey
 from .forms import AddJourneyForm
 
+from .helpers.views.get_allowed_journeys import get_allowed_journeys
+
 
 def add_new_journey(request):
     context = {
@@ -21,8 +23,7 @@ def add_new_journey(request):
             final_form.save()
             journ = Journey.objects.filter(who_added_the_journey=request.user)
             last_journey = journ.order_by('-timestamp').first()
-            last_journey.participants.add(request.user)
-            last_journey.save()
+            last_journey.particapants.add(request.user)
 
             return HttpResponseRedirect(
                            reverse('journeys:journey-list',
@@ -36,10 +37,12 @@ def add_new_journey(request):
 
 
 def user_journey_list(request, user_id):
-    user = get_object_or_404(TLAccount, id=request.user.id)
-    journeys = Journey.objects.filter(participants=user)
+    current_user = request.user
+    another_user = get_object_or_404(TLAccount, id=user_id)
+
+    journeys = get_allowed_journeys(current_user, another_user)
     context = {
-        'user_acc': user,
+        'user_acc': another_user,
         'journeys': journeys
     }
     return render(request, 'journeys/user_journeys_list.html', context)
@@ -48,11 +51,9 @@ def user_journey_list(request, user_id):
 def journey_page(request, journey_id):
     journey = get_object_or_404(Journey, id=journey_id)
     creator_of_journeys_page = journey.who_added_the_journey
-    participants = journey.participants.all()
     context = {
         'journey': journey,
         'creator_of_journeys_page': creator_of_journeys_page,
-        'participants': participants,
     }
     return render(request, 'journeys/journey_page.html', context)
 
@@ -80,19 +81,3 @@ def sort_journeys_by_date(request, user_id):
         'journeys': jrnes,
     }
     return render(request, 'journeys/user_journeys_list.html', context)
-
-
-def join_journey(request, journey_id):
-    journey = Journey.objects.get(pk=journey_id)
-    journey.participants.add(request.user)
-    journey.save()
-    return HttpResponseRedirect(reverse('journeys:journey-page',
-                                kwargs={'journey_id': journey_id}))
-
-
-def leave_journey(request, journey_id):
-    journey = Journey.objects.get(pk=journey_id)
-    journey.participants.remove(request.user)
-    journey.save()
-    return HttpResponseRedirect(reverse('journeys:journey-page',
-                                kwargs={'journey_id': journey_id}))

@@ -5,6 +5,16 @@ from trip_places.models import Place
 
 
 class Journey(models.Model):
+
+    VISIBILITY_CHOICES = [
+        ("All", "All users"),
+        ("FriendsFollowers", "Friends & followers"),
+        ("Friends", "Friends only"),
+        ("Me", "Only me"),
+    ]
+    visibility = models.CharField("The level of visibility", max_length=16,
+                                  choices=VISIBILITY_CHOICES, blank=False, 
+                                  null=True)
     journey_from = models.CharField("The point where the journey was started",
                                     max_length=35, blank=True)
     date_of_start = models.DateField(null=True)
@@ -31,6 +41,9 @@ class Journey(models.Model):
     def __str__(self):
         format_s = self.journey_from, self.journey_to, self.place
         return 'From: {}, to: {}, place: {}'.format(*format_s)
+
+    def get_visibility(self):
+    	return self.visibility
 
     class Meta:
         ordering = ('-timestamp',)

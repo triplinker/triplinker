@@ -36,7 +36,7 @@ def get_rating(user, journeys_of_user_raw) -> dict:
             if journey_usr.place == journey_frnd.place:
                 rating_var += 1
 
-        rating_of_recommendation[journey_frnd] = rating_var
+            rating_of_recommendation[journey_frnd] = rating_var
 
     # Sorting by rating of recommendation.
     rec_rating = sorted(rating_of_recommendation,
