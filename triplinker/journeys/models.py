@@ -16,14 +16,16 @@ class Journey(models.Model):
                                   choices=VISIBILITY_CHOICES, blank=False, 
                                   null=True)
     journey_from = models.CharField("The point where the journey was started",
-                                    max_length=35, blank=True)
+                                    max_length=35, blank=True, null=True)
     place_from = models.ForeignKey(Place, on_delete=models.CASCADE,
-                                   related_name="start_places", null=True)
+                                   related_name="start_places", blank=True,
+                                   null=True, default=None)
     date_of_start = models.DateField(null=True)
     journey_to = models.CharField("The point where the journey was finished",
                                   max_length=35, blank=True,  null=True)
     place_to = models.ForeignKey(Place, on_delete=models.CASCADE,
-                                 related_name="end_places")
+                                 related_name="end_places", blank=True,  
+                                 null=True, default=None)
     date_of_end = models.DateField(null=True)
 
     vb_name_p = 'Particapants of the journey'
