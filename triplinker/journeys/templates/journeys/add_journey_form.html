@@ -2,11 +2,7 @@
 {% load static %}
 {% block main %}
 
-<<<<<<< HEAD
-  <div class="container" style="margin-bottom: 3%;"> 
-=======
   <div class="container">
->>>>>>> 162b3a94e838f9069cc6d3978fc2f59e55dc5123
     <h1 class="mt-2">Create new journey</h1>
     <hr class="mt-0 mb-4">
       <form class="form-horizontal" method="post" enctype="multipart/form-data">
@@ -80,6 +76,15 @@
 
           <div class='form-group row'>
             <div class="col-form-label col-sm-3 control-label">
+              {{ form.visibility.label }}
+            </div>
+            <div class="col-sm-5">
+              {{ form.visibility }}
+            </div>
+          </div>
+
+          <div class='form-group row'>
+            <div class="col-form-label col-sm-3 control-label">
               {{ form.description.label }}
             </div>
             <div class="col-sm-5">
@@ -89,6 +94,8 @@
 
           <hr>
         </div>
+
+
 
 
         <div id="activities">
@@ -165,22 +172,15 @@
                   $.ajax({
                     type: "POST",
                     url: "{% url 'journeys:journey-form-api' %}",
-                    data: {'journey_from': $('#id_journey_from').val(), 'place_from': $('#id_place_from').find(':selected').val(), 'date_of_start': $('#main').find('#id_date_of_start').val(), 'journey_to': $('#id_journey_to').val(),
-                    'place_to': $('#id_place_to').find(':selected').val(), 'date_of_end': $('#main').find('#id_date_of_end').val(), 'description': $('#id_description').val(), 'csrfmiddlewaretoken': '{{ csrf_token }}' },
+                    data: {'journey_from': $('#id_journey_from').val(), 
+
+                    'place_from': $('#id_place_from').find(':selected').val(), 'date_of_start': $('#main').find('#id_date_of_start').val(), 'journey_to': $('#id_journey_to').val(),
+                    'visibility': $('#id_visibility').find(':selected').val(),
+                    'place_to': $('#id_place_to').find(':selected').val(), 
+                    'date_of_end': $('#main').find('#id_date_of_end').val(), 
+                    'description': $('#id_description').val(), 'csrfmiddlewaretoken': '{{ csrf_token }}' },
                     dataType: 'json',
 
-<<<<<<< HEAD
-        <div class='form-group row'>
-          <div class="col-form-label col-sm-3 control-label">
-            {{ form.visibility.label }}
-          </div>
-          <div class="col-sm-5">
-          {{ form.visibility }}
-          </div>
-        </div>
-
-      <input type="submit" class="btn btn-primary" value="Add new place!" style="margin-left: 53.5%;margin-top: 1%;">
-=======
                     success: function(data){
                       j_id = data['journey_id'];
                       if (data['status']) {
@@ -194,7 +194,7 @@
                             success: function(data){
                             },
                             error: function(rs, e) {
-                              alert(rs.responseText);
+                              alert('Activity');
                             }
                           });
                         }
@@ -209,7 +209,6 @@
           </script>
         </div>
       <button id="submit-form" class="btn btn-primary float-right text-light">Add new place!</button>
->>>>>>> 162b3a94e838f9069cc6d3978fc2f59e55dc5123
     </form>
   </div>
 

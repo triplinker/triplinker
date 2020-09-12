@@ -42,7 +42,7 @@
             <hr>
             <p class="card-text">Started: {{ journey.date_of_start }}</p>
             <p class="card-text">Ended: {{ journey.date_of_end }}</p>
-            <p class="card-text">Place: <a href="{% url 'trip_places:place-page' journey.place.id%}" style="color: inherit;">{{ journey.place.name_of_place }}</a></p>
+            <p class="card-text">Place: <a href="{% url 'trip_places:place-page' journey.place_from.id%}" style="color: inherit;">{{ journey.place.name_of_place }}</a></p>
             <p class="card-text">Location: {{ journey.place.location }}</p>
             <p class="card-text">Rating: {{ journey.place.get_rating_of_place }}</p>
             

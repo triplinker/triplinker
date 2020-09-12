@@ -11,7 +11,7 @@ def get_allowed_journeys(current_user, another_user) -> list:
                 if visibility_of_journey == 'FriendsFollowers':
                     if (current_user in another_user.friends.all() or
                        current_user in another_user.followers.all()):
-                       permitted_journeys.append(journey)
+                        permitted_journeys.append(journey)
 
                 elif visibility_of_journey == 'Friends':
                     if current_user in another_user.friends.all():
@@ -24,4 +24,3 @@ def get_allowed_journeys(current_user, another_user) -> list:
         return permitted_journeys
     else:
         return all_journeys_of_user
-

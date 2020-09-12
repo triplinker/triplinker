@@ -6,11 +6,15 @@ from accounts.models.TLAccount_frequest import TLAccount
 from .models import Journey
 from .forms import AddJourneyForm, AddActivityForm
 
+from .helpers.views.get_allowed_journeys import get_allowed_journeys
+
 
 def activity_form_api(request):
-    print(request.POST)
+    print('activity_form_api')
     form = AddActivityForm(request.POST)
+    print(request.POST)
     if form.is_valid():
+        print('Valid')
         activity = form.save(commit=False)
         activity.journey = Journey.objects.get(id=request.POST['journey_id'])
         activity.save()
@@ -23,7 +27,10 @@ def activity_form_api(request):
 
 def journey_form_api(request):
     form = AddJourneyForm(request.POST)
+    print('prevalidation')
+    print(request.POST)
     if form.is_valid():
+        print('valid')
         journey = form.save(commit=False)
         journey.who_added_the_journey = request.user
         journey.save()
@@ -35,8 +42,6 @@ def journey_form_api(request):
         }
         return JsonResponse(context, safe=False)
     return JsonResponse({'status': False}, safe=False)
-
-from .helpers.views.get_allowed_journeys import get_allowed_journeys
 
 
 def add_new_journey(request):
@@ -50,7 +55,7 @@ def add_new_journey(request):
 
     if request.method == 'POST':
         form = AddJourneyForm(request.POST)
-
+        print('Hello')
         if form.is_valid():
             final_form = form.save(commit=False)
             final_form.who_added_the_journey = request.user
