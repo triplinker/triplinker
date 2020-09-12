@@ -1,10 +1,15 @@
-from django.views import generic
+from django.views import generic  # noqa: F401
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
-from accounts.models.TLAccount_frequest import TLAccount
+from accounts.models.TLAccount_frequest import TLAccount  # noqa: F401
 
 
-class IndexView(generic.ListView):
-    template_name = 'accounts/index.html'
+def index_view(request):
+    return HttpResponseRedirect(reverse('accounts:feed'))
 
-    def get_queryset(self):
-        return TLAccount.objects.all()
+# class IndexView(generic.ListView):
+#     template_name = 'accounts/index.html'
+
+#     def get_queryset(self):
+#         return TLAccount.objects.all()
