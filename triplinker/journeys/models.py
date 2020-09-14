@@ -35,7 +35,7 @@ class Journey(models.Model):
                                           verbose_name=vb_name_p, blank=True)
 
     description = models.TextField("Describe your journey", max_length=500,
-                                   blank=True)
+                                   blank=True, null=True)
     vb_name_who = "The person who has created the journey's page"
 
     acc = TLAccount
@@ -50,6 +50,9 @@ class Journey(models.Model):
 
     def get_visibility(self):
         return self.visibility
+
+    def check_instance(self):
+        return 'Journey'
 
     class Meta:
         ordering = ('-timestamp',)
@@ -72,13 +75,13 @@ class Participant(models.Model):
 
 class Activity(models.Model):
     journey = models.ForeignKey(Journey, related_name="Activities",
-                                on_delete=models.CASCADE)
+                                on_delete=models.CASCADE, blank=True, null=True)
     description = models.CharField("Description of activity",
-                                   max_length=35, blank=True)
+                                   max_length=35, blank=True, null=True)
     place = models.ForeignKey(Place, on_delete=models.CASCADE,
-                              related_name="activities")
-    date_of_start = models.DateField(null=True)
-    date_of_end = models.DateField(null=True)
+                              related_name="activities", blank=True, null=True)
+    date_of_start = models.DateField(null=True, blank=True,)
+    date_of_end = models.DateField(null=True, blank=True,)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):

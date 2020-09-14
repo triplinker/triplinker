@@ -4,17 +4,27 @@
 {% block main %}
 <div class="chat_window">
     <div class="top_menu">
-        <div class="buttons">
-            <div class="button close"></div>
-            <div class="button minimize"></div>
-            <div class="button maximize"></div>
-        </div>
         <div class="title">Chat with <a style='color:#bcbdc0;'href="{% url 'accounts:detail_profile' message_to_user.id %}">{{message_to_user.email}}</a></div>
     </div>
     <ul class="messages"></ul>
     <div class="bottom_wrapper clearfix">
+            
+            <input id="upload" type="file" style="display: none;padding:0%; margin: 0%;">
+            <h6 id="upload_link"><i class="fa fa-picture-o" aria-hidden="true"></i></h6>
+            
+            <script type="text/javascript">
+                $(function(){
+                    $("#upload_link").on('click', function(e){
+                        e.preventDefault();
+                    $("#upload:hidden").trigger('click');
+                    });
+                });
+
+            </script>
+        
         <div class="message_input_wrapper">
             <input class="message_input" placeholder="Type your message here..." />
+
         </div>
         <div class="send_message">
             <div class="icon"></div>

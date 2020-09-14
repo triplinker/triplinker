@@ -6,5 +6,7 @@ from . import views
 app_name = 'recommendations'
 
 urlpatterns = [
-    path('', views.similar_jouneys, name='similar-journeys')
+    path('', views.all_recommendations, name='all-recommendations'),
+    path('journeys-only/', views.jouneys_only, name='journeys-only'),
+    path('places-only', views.places_only, name='places-only'),
 ]

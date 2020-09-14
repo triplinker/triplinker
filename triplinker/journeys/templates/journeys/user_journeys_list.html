@@ -42,10 +42,17 @@
             <hr>
             <p class="card-text">Started: {{ journey.date_of_start }}</p>
             <p class="card-text">Ended: {{ journey.date_of_end }}</p>
-            <p class="card-text">Place: <a href="{% url 'trip_places:place-page' journey.place.id%}" style="color: inherit;">{{ journey.place.name_of_place }}</a></p>
-            <p class="card-text">Location: {{ journey.place.location }}</p>
-            <p class="card-text">Rating: {{ journey.place.get_rating_of_place }}</p>
+            <p class="card-text">From : <a href="{% url 'trip_places:place-page' journey.place_from.id%}" style="color: inherit;">{{ journey.place_from.name_of_place }} ({{ journey.place_from.get_rating_of_place }} ★)</a></p>
+            <p class="card-text">To : <a href="{% url 'trip_places:place-page' journey.place_from.id%}" style="color: inherit;">{{ journey.place_to.name_of_place }} ({{ journey.place_to.get_rating_of_place }} ★)</a></p>
+            <p class="card-text">Location: {{ journey.place_to.location }} - {{ journey.place_to.location}}</p>
             
+            {% if journey.participant_set.all %}
+            <hr>
+            <p class="card-text" style="text-align: center;">Particapants: </p>
+            {% for participant in journey.participant_set.all %}
+            <p class="card-text">• <a style="color: inherit;" href="{% url 'accounts:detail_profile' participant.participant.id %}">{{participant.participant.first_name}} {{participant.participant.second_name}} </a></p>
+            {% endfor %}
+            {% endif %}
 
             <a href="{% url 'journeys:journey-page' journey.id %}" class="btn btn-outline-light">Check it out</a>
             </div>

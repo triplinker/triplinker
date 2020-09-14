@@ -18,20 +18,10 @@ class AddJourneyForm(forms.ModelForm):
                                      'class': 'form-control',
                                      'rows': '5'}))
 
-    CHOICES = [
-        ("All", "All users"),
-        ("FriendsFollowers", "Friends & followers"),
-        ("Friends", "Friends only"),
-        ("Me", "Only me"),
-    ]
-    visibility = forms.ChoiceField(widget=forms.Select(attrs={
-                               'class': 'form-control',
-                               }), choices=CHOICES, initial='All')
-
     class Meta:
         model = Journey
         fields = ['journey_from', 'place_from', 'date_of_start', 'journey_to',
-                  'place_to', 'date_of_end', 'description']
+                  'place_to', 'date_of_end', 'description', 'visibility']
 
 
 class AddActivityForm(forms.ModelForm):

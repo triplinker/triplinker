@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+{% block css%}
+<link rel="stylesheet" type="text/css" href="{% static 'recommendations/recommendations_list.css'%}">
+
+{% endblock %}
+
+<div class="container" style="text-align: center;margin-top: 1%;">
+  <h1 class="mt-2" style=" display: inline;">Recommendations </h1><h5 style="display: inline; margin-bottom: 3%"><span class="badge badge-info">Places</span></h5>
+</div>
+
+</div>
+<div class="container" style="text-align: center; margin-top: 1%;">
+  <a href="{% url 'recommendations:all-recommendations' %}"><button class="btn btn-dark">All recomenndations</button></a>
+  <a href="{% url 'recommendations:places-only' %}"><button class="btn btn-dark">Places</button></a>
+  <a href="{% url 'recommendations:journeys-only' %}"><button class="btn btn-dark">Journeys</button></a>
+
+</div>
+  {% if recommendations%}
+  <div class="container" style="margin-top: 2%;margin-bottom: 3%;">
+  <div class="row">
+  {% for place, rating in recommendations.items %}
+  {% if place.check_instance == 'Place'%}
+  <div class="col-sm-4 py-2">
+    <div class="card text-white bg-light">
+      <div class="card-body">
+        <div style="text-align: center;"> <!-- img -->
+          {% if place.place_pic %}
+          
+            <img src="{{place.place_pic.url}}" alt="Place's picture" class="avatar-xl rounded-circle" height="140" width="140" style="margin-bottom: 5%;">
+          {% else %}
+          <img src="https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/10657202191586787135-512.png" alt="Place's picture" class="avatar-xl rounded-circle" height="140" width="140" style="margin-bottom: 5%;">
+          {%endif %}
+          </div> <!-- img -->
+          <div name='info' style="color:black;">
+            <h3 class="card-title" style="text-align: center;"><a href="" style="color: inherit;">{{ place.name_of_place}}</a></h3>
+            <p class="card-text">{{ place.place_description }}</p>
+            <hr style="margin-top: -2%;">
+            <p class="card-text">Location: {{ place.location }}</p>
+            <p class="card-text">Followers: {{ place.followers.count }}</p>
+            <p class="card-text">Type: <span class="badge badge-info">Place</span></p>
+            <p class="card-text">Rating: {{ place.get_rating_of_place }}</p>
+          </div>
+        </div>
+      </div>
+    
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+  {% else %}
+    <p style="text-align: center; margin-top: 3%;">There are no places to recommend. Check out triplinker's <a href="{% url 'trip_places:all-places'%}">list of places!</a></p>
+  {% endif %}
+{% endblock %}

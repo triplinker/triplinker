@@ -7,7 +7,7 @@ app_name = 'accounts'
 
 urlpatterns = [
     # Home page.
-    path('', views.IndexView.as_view(), name='index'),
+    path('', views.index_view, name='index'),
 
     # All users list.
     path('users/', views.all_users_list, name='all_users_list'),
