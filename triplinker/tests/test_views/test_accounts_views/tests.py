@@ -45,14 +45,6 @@ def test_feed_view(client):
 @pytest.mark.django_db
 def test_feed_view(client):
     response = new_user()['client']
-    url = reverse('accounts:feed')
-    response = response.get(url)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_feed_view(client):
-    response = new_user()['client']
     url = reverse('accounts:all_users_list')
     response = response.get(url)
     assert response.status_code == 200
@@ -64,21 +56,3 @@ def test_logout_view(client):
     url = reverse('accounts:logout')
     response = response.get(url)
     assert response.status_code == 200
-
-# @pytest.mark.django_db
-# def test_detail_profile_view(client):
-#     response = new_user()['client']
-#     another_user = response['another_user']
-#     user_id = another_user.id
-#     print(user_id)
-#     url = reverse('accounts:detail_profile', kwargs={'user_id':0})
-#     response = response.get(url)
-#     assert response.status_code == 200
-
-
-
-
-
-
-
-

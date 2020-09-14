@@ -12,7 +12,9 @@ class Place(models.Model):
     ]
 
     LOCATION = [
-        ("BY", "Belarus")
+        ("BY", "Belarus"),
+        ("US", "United States of America"),
+        ("CH", "China")
     ]
 
     name_of_place = models.CharField("Name of place", max_length=50,
@@ -38,8 +40,16 @@ class Place(models.Model):
                                        related_name='favourite_places',
                                        blank=True, default=None)
 
+    class Meta:
+        app_label = 'trip_places'
+        verbose_name = 'Place'
+        verbose_name_plural = 'Places'
+
     def __str__(self):
         return self.name_of_place
+
+    def check_instance(self):
+        return 'Place'
 
     def get_full_value_type_of_place(self):
         """Returns full value in tuples of CHOICES"""
@@ -52,11 +62,6 @@ class Place(models.Model):
     def number_of_followers(self):
         """Returns number of followers"""
         return self.followers.all().count()
-
-    class Meta:
-        app_label = 'trip_places'
-        verbose_name = 'Place'
-        verbose_name_plural = 'Places'
 
     def get_rating_of_place(self):
         all_feedbacks = self.place_feedback.all()

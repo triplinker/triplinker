@@ -11,13 +11,3 @@ def test_add_new_journey_view(client):
     url = reverse('journeys:new-journey')
     response = response.get(url)
     assert response.status_code == 200
-
-
-
-
-
-
-
-
-
-

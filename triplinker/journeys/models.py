@@ -51,6 +51,9 @@ class Journey(models.Model):
     def get_visibility(self):
         return self.visibility
 
+    def check_instance(self):
+        return 'Journey'
+
     class Meta:
         ordering = ('-timestamp',)
         app_label = 'journeys'

@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
 from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey
+from .models import Journey, Participant
 from .forms import AddJourneyForm, AddActivityForm
 
 from .helpers.views.get_allowed_journeys import get_allowed_journeys
@@ -51,14 +51,17 @@ def add_new_journey(request):
 
     if request.method == 'POST':
         form = AddJourneyForm(request.POST)
-        print('Hello')
         if form.is_valid():
             final_form = form.save(commit=False)
             final_form.who_added_the_journey = request.user
             final_form.save()
             journ = Journey.objects.filter(who_added_the_journey=request.user)
             last_journey = journ.order_by('-timestamp').first()
-            last_journey.particapants.add(request.user)
+            partcpant = request.user
+            dflt_participant = Participant.objects.create(
+                                                          journey=last_journey,
+                                                          participant=partcpant)
+            dflt_participant.save()
 
             return HttpResponseRedirect(
                            reverse('journeys:journey-list',

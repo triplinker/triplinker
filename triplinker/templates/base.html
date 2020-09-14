@@ -68,7 +68,7 @@
             <a class="nav-item nav-link" href="{% url 'accounts:all_users_list' %}"><h5 style="display:inline;"><i class="fa fa-users" aria-hidden="true"></i></h5> People</a>
 
             <a class="nav-item nav-link" href="{% url 'trip_places:all-places' %}"><h5 style="display:inline;"><i class="fa fa-map-marker" aria-hidden="true"></i></h5> Places</a>
-            <a class="nav-item nav-link" href="{% url 'recommendations:similar-journeys' %}"><h5 style="display:inline;"><i class="fa fa-suitcase" aria-hidden="true"></i></h5> Friends' journeys</a>
+            <a class="nav-item nav-link" href="{% url 'recommendations:all-recommendations' %}"><h5 style="display:inline;"><i class="fa fa-suitcase" aria-hidden="true"></i></h5> Recommendations</a>
             <a class="nav-item nav-link {% if user not in user.notifications.last.is_seen.all %} text-danger {% endif %}" href="{% url 'feed:notifications' %}"><h5 style="display:inline;"><i class="fa fa-bell" aria-hidden="true"></i></h5> Notifications</a>
           {% else %}
             <a class="nav-item nav-link" href="{% url 'accounts:login' %}">login</a>

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+{% block css%}
+<link rel="stylesheet" type="text/css" href="{% static 'recommendations/recommendations_list.css'%}">
+
+{% endblock %}
+
+<div class="container" style="text-align: center;margin-top: 1%;">
+  <h1 class="mt-2" style=" display: inline;">Recommendations </h1><h5 style="display: inline; margin-bottom: 3%"><span class="badge badge-warning">Journeys</span></h5>
+</div>
+
+</div>
+<div class="container" style="text-align: center; margin-top: 1%;">
+  <a href="{% url 'recommendations:all-recommendations' %}"><button class="btn btn-dark">All recomenndations</button></a>
+  <a href="{% url 'recommendations:places-only' %}"><button class="btn btn-dark">Places</button></a>
+  <a href="{% url 'recommendations:journeys-only' %}"><button class="btn btn-dark">Journeys</button></a>
+
+</div>
+{% if recommendations %}
+<div class="container" style="margin-top: 2%;margin-bottom:3%;">
+  <div class="row">
+  {% for journey,rating in recommendations.items %}
+  {% if journey.check_instance == 'Journey'%}
+  <div class="col-sm-4 py-2">
+    <div class="card text-white bg-light">
+      <div class="card-body">
+        <div name='info' style="color:black;">
+          <h3 class="card-title">{{ journey.journey_from}} - {{ journey.journey_to }}</h3>
+            <p class="card-text">{{ journey.description }}</p>
+            <hr>
+            <p class="card-text">Started: {{ journey.date_of_start }}</p>
+            <p class="card-text">Ended: {{ journey.date_of_end }}</p>
+            <p class="card-text">From: <a href="{% url 'trip_places:place-page' journey.place_from.id%}" style="color: inherit;">{{ journey.place_from.name_of_place }} ({{ journey.place_from.get_rating_of_place }} ★)</a></p>
+            <p class="card-text">To: <a href="{% url 'trip_places:place-page' journey.place_to.id%}" style="color: inherit;">{{ journey.place_to.name_of_place }} ({{ journey.place_to.get_rating_of_place }} ★)</a> </p>
+            <p class="card-text">Type: <span class="badge badge-warning">Journey</span></p>
+            <p class="card-text">Location: {{ journey.place_to.location }} - {{ journey.place_to.location}}</p>
+
+            {% if journey.participant_set.all %}
+            {% if journey.participant_set.all %}
+            <hr>
+            <p class="card-text" style="text-align: center;">Particapants: </p>
+            {% for participant in journey.participant_set.all %}
+            <p class="card-text">• <a style="color: inherit;" href="{% url 'accounts:detail_profile' participant.participant.id %}">{{participant.participant.first_name}} {{participant.participant.second_name}} </a></p>
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+
+            <a href="{% url 'journeys:journey-page' journey.id %}" class="btn btn-success">Check it out</a>
+            <span style="float: right;">Mathes: {{ rating }} / 3</span>
+            </div>
+            </div>
+          </div>
+        </div>
+  {% endif %}
+  {% endfor %}
+    </div>
+</div>
+{% else %}
+  <p style="text-align: center; margin-top: 3%;">There are nothing to recommend according to your history of journeys.</p>
+{% endif %}
+{% endblock %}
