@@ -3,6 +3,7 @@ import pytest
 from django.urls import reverse
 
 from tests.helpers.create_user import new_user
+from django.test import TestCase
 
 
 @pytest.mark.django_db
