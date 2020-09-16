@@ -68,18 +68,18 @@ class Participant(models.Model):
 
     def __str__(self):
         jrn_s = self.journey.journey_from
-        jrn_f = self.journey.journey_from
+        jrn_f = self.journey.journey_to
         partic = self.participant.email
         return "Journey: {} - {}, participant: {}".format(jrn_s, jrn_f, partic)
 
 
 class Activity(models.Model):
-    journey = models.ForeignKey(Journey, related_name="Activities",
+    journey = models.ForeignKey(Journey, related_name="activities",
                                 on_delete=models.CASCADE, blank=True, null=True)
     description = models.CharField("Description of activity",
                                    max_length=35, blank=True, null=True)
     place = models.ForeignKey(Place, on_delete=models.CASCADE,
-                              related_name="activities", blank=True, null=True)
+                              related_name="places", blank=True, null=True)
     date_of_start = models.DateField(null=True, blank=True,)
     date_of_end = models.DateField(null=True, blank=True,)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)

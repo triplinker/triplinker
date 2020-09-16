@@ -32,16 +32,16 @@
             <h4 class="header-title">Main place of the journey</h4>
 
           <div style="margin-top: 4%;">
-          {% if journey.place.place_pic %}
-            <img src="{{ journey.place.place_pic.url }}" alt="user" class="profile-photo-lg">
+          {% if journey.place_to.place_pic %}
+            <img src="{{ journey.place_to.place_pic.url }}" alt="user" class="profile-photo-lg">
           {% else %}
             <img src="https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/10657202191586787135-512.png" alt="user" class="profile-photo-lg">
           {% endif %}
         </div>
         <div style="margin-top: 2%; margin-bottom: -4%!important;">
-          <h5><a href="{% url 'trip_places:place-page' journey.place.id %}" class="profile-link">{{ journey.place.name_of_place }}</a></h5>
-          <p>{{ journey.place.location }}</p>
-          <p class="text-muted" style="margin-top: -2%;">{{journey.place.get_rating_of_place}} star{{journey.place.get_rating_of_place|pluralize}}</p>
+          <h5><a href="{% url 'trip_places:place-page' journey.place_to.id %}" class="profile-link">{{ journey.place_to.name_of_place }}</a></h5>
+          <p>{{ journey.place_to.location }}</p>
+          <p class="text-muted" style="margin-top: -2%;">{{journey.place_to.get_rating_of_place}} star{{journey.place_to.get_rating_of_place|pluralize}}</p>
         </div>
         </div> <!-- end card-box-->
 
@@ -49,10 +49,10 @@
             <h4 class="header-title">Participants</h4>
             <p class="mb-3">View the list of people who participated in this journey!</p>
 
-            {% for participant in participants %}
-                <p><a href="{% url 'accounts:detail_profile' user.id %}" class="profile-link">{{ user.email }}</a></p>
+            {% for participant in journey.participants.all %}
+                <p><a href="{% url 'accounts:detail_profile' participant.id %}" class="profile-link">{{ participant.email }}</a></p>
             {% endfor %}
-            {% if request.user in participants %}
+            {% if user in journey.participants.all %}
                 <a href="{% url 'journeys:leave' journey.id %}" class="btn btn-danger btn-xs waves-effect mb-2 waves-light">Leave</a>
             {% else %}
                 <a href="{% url 'journeys:join' journey.id %}" class="btn btn-success btn-xs waves-effect mb-2 waves-light">Join</a>
@@ -79,7 +79,7 @@
             </ul>
             {% endif %}
             <div class="tab-content">
-                
+
                 <div class="tab-pane show active" id="about-me">
 
                     <img style="text-align: center;" class="img-thumbnail" src="https://avatars.mds.yandex.net/get-pdb/2022479/325b70e6-af92-4e6e-a172-7d479a85dcdb/s1200?webp=false">
@@ -90,21 +90,26 @@
                     <ul class="list-unstyled timeline-sm">
                         <li class="timeline-sm-item">
                             <span class="timeline-sm-date">{{journey.date_of_start|date:"SHORT_DATE_FORMAT"}}</span>
-                            <h5 class="mt-0 mb-1">{{journey.journey_from}}</h5>
-
+                            <h5 class="mt-0 mb-1">{{journey.journey_from}}<a href="{% url 'trip_places:place-page' journey.place_from.id %}"> ({{ journey.place_from.name_of_place }})</a></h5>
                         </li>
+                        {% for activity in journey.activities.all.reverse %}
+                          <li class="timeline-sm-item">
+                              <span class="timeline-sm-date">{{activity.date_of_start|date:"SHORT_DATE_FORMAT"}}<br>{{activity.date_of_end|date:"SHORT_DATE_FORMAT"}}</span>
+                              <h5 class="mt-0 mb-1">{{activity.description}}<a href="{% url 'trip_places:place-page' activity.place.id %}"> ({{ activity.place.name_of_place }})</a></h5>
+                          </li>
+                        {% endfor %}
                         <li class="timeline-sm-item">
                             <span class="timeline-sm-date">{{journey.date_of_end|date:"SHORT_DATE_FORMAT"}}</span>
-                            <h5 class="mt-0 mb-1">{{journey.journey_to}}</h5>
+                            <h5 class="mt-0 mb-1">{{journey.journey_to}}<a href="{% url 'trip_places:place-page' journey.place_to.id %}"> ({{ journey.place_to.name_of_place }})</a></h5>
                         </li>
-                    </ul>                   
+                    </ul>
                 </div>
                 <!-- end timeline content-->
 
                 <div class="tab-pane" id="settings">
                     <form>
                         <h5 class="mb-3 text-uppercase bg-light p-2"><i class="mdi mdi-account-circle mr-1"></i> Personal Info</h5>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -237,7 +242,7 @@
                                 </div>
                             </div> <!-- end col -->
                         </div> <!-- end row -->
-                        
+
                         <div class="text-right">
                             <button type="submit" class="btn btn-success waves-effect waves-light mt-2"><i class="mdi mdi-content-save"></i> Save</button>
                         </div>
