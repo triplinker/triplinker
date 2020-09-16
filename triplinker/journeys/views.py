@@ -119,3 +119,19 @@ def sort_journeys_by_date(request, user_id):
         'journeys': jrnes,
     }
     return render(request, 'journeys/user_journeys_list.html', context)
+
+
+def join_journey(request, journey_id):
+    journey = Journey.objects.get(pk=journey_id)
+    journey.participants.add(request.user)
+    journey.save()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                kwargs={'journey_id': journey_id}))
+
+
+def leave_journey(request, journey_id):
+    journey = Journey.objects.get(pk=journey_id)
+    journey.participants.remove(request.user)
+    journey.save()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                kwargs={'journey_id': journey_id}))
