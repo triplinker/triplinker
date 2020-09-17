@@ -15,6 +15,10 @@ urlpatterns = [
     path('<int:user_id>/', views.user_journey_list,
          name='journey-list'),
     path('new-journey/', views.add_new_journey, name="new-journey"),
+    path('edit-journey/<int:journey_id>/', views.edit_journey,
+         name="edit-journey"),
+    path('edit-activity/<int:activity_id>/', views.edit_activity,
+         name="edit-activity"),
 
     # The sorting of journeys
     path('sort-by-date/<int:user_id>', views.sort_journeys_by_date,

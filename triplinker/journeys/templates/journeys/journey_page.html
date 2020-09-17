@@ -90,17 +90,23 @@
                     <ul class="list-unstyled timeline-sm">
                         <li class="timeline-sm-item">
                             <span class="timeline-sm-date">{{journey.date_of_start|date:"SHORT_DATE_FORMAT"}}</span>
-                            <h5 class="mt-0 mb-1">{{journey.journey_from}}<a href="{% url 'trip_places:place-page' journey.place_from.id %}"> ({{ journey.place_from.name_of_place }})</a></h5>
+                            <h5 class="mt-0 mb-1">{{journey.journey_from}}<a href="{% url 'trip_places:place-page' journey.place_from.id %}"> ({{ journey.place_from.name_of_place }})</a>
+                              {% if user == journey.who_added_the_journey %}<a class="float-right" href="{% url 'journeys:edit-journey' journey.id %}">Edit</a>{% endif %}
+                            </h5>
                         </li>
                         {% for activity in journey.activities.all.reverse %}
                           <li class="timeline-sm-item">
                               <span class="timeline-sm-date">{{activity.date_of_start|date:"SHORT_DATE_FORMAT"}}<br>{{activity.date_of_end|date:"SHORT_DATE_FORMAT"}}</span>
-                              <h5 class="mt-0 mb-1">{{activity.description}}<a href="{% url 'trip_places:place-page' activity.place.id %}"> ({{ activity.place.name_of_place }})</a></h5>
+                              <h5 class="mt-0 mb-1">{{activity.description}}<a href="{% url 'trip_places:place-page' activity.place.id %}"> ({{ activity.place.name_of_place }})</a>
+                                {% if user == journey.who_added_the_journey %}<a class="float-right" href="{% url 'journeys:edit-activity' activity.id %}">Edit</a>{% endif %}
+                              </h5>
                           </li>
                         {% endfor %}
                         <li class="timeline-sm-item">
                             <span class="timeline-sm-date">{{journey.date_of_end|date:"SHORT_DATE_FORMAT"}}</span>
-                            <h5 class="mt-0 mb-1">{{journey.journey_to}}<a href="{% url 'trip_places:place-page' journey.place_to.id %}"> ({{ journey.place_to.name_of_place }})</a></h5>
+                            <h5 class="mt-0 mb-1">{{journey.journey_to}}<a href="{% url 'trip_places:place-page' journey.place_to.id %}"> ({{ journey.place_to.name_of_place }})</a>
+                              {% if user == journey.who_added_the_journey %}<a class="float-right" href="{% url 'journeys:edit-journey' journey.id %}">Edit</a>{% endif %}
+                            </h5>
                         </li>
                     </ul>
                 </div>

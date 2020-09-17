@@ -3,8 +3,9 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
 from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey, Participant
+from .models import Journey, Activity
 from .forms import AddJourneyForm, AddActivityForm
+from django.core.exceptions import PermissionDenied
 
 from .helpers.views.get_allowed_journeys import get_allowed_journeys
 
@@ -40,6 +41,43 @@ def journey_form_api(request):
     return JsonResponse({'status': False}, safe=False)
 
 
+def edit_journey(request, journey_id):
+
+    journey = Journey.objects.get(pk=journey_id)
+
+    if journey.who_added_the_journey != request.user:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        form = AddJourneyForm(request.POST, instance=journey)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('journeys:journey-page',
+                                        kwargs={'journey_id': journey.id}))
+
+    form = AddJourneyForm(instance=journey)
+    return render(request, 'journeys/edit_journey.html', {'form': form})
+
+
+def edit_activity(request, activity_id):
+
+    activity = Activity.objects.get(pk=activity_id)
+
+    if activity.journey.who_added_the_journey != request.user:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        form = AddActivityForm(request.POST, instance=activity)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('journeys:journey-page',
+                                        kwargs={'journey_id':
+                                                activity.journey.id}))
+
+    form = AddActivityForm(instance=activity)
+    return render(request, 'journeys/edit_activity.html', {'form': form})
+
+
 def add_new_journey(request):
     if request.method == 'POST':
         return HttpResponseRedirect(reverse('journeys:journey-list',
@@ -48,30 +86,7 @@ def add_new_journey(request):
         'form': AddJourneyForm(),
         'activity_form': AddActivityForm(),
     }
-
-    if request.method == 'POST':
-        form = AddJourneyForm(request.POST)
-        if form.is_valid():
-            final_form = form.save(commit=False)
-            final_form.who_added_the_journey = request.user
-            final_form.save()
-            journ = Journey.objects.filter(who_added_the_journey=request.user)
-            last_journey = journ.order_by('-timestamp').first()
-            partcpant = request.user
-            dflt_participant = Participant.objects.create(
-                                                          journey=last_journey,
-                                                          participant=partcpant)
-            dflt_participant.save()
-
-            return HttpResponseRedirect(
-                           reverse('journeys:journey-list',
-                                   kwargs={'user_id': request.user.id}))
-        else:
-            context['form'] = form
-            return render(request, 'journeys/add_journey_form.html', context)
-    # If HTTP method is GET...
-    else:
-        return render(request, 'journeys/add_journey_form.html', context)
+    return render(request, 'journeys/add_journey_form.html', context)
 
 
 def user_journey_list(request, user_id):
