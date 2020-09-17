@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from accounts.models.TLAccount_frequest import TLAccount
 
 
-class TestTLAccountViews(TestCase):
+class TestChatViews(TestCase):
 
     def setUp(self):
         self.user_1 = TLAccount.objects.create_user(first_name='John', 
@@ -45,8 +45,8 @@ class TestTLAccountViews(TestCase):
         response = self.client_user_1.post(url, data)
         self.assertEquals(response.status_code, 200)
 
-    def test_get_all_messages_view(self):
-        url = reverse('chat:get-all-messages', kwargs=self.kwargs_user_2)
-        response = self.client_user_1.get(url)
-        self.assertEquals(response.status_code, 200)
+    # def test_get_all_messages_view(self):
+    #     url = reverse('chat:get-all-messages', kwargs=self.kwargs_user_2)
+    #     response = self.client_user_1.get(url)
+    #     self.assertEquals(response.status_code, 200)
 

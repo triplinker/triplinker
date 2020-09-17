@@ -137,8 +137,15 @@ MAILHOG=on
 When you get to the directory 'triplinker/triplinker' just run the command:
 
 ```
-pytest
+pytest tests
 ```
+
+then:
+
+```
+python3 manage.py test
+```
+to run django's tests
 
 ## License
 

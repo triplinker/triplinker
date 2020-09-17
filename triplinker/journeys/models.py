@@ -33,7 +33,7 @@ class Journey(models.Model):
     participants = models.ManyToManyField(TLAccount,
                                           through='journeys.Participant',
                                           verbose_name=vb_name_p, blank=True,
-                                          null=True)
+                                          )
 
     description = models.TextField("Describe your journey", max_length=500,
                                    blank=True, null=True)

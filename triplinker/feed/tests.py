@@ -5,7 +5,7 @@ from accounts.models.TLAccount_frequest import TLAccount
 from .models import Post, Comment
 
 
-class TestTLAccountViews(TestCase):
+class TestFeedViews(TestCase):
 
     def setUp(self):
         self.user_1 = TLAccount.objects.create_user(first_name='John', 
