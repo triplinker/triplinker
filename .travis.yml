@@ -19,7 +19,6 @@ before_script:
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE test TO test;" -U postgres
   - psql -c "ALTER USER test createdb;" -U postgres
   - python manage.py migrate --noinput
-  - bash celery.sh
 
 env:
   global:
