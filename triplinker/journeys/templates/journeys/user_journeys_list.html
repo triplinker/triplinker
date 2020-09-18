@@ -24,7 +24,11 @@
 {% endif %}
 </div>
 <div class="container" style="text-align: center; margin-top: 1%;">
-  <a href="{% url 'journeys:journey-list' request.user.id %}"><button class="btn btn-dark">Default</button></a>
+  {% if request.user.email == user_acc.email %}
+    <a href="{% url 'journeys:journey-list' request.user.id %}"><button class="btn btn-dark">Default</button></a>
+  {% else %}
+    <a href="{% url 'journeys:journey-list' user_acc.id %}"><button class="btn btn-dark">Default</button></a>
+  {% endif %}
   <a href="{% url 'journeys:sort-journeys-by-date' user_acc.id %}"><button class="btn btn-dark">Sort by date</button></a>
   <a href="{% url 'journeys:sort-journeys-by-rating-of-place' user_acc.id %}"><button class="btn btn-dark">Sort by rating of place</button></a>
 
@@ -35,8 +39,9 @@
   
   {% for journey in journeys %}
   <div class="col-sm-4 py-2">
-    <div class="card text-white bg-primary">
+    <div class="card text-white bg-light">
       <div class="card-body">
+        <div name='info' style="color:black;">
           <h3 class="card-title">{{ journey.journey_from}} - {{ journey.journey_to }}</h3>
             <p class="card-text">{{ journey.description }}</p>
             <hr>
@@ -54,8 +59,9 @@
             {% endfor %}
             {% endif %}
 
-            <a href="{% url 'journeys:journey-page' journey.id %}" class="btn btn-outline-light">Check it out</a>
+            <a href="{% url 'journeys:journey-page' journey.id %}" class="btn btn-success">Check it out</a>
             </div>
+          </div>
             </div>
         </div>
   {% endfor %}

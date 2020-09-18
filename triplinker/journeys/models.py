@@ -33,7 +33,8 @@ class Journey(models.Model):
     participants = models.ManyToManyField(TLAccount,
                                           through='journeys.Participant',
                                           verbose_name=vb_name_p, blank=True,
-                                          )
+                                          default=None,
+                                          related_name='get_jrns')
 
     description = models.TextField("Describe your journey", max_length=500,
                                    blank=True, null=True)
@@ -63,9 +64,9 @@ class Journey(models.Model):
 
 
 class Participant(models.Model):
-    journey = models.ForeignKey(Journey, on_delete=models.CASCADE)
+    journey = models.ForeignKey(Journey, on_delete=models.CASCADE, null=True)
     participant = models.ForeignKey(TLAccount, on_delete=models.CASCADE,
-                                    related_name='participant_set')
+                                    related_name='participant_set', null=True)
 
     def __str__(self):
         jrn_s = self.journey.journey_from

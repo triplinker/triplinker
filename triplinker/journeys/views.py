@@ -3,11 +3,12 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
 from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey, Activity
+from .models import Journey, Participant, Activity
 from .forms import AddJourneyForm, AddActivityForm
 from django.core.exceptions import PermissionDenied
 
 from .helpers.views.get_allowed_journeys import get_allowed_journeys
+from .helpers.views.get_average_rating import get_rating
 
 
 def activity_form_api(request):
@@ -113,9 +114,13 @@ def journey_page(request, journey_id):
 
 def sort_journeys_by_rating_of_place(request, user_id):
     user = get_object_or_404(TLAccount, id=user_id)
-    journeys = Journey.objects.filter(particapants=user)
-    sort = sorted(journeys,
-                  key=lambda journey: journey.place.get_rating_of_place(),
+    journeys_raw = Participant.objects.filter(participant=user)
+
+    journeys = []
+    for participant_object in journeys_raw:
+        journeys.append(participant_object.journey)
+
+    sort = sorted(journeys, key=lambda journey: get_rating(journey),
                   reverse=False)
 
     context = {
@@ -127,11 +132,17 @@ def sort_journeys_by_rating_of_place(request, user_id):
 
 def sort_journeys_by_date(request, user_id):
     user = get_object_or_404(TLAccount, id=user_id)
-    jrnes = Journey.objects.filter(particapants=user).order_by("date_of_start")
+    journeys_raw = Participant.objects.filter(participant=user)
 
+    journeys = []
+    for participant_object in journeys_raw:
+        journeys.append(participant_object.journey)
+
+    sort = sorted(journeys, key=lambda journey: journey.date_of_start,
+                  reverse=False)
     context = {
         'user_acc': user,
-        'journeys': jrnes,
+        'journeys': sort,
     }
     return render(request, 'journeys/user_journeys_list.html', context)
 
