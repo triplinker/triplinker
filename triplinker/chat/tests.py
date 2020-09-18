@@ -45,8 +45,8 @@ class TestChatViews(TestCase):
         response = self.client_user_1.post(url, data)
         self.assertEquals(response.status_code, 200)
 
-    # def test_get_all_messages_view(self):
-    #     url = reverse('chat:get-all-messages', kwargs=self.kwargs_user_2)
-    #     response = self.client_user_1.get(url)
-    #     self.assertEquals(response.status_code, 200)
+    def test_get_all_messages_view(self):
+        url = reverse('chat:get-all-messages', kwargs=self.kwargs_user_2)
+        response = self.client_user_1.get(url)
+        self.assertEquals(response.status_code, 200)
 
