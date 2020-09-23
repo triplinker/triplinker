@@ -1,12 +1,11 @@
 import json
 from django.shortcuts import get_object_or_404
 
-from .models import Message
+from .models import Message, GroupChat, GroupChatMessage
 from accounts.models.TLAccount_frequest import TLAccount
 
 
 def get_associated_messages_celery(from_user, to_user):
-    # from_user == request.user.id
     from_user = get_object_or_404(TLAccount, id=from_user)
     to_user = get_object_or_404(TLAccount, id=to_user)
 
@@ -22,4 +21,17 @@ def get_associated_messages_celery(from_user, to_user):
     context = {}
     for message in ordered_messages:
         context[message.id] = [message.from_user.email, message.message]
+    return json.dumps(context)
+
+
+def get_associated_messages_group_chat_celery(chat_name_slug):
+    # Chat
+    c = GroupChat.objects.get(slug=chat_name_slug)
+    mssges = GroupChatMessage.objects.filter(group_chat=c).order_by('timestamp')
+
+    context = {}
+
+    for message in mssges:
+        context[message.id] = [message.msg_from_user.email, message.message]
+
     return json.dumps(context)
