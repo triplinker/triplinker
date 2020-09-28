@@ -3,9 +3,10 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
 from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey, Participant, Activity
+from .models import Journey, Participant, Activity, Place
 from .forms import AddJourneyForm, AddActivityForm
 from django.core.exceptions import PermissionDenied
+from feed.models import Post, Notification
 
 from .helpers.views.get_allowed_journeys import get_allowed_journeys
 from .helpers.views.get_average_rating import get_rating
@@ -38,6 +39,21 @@ def journey_form_api(request):
             'journey_id': journey.id,
             'status': True,
         }
+        user = request.user
+        journey_to = request.POST["journey_to"]
+        journey_date = request.POST["date_of_start"]
+        NEW_JOURNEY_POST_TEXT = f'I am starting a new journey to '\
+                                f'{journey_to} on {journey_date}.'
+        NEW_JOURNEY_NOTIF_TEXT = f'{user} is starting a new journey to '\
+                                 f'{journey_to} on {journey_date}.'
+        post = Post.objects.create(is_place=True, content=NEW_JOURNEY_POST_TEXT,
+                                   author=user, place=Place.objects.get(id=request.POST["place_to"]),
+                                   journey=journey, notification_post=True)
+        post.save()
+        notification = Notification.objects.create(post=post,
+                                                   text=NEW_JOURNEY_NOTIF_TEXT, is_journey=True)
+        notification.users.set(user.friends.all())
+        notification.save()
         return JsonResponse(context, safe=False)
     return JsonResponse({'status': False}, safe=False)
 
@@ -151,6 +167,22 @@ def join_journey(request, journey_id):
     journey = Journey.objects.get(pk=journey_id)
     journey.participants.add(request.user)
     journey.save()
+
+    user = request.user
+    journey_to = journey.journey_to
+    journey_date = journey.date_of_start
+    NEW_JOURNEY_POST_TEXT = f'I am joining {journey.who_added_the_journey} in a journey to ' \
+                            f'{journey_to} on {journey_date}.'
+    NEW_JOURNEY_NOTIF_TEXT = f'{user} is joining you in a journey to ' \
+                             f'{journey_to} on {journey_date}.'
+    post = Post.objects.create(is_place=True, content=NEW_JOURNEY_POST_TEXT,
+                               author=user, place=journey.place_to,
+                               journey=journey, notification_post=True)
+    post.save()
+    notification = Notification.objects.create(post=post,
+                                               text=NEW_JOURNEY_NOTIF_TEXT, is_journey=True)
+    notification.users.set(user.friends.all())
+    notification.save()
     return HttpResponseRedirect(reverse('journeys:journey-page',
                                 kwargs={'journey_id': journey_id}))
 
@@ -159,5 +191,8 @@ def leave_journey(request, journey_id):
     journey = Journey.objects.get(pk=journey_id)
     journey.participants.remove(request.user)
     journey.save()
+
+    post = Post.objects.filter(author=request.user, journey=journey)
+    post.delete()
     return HttpResponseRedirect(reverse('journeys:journey-page',
                                 kwargs={'journey_id': journey_id}))

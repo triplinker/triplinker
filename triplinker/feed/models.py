@@ -5,6 +5,7 @@ from django.core.validators import FileExtensionValidator
 
 from accounts.models.TLAccount_frequest import TLAccount
 from trip_places.models import Place
+from journeys.models import Journey
 
 
 class Post(models.Model):
@@ -20,6 +21,8 @@ class Post(models.Model):
                                on_delete=models.CASCADE)
     place = models.ForeignKey(Place, related_name='posts_of_place', null=True,
                               blank=True, on_delete=models.CASCADE)
+    journey = models.ForeignKey(Journey, related_name='posts_of_journey',
+                                null=True, blank=True, on_delete=models.CASCADE)
     likes = models.ManyToManyField(TLAccount, default=None, blank=True,
                                    related_name='like_system_post')
 
@@ -72,6 +75,7 @@ class Notification(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_seen = models.ManyToManyField(TLAccount, blank=True,
                                      related_name='seen_notifications')
+    is_journey = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Post {self.post}"

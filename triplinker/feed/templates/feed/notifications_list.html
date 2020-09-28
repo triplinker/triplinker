@@ -4,7 +4,16 @@
 {% else %}
 {% for notification in notifications%}
   <div class="alert alert-primary" role="alert">
-    {{ notification.text }} <a href="{% url 'accounts:detail_profile' notification.post.author.id %}" class="alert-link float-right">See more</a>
+    {{ notification.text }}
+      {% if notification.is_journey %}
+        {% if user in notification.post.journey.participants.all %}
+          <a href="{% url 'journeys:leave' notification.post.journey.id %}" class="alert-link float-right">Leave.</a>
+        {% else %}
+          <a href="{% url 'journeys:join' notification.post.journey.id %}" class="alert-link float-right">Join!</a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'accounts:detail_profile' notification.post.author.id %}" class="alert-link float-right">See more</a>
+      {% endif %}
   </div>
 {% endfor %}
 {% endif %}
