@@ -50,7 +50,12 @@
             <p class="mb-3">View the list of people who participated in this journey!</p>
 
             {% for participant in journey.participants.all %}
-                <p><a href="{% url 'accounts:detail_profile' participant.id %}" class="profile-link">{{ participant.email }}</a></p>
+                <p><a href="{% url 'accounts:detail_profile' participant.id %}" class="profile-link">{{ participant.email }}</a>
+                        {% if user == journey.who_added_the_journey and user != participant %}
+                            <a href="{% url 'journeys:remove' journey.id participant.id %}"
+                                class="alert-link float-right">Remove.</a>
+                        {% endif %}
+                </p>
             {% endfor %}
             {% if user in journey.participants.all %}
                 <a href="{% url 'journeys:leave' journey.id %}" class="btn btn-danger btn-xs waves-effect mb-2 waves-light">Leave</a>

@@ -6,13 +6,20 @@
   <div class="alert alert-primary" role="alert">
     {{ notification.text }}
       {% if notification.is_journey %}
-        {% if user in notification.post.journey.participants.all %}
-          <a href="{% url 'journeys:leave' notification.post.journey.id %}" class="alert-link float-right">Leave.</a>
+        {% if user == notification.post.journey.who_added_the_journey %}
+            <a href="{% url 'journeys:remove' notification.post.journey.id notification.post.author.id %}"
+               class="alert-link float-right">Remove.</a>
         {% else %}
-          <a href="{% url 'journeys:join' notification.post.journey.id %}" class="alert-link float-right">Join!</a>
+          {% if user in notification.post.journey.participants.all %}
+            <a href="{% url 'journeys:leave' notification.post.journey.id %}" class="alert-link float-right">Leave.</a>
+          {% else %}
+            <a href="{% url 'journeys:join' notification.post.journey.id %}" class="alert-link float-right">Join!</a>
+          {% endif %}
         {% endif %}
+        <a style="margin-right:5px" href="{% url 'journeys:journey-page' notification.post.journey.id %}"
+           class="alert-link float-right">Journey info</a>
       {% else %}
-        <a href="{% url 'accounts:detail_profile' notification.post.author.id %}" class="alert-link float-right">See more</a>
+          <a href="{% url 'accounts:detail_profile' notification.post.author.id %}" class="alert-link float-right">See more</a>
       {% endif %}
   </div>
 {% endfor %}

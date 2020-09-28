@@ -196,3 +196,14 @@ def leave_journey(request, journey_id):
     post.delete()
     return HttpResponseRedirect(reverse('journeys:journey-page',
                                 kwargs={'journey_id': journey_id}))
+
+
+def remove_from_journey(request, journey_id, user_id):
+    user = TLAccount.objects.get(pk=user_id)
+    journey = Journey.objects.get(pk=journey_id)
+    journey.participants.remove(user)
+    journey.save()
+    post = Post.objects.filter(author=user, journey=journey)
+    post.delete()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                kwargs={'journey_id': journey_id}))

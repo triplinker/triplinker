@@ -12,6 +12,8 @@ urlpatterns = [
          name='join'),
     path('separate-journeys/<int:journey_id>/leave', views.leave_journey,
          name='leave'),
+    path('separate-journeys/<int:journey_id>/remove/<int:user_id>', views.remove_from_journey,
+         name='remove'),
     path('<int:user_id>/', views.user_journey_list,
          name='journey-list'),
     path('new-journey/', views.add_new_journey, name="new-journey"),
