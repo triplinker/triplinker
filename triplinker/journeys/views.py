@@ -42,16 +42,18 @@ def journey_form_api(request):
         user = request.user
         journey_to = request.POST["journey_to"]
         journey_date = request.POST["date_of_start"]
+        place_to = Place.objects.get(id=request.POST["place_to"])
         NEW_JOURNEY_POST_TEXT = f'I am starting a new journey to '\
                                 f'{journey_to} on {journey_date}.'
         NEW_JOURNEY_NOTIF_TEXT = f'{user} is starting a new journey to '\
                                  f'{journey_to} on {journey_date}.'
         post = Post.objects.create(is_place=True, content=NEW_JOURNEY_POST_TEXT,
-                                   author=user, place=Place.objects.get(id=request.POST["place_to"]),
-                                   journey=journey, notification_post=True)
+                                   author=user, place=place_to, journey=journey,
+                                   notification_post=True)
         post.save()
         notification = Notification.objects.create(post=post,
-                                                   text=NEW_JOURNEY_NOTIF_TEXT, is_journey=True)
+                                                   text=NEW_JOURNEY_NOTIF_TEXT,
+                                                   is_journey=True)
         notification.users.set(user.friends.all())
         notification.save()
         return JsonResponse(context, safe=False)
@@ -171,7 +173,8 @@ def join_journey(request, journey_id):
     user = request.user
     journey_to = journey.journey_to
     journey_date = journey.date_of_start
-    NEW_JOURNEY_POST_TEXT = f'I am joining {journey.who_added_the_journey} in a journey to ' \
+    NEW_JOURNEY_POST_TEXT = f'I am joining {journey.who_added_the_journey} ' \
+                            f'in a journey to ' \
                             f'{journey_to} on {journey_date}.'
     NEW_JOURNEY_NOTIF_TEXT = f'{user} is joining you in a journey to ' \
                              f'{journey_to} on {journey_date}.'
@@ -180,7 +183,8 @@ def join_journey(request, journey_id):
                                journey=journey, notification_post=True)
     post.save()
     notification = Notification.objects.create(post=post,
-                                               text=NEW_JOURNEY_NOTIF_TEXT, is_journey=True)
+                                               text=NEW_JOURNEY_NOTIF_TEXT,
+                                               is_journey=True)
     notification.users.set(user.friends.all())
     notification.save()
     return HttpResponseRedirect(reverse('journeys:journey-page',
