@@ -29,11 +29,8 @@
             <h3 type="button" style='display: inline; margin-left: 5%;' data-toggle="modal" data-target="#exampleModal"><i class="fa fa-envelope" aria-hidden="true" ></i></h3>
 
             <!-- modal triger button -->
-            <a href="{% url 'chat:group-chats' %}" style="color:inherit;"><h3 style="margin-left: 3%; display: inline;"><i class="fa fa-users" aria-hidden="true"></i></h3></a>
+            <h3 style="margin-left: 3%; display: inline;"><i class="fa fa-user-circle" aria-hidden="true"></i></h3>
             <!-- modal triger button -->
-
-
-            <a href="{% url 'chat:create-group-chat' %}" style="color:inherit;"><h3 style="margin-left: 3%; display: inline;"><i class="fa fa-user-plus" aria-hidden="true"></i></h3></a>
 
             <!-- Modal -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -56,6 +53,10 @@
                         <label>To: </label>
                         {{ form.to_user}}
 
+
+                        <hr>
+                        <h4><a href="{% url 'chat:create-group-chat' %}" style="text-align: center;" class="btn btn-primary">Create group chat</a></h4>
+
                     <!-- Send button -->
                     
                       </div>
@@ -75,16 +76,10 @@
                 {% if group_chats %}
                 {% for chat in group_chats %}
                 <ul>
-                    <li>
-                        
-
-                        <a href="{% url 'chat:particular-group-chat' chat.slug %}">
+                    <li> 
+                        <a href="{% url 'chat:'%}">
                             <div class="message-avatar">
-                                {% if chat.chat_image%}
-                                    <img src="{{ chat.chat_image.url }}" alt="">
-                                {% else %}
-                                    <img src="https://www.plotprojects.com/wp-content/uploads/2014/06/multiple-users.png" alt="">
-                                {% endif %}
+                                <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
                             </div>
                                 <div class="message-body">
                                     <div class="message-body-heading">

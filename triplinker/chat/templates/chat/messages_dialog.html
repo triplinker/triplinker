@@ -9,17 +9,23 @@
     <ul class="messages"></ul>
     <div class="bottom_wrapper clearfix">
             
-            <input id="upload" type="file" style="display: none;padding:0%; margin: 0%;">
-            <h6 id="upload_link"><i class="fa fa-picture-o" aria-hidden="true"></i></h6>
+        <form class="form-horizontal" method="post" enctype="multipart/form-data">
+            <input id="upload" type="file">
+        </form> 
+            <h5 id ='button_X'style="display: none;"><i class='fa fa-times' aria-hidden='true'></i></h5>
             
             <script type="text/javascript">
-                $(function(){
-                    $("#upload_link").on('click', function(e){
-                        e.preventDefault();
-                    $("#upload:hidden").trigger('click');
-                    });
+            var image_base64 = null;
+            $(document).ready(function(){
+                $("#upload").on('change', function() {
+                $("#button_X").css("display", "block");
                 });
-
+                $("#button_X").on('click', function() {
+                    image_base64 = null;
+                    $("#upload").val('');
+                    $('#button_X').css('display', 'none')
+                });
+            })
             </script>
         
         <div class="message_input_wrapper">
@@ -47,26 +53,63 @@
 
 <!--- Messages-main logic and ajax requests [START] --->
     <script>
+    function check_image(){
+        var reader = new FileReader();
+        var f = document.getElementById("upload").files;
+            
+            reader.onloadend = function () {
+            // console.log(reader.result);
+            image_base64 = String(reader.result)
+            }
+            try {
+                reader.readAsDataURL(f[0]);
+            } catch(error) {
+                var do_nothing = 1;
+            }
+
+        }
+        var run = setInterval(check_image, 1000);        
+
         (function () {
         var Message;
         Message = function (arg) {
             this.text = arg.text, this.message_side = arg.message_side;
-            this.draw = function (_this) {
-                return function () {
-                    var $message;
-                    $message = $($('.message_template').clone().html());
-                    $message.addClass(_this.message_side).find('.text').html(_this.text);
-                    $('.messages').append($message);
-                    return setTimeout(function () {
-                        return $message.addClass('appeared');
-                    }, 0);
-                };
-            }(this);
+
+            if (arg.img){
+                this.img = arg.img;
+                this.draw = function (_this){
+                    return function () {
+                        var $message;
+                        $message = $($('.message_template').clone().html());
+                        image = '<div style="text-align: center;"><img src="' + _this.img + '" width="250" height="260" style ="object-fit: contain;"></div>'
+                        $message.addClass(_this.message_side).find('.text').html(_this.text + '<br><br>' + image);
+                        $('.messages').append($message);
+                        return setTimeout(function () {
+                            return $message.addClass('appeared');
+                        }, 0);
+                    };
+                }(this);
+            } else{
+                this.draw = function (_this){
+                    return function () {
+                        var $message;
+                        $message = $($('.message_template').clone().html());
+                        $message.addClass(_this.message_side).find('.text').html(_this.text);
+                        $('.messages').append($message);
+                        return setTimeout(function () {
+                            return $message.addClass('appeared');
+                        }, 0);
+                    };
+                }(this);
+            }
+            
+            image_base64 = null;
+                $("#upload").val('');
+                $("#button_X").css('display', 'none')
             return this;
         };
 
         var all_messages = []; // This var is needed to sync the messages in the dialog boxes of two users. For example, if user1 wrote the message then user2 must be able to see the message just in seconds.
-
         $(function () {
 
             var getMessageText, message_side, sendMessage;
@@ -80,45 +123,53 @@
             };
 
             // Draw messages in dialog boxes, if the status is 'insert-message-into-db' then before drawing makes request to the server to insert a message into DB, if the status is 'get-messages-from-db' then make request to the server to get all messages from db of current dialog.
-            sendMessage = function (text, status, author=null, anim_speed=null) {
+            let photo_URL;
+            sendMessage = function (text, status, author=null, photo=null, anim_speed=null) {
                 if (status === 'insert-message-into-db'){
                     // Ajax request [START]
-                    $.ajax({
-                        type: "POST",
-                        url: "{% url 'chat:send-message' message_to_user.id %}",
-                        async:true,
-                        data: {"message_body": text},
-                        dataType: 'json',
+                    var inf = $.ajax({
+                            type: "POST",
+                            url: "{% url 'chat:send-message' message_to_user.id %}",
+                            async:false,
+                            global: false,
+                            data: {"message_body": text , 'csrfmiddlewaretoken': '{{ csrf_token }}', 'image_or_nothing': image_base64 },
+                            dataType: 'json',
 
-                        success: function(data){
-                            message_DB = data['author']
-                            all_messages.push(data['message_id'])
-                        }
-                    });
+                            success: function(data){
+                                message_DB = data['author']
+                                all_messages.push(data['message_id'])
+                                img = data['image_url']
+                                return img
+
+                            }
+                        }).responseText;
                     // Ajax request [END]
 
+                    var photo_URL = JSON.parse(inf)['image_url']
                     var $messages, message;
                     if (text.trim() === ''){
                         return;
                     }
-
                     $('.message_input').val('');
                     $messages = $('.messages');
                     var message_side = null;
 
-                    var current_user = '{{ request.user.email }}'
-                        receiver = '{{ message_to_user.email }}';
+                    var current_user = '{{ request.user.email }}';
+                    var full_text = current_user + "<hr>" + text;
 
+                    // If current user is author of message [ WARNING! LOGIC IS REVERSED!]
                     if(current_user === message_DB){
                         message = new Message({
-                        text: text,
-                        message_side: 'left'
+                        text: full_text,
+                        message_side: 'right',
+                        img: photo_URL
                         });
 
                     }else{
                         message = new Message({
-                        text: text,
-                        message_side: 'right'
+                        text: full_text,
+                        message_side: 'left',
+                        img: photo_URL
                         });
                     }
 
@@ -135,22 +186,24 @@
                     $messages = $('.messages');
                     var message_side = null;  // The side in message box where the message will be appeared
 
-                    var current_user = '{{ request.user.email }}'
-                        receiver = '{{ message_to_user.email }}';
+                    var current_user = '{{ request.user.email }}';
+                    var full_text = String(author) + "<hr>" + text;
 
                     if(current_user === message_DB){
                         message = new Message({
-                        text: text,
-                        message_side: 'right'
+                        text: full_text,
+                        message_side: 'right',
+                        img: photo
                         });
                     } else{
                         message = new Message({
-                        text: text,
-                        message_side: 'left'
+                        text: full_text,
+                        message_side: 'left',
+                        img: photo
                         });
                     }
-
                     message.draw();
+
                     if (anim_speed){
                         return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300); // Animation speed is 300
                     } else{
@@ -180,9 +233,13 @@
                 $.get(url,
                 function (data, textStatus) {  // success callback
 
-                      for (var message_id in data){
-                      all_messages.push(message_id)
-                      sendMessage(data[message_id][1], 'get-messages-from-db', data[message_id][0])
+                    for (var message_id in data){
+                        all_messages.push(message_id)
+                    if (String(data[message_id][2]) == 'no_img'){
+                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=null)
+                    } else{
+                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2],anim_speed=null)
+                    }
                 }
             
             // The function that makes ajax requests every period of time to make sure that there are no new messages within the current dialog, if so then it updates the dialog window by adding new messages into it.
@@ -191,22 +248,27 @@
                 var milliseconds = date.getSeconds();
 
                 var url = "{% url 'chat:get-all-messages' message_to_user.id %}";
-                axios.get(url).then((response) => {
-                    data = response.data 
+                    axios.get(url).then((response) => {
+                    data = response.data
                     for (var message_id in data){
-                            message_id = message_id.toString()
-                            if (all_messages.includes(message_id)){
-                                var nothing = 1;  // If so then do nothing
+                        message_id = message_id.toString()
+                        if (all_messages.includes(message_id)){
+                            var nothing = 1;  // If so then do nothing
+                        }else{
+                            // Update the message dialog if there are new messages in DB which are connected with the current dialog.
+                            if (String(data[message_id][2]) == 'no_img'){
+                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=300,)
+                                        all_messages.push(message_id)
                             }else{
-                                // Update the message dialog if there are new messages in DB which are connected with the current dialog.
-                                sendMessage(data[message_id][1], 'get-messages-from-db', data[message_id][0], anim_speed=300)
-                                    all_messages.push(message_id)
+                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2], anim_speed=300)
+                                        all_messages.push(message_id)    
                             }
                         }
-                });                
-                current_msgs = [] // 
-            }
-            , 5000); // The interval between ajax requests.
+                    }
+            });                
+            current_msgs = [] // 
+        }
+        , 5000); // The interval between ajax requests.
 
         });
         };

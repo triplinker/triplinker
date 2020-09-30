@@ -5,7 +5,7 @@
   <div class="container"> 
     <h1 class="mt-2">Create group chat</h1>
     <hr class="mt-0 mb-4">
-      <form class="form-horizontal" method="post" enctype="multipart/form-data">
+      <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
         {{ form.field_errors }}
@@ -38,7 +38,7 @@
           </div>
           
           <div class="col-sm-5" style="margin-top: 5%;">
-            <input type="file" name="place_pic" id="imgload">
+            <input type="file" name="chat_image" id="imgload">
           </div>
 
         </div>
@@ -59,7 +59,7 @@
           </script>
         <!--- Update photo on the page [END] --->
 
-      <input type="submit" class="btn btn-primary" value="Add new place!" style="margin-left: 53.5%;margin-top: -1.5%;">
+      <input type="submit" class="btn btn-primary" value="Create!" style="margin-left: 53.5%;margin-top: -1.5%;">
     </form>
   </div>
 

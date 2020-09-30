@@ -1,6 +1,12 @@
+import os
 import json
+import base64
+from datetime import datetime
+
+from django.core.files.images import ImageFile
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseNotFound, HttpResponseRedirect, JsonResponse
+from django.http import (HttpResponseNotFound, HttpResponseRedirect,
+                         JsonResponse)
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.template.defaultfilters import slugify
@@ -9,8 +15,10 @@ from accounts.models.TLAccount_frequest import TLAccount
 from chat.tasks import (get_associated_messages_task,
                         get_associated_messages_group_chat_task)
 
-from .models import Message, GroupChat, GroupChatMessage
-from .helpers.get_last_messages_with_friends import get_last_mssges_from_dialogs
+from .models import (Message, GroupChat, GroupChatMessage, MessagePhoto,
+                     DialogPhoto)
+from .helpers.get_last_mssges_with_friends import (get_last_mssges_from_dialogs,  # noqa: F401, E501
+                                                get_last_messges_of_group_chats)  # noqa: E128, E501
 from .forms import SendMessageForm, CreateGroupChatForm
 
 
@@ -110,8 +118,46 @@ def send_message(request, user_id, dict_for_messages={}):
         )
 
     new_message.users_who_read_message.add(request.user)
+
+    get_msg_with_photo = None
+    imgs_url_for_fronted = None
+    image_base64 = request.POST.get("image_or_nothing", "").partition(",")[2]
+    if image_base64:
+        decoding = base64.b64decode(image_base64)
+        current_date = str(datetime.now())
+        poFileStr = str(request.user) + current_date + '.jpg'
+
+        cur_path = os.path.dirname(__file__)
+
+        additional_dirs = 'public/media/'
+
+    # .../triplinker/triplinker/public/media/chat/pictures_of_messages/image.jpg
+    # ... - means system dirctories which are not connected with the project
+    # Need to change cur_path.rstrip('chat') if the name of application will be
+    # changed!
+        new_path = cur_path.rstrip('chat') + additional_dirs + poFileStr
+        new_path = ''.join(new_path)
+
+        with open(new_path, 'wb') as f:
+            f.write(decoding)
+
+        new_msge_with_pic = DialogPhoto.objects.create(message=new_message,
+                                                       name_of_file=poFileStr)
+        new_msge_with_pic.image = ImageFile(open(new_path, "rb"))
+        new_msge_with_pic.save()
+        get_msg_with_photo = DialogPhoto.objects.get(name_of_file=poFileStr)
+
     json = {'author': str(new_message.from_user),
             'message_id': str(new_message.id)}
+
+    try:
+        image_url = get_msg_with_photo.image.url
+        index = image_url.rfind('/media')
+        imgs_url_for_fronted = image_url[index:]
+        json['image_url'] = imgs_url_for_fronted
+    except AttributeError:
+        pass
+
     return JsonResponse(json, safe=False)
 
 
@@ -139,15 +185,35 @@ def get_all_messages(request, user_id):
 def create_group_chat(request):
     template = 'chat/create_group_chat.html'
     usr = TLAccount.objects.get(id=request.user.id)
-    context = {'form': CreateGroupChatForm()}
+    context = {'form': CreateGroupChatForm(usr)}
     if request.method == 'POST':
-        form = CreateGroupChatForm(request.POST)
+        get_file = request.FILES.get('chat_image', None)
+        init_inf: dict = {}
+
+        if get_file:
+            read_file = get_file.read()
+            init_inf['chat_image'] = read_file
+        else:
+            init_inf['chat_image'] = get_file
+
+        form = CreateGroupChatForm(usr, request.POST, initial=init_inf)
         if form.is_valid():
             final_form = form.save(commit=False)
             final_form.creator = usr
+
             cht_name = form.cleaned_data.get('chat_name')
+
             final_form.slug = slugify(cht_name)
             final_form.save()
+
+            all_particapants = form.cleaned_data.get('participants')
+            for participant in all_particapants:
+                if participant == usr:
+                    continue
+                else:
+                    particapant = TLAccount.objects.get(id=int(participant))  # noqa:F841, E501
+                    final_form.participants.add(participant)
+
             final_form.participants.add(usr)
             final_form.save()
 
@@ -161,11 +227,13 @@ def create_group_chat(request):
 
 
 def list_of_group_chats(request):
+    usr = TLAccount.objects.get(id=request.user.id)
     order_v = '-timestamp'
     chts = GroupChat.objects.filter(participants=request.user).order_by(order_v)
 
     context = {
-        'group_chats': chts
+        'group_chats': chts,
+        'form': SendMessageForm(usr=usr)
     }
     return render(request, 'chat/list_of_group_chats.html', context)
 
@@ -180,9 +248,8 @@ def particular_group_chat(request, chat_name_slug):
 def send_message_in_group_chat(request, chat_name_slug):
     current_user = TLAccount.objects.get(id=request.user.id)
     message = request.POST.get("message_body", "")
-    group_chat = GroupChat.objects.get(slug=chat_name_slug)
 
-    # participants = group_chat.participants.all()
+    group_chat = GroupChat.objects.get(slug=chat_name_slug)
 
     data = {
         'group_chat': group_chat,
@@ -190,8 +257,46 @@ def send_message_in_group_chat(request, chat_name_slug):
         'message': message
     }
     new_message = GroupChatMessage.objects.create(**data)
+    # new_message_id = new_message.id
+
+    get_msg_with_photo = None
+    imgs_url_for_fronted = None
+    image_base64 = request.POST.get("image_or_nothing", "").partition(",")[2]
+    if image_base64:
+        decoding = base64.b64decode(image_base64)
+        current_date = str(datetime.now())
+        poFileStr = str(request.user) + current_date + '.jpg'
+
+        cur_path = os.path.dirname(__file__)
+
+        additional_dirs = 'public/media/'
+
+    # .../triplinker/triplinker/public/media/chat/pictures_of_messages/image.jpg
+    # ... - means system dirctories which are not connected with the project
+    # Need to change cur_path.rstrip('chat') if the name of application will be
+    # changed!
+        new_path = cur_path.rstrip('chat') + additional_dirs + poFileStr
+        new_path = ''.join(new_path)
+
+        with open(new_path, 'wb') as f:
+            f.write(decoding)
+
+        new_msge_with_pic = MessagePhoto.objects.create(message=new_message,
+                                                        name_of_file=poFileStr)
+        new_msge_with_pic.image = ImageFile(open(new_path, "rb"))
+        new_msge_with_pic.save()
+        get_msg_with_photo = MessagePhoto.objects.get(name_of_file=poFileStr)
+
     json = {'author': str(new_message.msg_from_user),
             'message_id': str(new_message.id)}
+    try:
+        image_url = get_msg_with_photo.image.url
+        index = image_url.rfind('/media')
+        imgs_url_for_fronted = image_url[index:]
+        json['image_url'] = imgs_url_for_fronted
+    except AttributeError:
+        pass
+
     return JsonResponse(json, safe=False)
 
 

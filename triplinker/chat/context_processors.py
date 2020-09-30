@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 
 from accounts.models.TLAccount_frequest import TLAccount
-from .helpers.get_last_messages_with_friends import get_last_mssges_from_dialogs
+from .helpers.get_last_mssges_with_friends import get_last_mssges_from_dialogs
 
 
 def new_messages_notification(request):

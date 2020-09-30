@@ -3,6 +3,7 @@ from django.db import models
 from accounts.models.TLAccount_frequest import TLAccount
 
 
+# Model for chatting one by one
 class Message(models.Model):
     from_user = models.ForeignKey(TLAccount, on_delete=models.CASCADE,
                                   related_name='message_from_user')
@@ -22,6 +23,23 @@ class Message(models.Model):
         verbose_name_plural = 'Messages'
 
 
+class DialogPhoto(models.Model):
+    message = models.ForeignKey('Message', on_delete=models.CASCADE)
+    image = models.ImageField('Picture of message',
+                              upload_to='chat/pictures_of_messages',
+                              null=True, blank=True)
+    name_of_file = models.TextField("The name image", null=True, blank=True)
+
+    def __str__(self):
+        return 'Message: {}, image: {}'.format(self.message, self.image)
+
+    class Meta:
+        app_label = 'chat'
+        verbose_name = 'DialogPhoto'
+        verbose_name_plural = 'DialogPhotos'
+
+
+# Models for group chatting
 class GroupChat(models.Model):
     chat_name = models.CharField("The name of group chat", max_length=25)
     chat_image = models.ImageField('Main photo of chat',
@@ -42,6 +60,9 @@ class GroupChat(models.Model):
             prnts_list.append(participant)
 
         return "Chat {}, participants: {}".format(self.chat_name, prnts_list)
+
+    def get_name(self):
+        return self.chat_name
 
     class Meta:
         app_label = 'chat'
@@ -66,6 +87,22 @@ class GroupChatMessage(models.Model):
         app_label = 'chat'
         verbose_name = 'GroupChatMessage'
         verbose_name_plural = 'GroupChatMessages'
+
+
+class MessagePhoto(models.Model):
+    message = models.ForeignKey(GroupChatMessage, on_delete=models.CASCADE)
+    image = models.ImageField('Picture of message',
+                              upload_to='chat/pictures_of_messages',
+                              null=True, blank=True)
+    name_of_file = models.TextField("The name image", null=True, blank=True)
+
+    def __str__(self):
+        return 'Message: {}, image: {}'.format(self.message, self.image)
+
+    class Meta:
+        app_label = 'chat'
+        verbose_name = 'MessagePhoto'
+        verbose_name_plural = 'MessagePhotos'
 
 
 # class WhoReadChatMessage:
