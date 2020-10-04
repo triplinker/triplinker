@@ -4,8 +4,10 @@
 {% block main %}
 <div class="chat_window">
     <div class="top_menu">
-        <div class="title"><a style='color:#bcbdc0;'href="">{{ group_chat.chat_name }}</a></div>
+        <div class="title">
+            {{ group_chat.chat_name }} | <a href="{% url 'chat:participants' group_chat.slug %}" style="color: inherit;"><span style="text-align: left;">Participants</span></a></div>
     </div>
+
     <ul class="messages"></ul>
     <div class="bottom_wrapper clearfix">
         <form class="form-horizontal" method="post" enctype="multipart/form-data">
@@ -258,7 +260,6 @@
                             var nothing = 1;  // If so then do nothing
                         }else{
                             // Update the message dialog if there are new messages in DB which are connected with the current dialog.
-                            console.log(data[message_id][2])
                             if (String(data[message_id][2]) == 'no_img'){
                                 sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=300,)
                                         all_messages.push(message_id)

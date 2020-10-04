@@ -28,4 +28,13 @@ urlpatterns = [
     path('<slug:chat_name_slug>/get-all-messages-api/',
          views.get_all_messages_for_group_chat,
          name='get-all-messages-group-chat'),
+    # GroupChat extra features
+    path('<slug:chat_name_slug>/participants/', views.view_participants,
+         name='participants'),
+    path('invite-person/<slug:chat_name_slug>/',
+         views.invite_to_chat, name='invite-to-chat'),
+    path('delete-from-chat/<slug:chat_name_slug>/<int:user_id>/',
+         views.delete_user_from_chat, name='delete-from-chat'),
+    path('leave-chat/<slug:chat_name_slug>/', views.leave_chat,
+         name='leave-chat'),
 ]

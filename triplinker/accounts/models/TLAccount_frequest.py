@@ -39,6 +39,10 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     country = models.CharField("Country", max_length=25, choices=COUNTRIES,
                                blank=True)
 
+    # Media
+    # profile_image = models.ImageField('Profile image',
+    #                             upload_to='accounts/user_main_photo',
+    #                             null=True, blank=True)
     # Additional information about user
     place_of_work = models.CharField("Place of work", max_length=70, blank=True)
     short_description = models.CharField("Short description", max_length=500,

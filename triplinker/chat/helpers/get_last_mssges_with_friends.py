@@ -1,4 +1,4 @@
-from chat.models import Message, GroupChat, GroupChatMessage
+from chat.models import Message
 
 
 def get_last_mssges_from_dialogs(usr) -> set:
@@ -30,19 +30,3 @@ def get_last_mssges_from_dialogs(usr) -> set:
 
     sortMsg = sorted(last_messages, key=lambda msg: msg.timestamp, reverse=True)
     return set(sortMsg)
-
-
-def get_last_messges_of_group_chats(usr) -> set:
-    all_chats_with_usr = GroupChat.objects.filter(participants=usr)
-
-    last_messages: set = set()
-
-    for c in all_chats_with_usr:
-        prm = '-timestamp'
-        # All messages which are connected with the chat
-        ms = GroupChatMessage.objects.filter(group_chat=c).order_by(prm).first()
-        last_messages.add(ms)
-
-    sortMsg = sorted(last_messages, key=lambda msg: msg.timestamp, reverse=True)
-
-    return sortMsg

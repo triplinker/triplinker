@@ -2,7 +2,8 @@ from django import forms
 
 from accounts.models.TLAccount_frequest import TLAccount
 
-from .models import Message, GroupChat
+from .models import Message, GroupChat, GroupChatMainPhoto
+from .helpers.get_query_set_not_participants import get_friends_not_participants
 
 
 class SendMessageForm(forms.ModelForm):
@@ -57,6 +58,27 @@ class CreateGroupChatForm(forms.ModelForm):
     class Meta:
         model = GroupChat
         exclude = ['timestamp', ]
+
+
+class ChatWithMainPhotoForm(forms.ModelForm):
+
+    class Meta:
+        model = GroupChatMainPhoto
+        exclude = ['timestamp', ]
+
+
+class InviteFriendToChatForm(forms.Form):
+
+    def __init__(self, usr, chat_slug_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = TLAccount.objects.get(id=usr.id)
+        self.query = get_friends_not_participants(usr, chat_slug_name)
+        self.tuples = [(i.id, i.email) for i in self.query]
+        self.fields['participants'].choices = self.tuples
+
+    OPTIONS = (('n', 'none'))
+    widget = forms.CheckboxSelectMultiple
+    participants = forms.MultipleChoiceField(widget=widget, choices=OPTIONS)
 
 
 # class PinImageToMessageForm(forms.ModelForm):

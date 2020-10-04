@@ -72,35 +72,52 @@
 
             <hr>
             <div class="inbox-message">
-                {% if group_chats %}
-                {% for chat in group_chats %}
+                {% if not group_chats %}
+
+                    <p align="center" style="margin-top: 8%; margin-bottom: 0%;">You are not participating in any group chat.</p>
+                {% elif group_chats %}
+                {% for chat, list in group_chats.items %}
                 <ul>
                     <li>
-                        
-
                         <a href="{% url 'chat:particular-group-chat' chat.slug %}">
                             <div class="message-avatar">
-                                {% if chat.chat_image%}
-                                    <img src="{{ chat.chat_image.url }}" alt="">
+                                {% if list.1.chat_image %}
+                                    <img src="{{ list.1.chat_image.url }}" alt="">
                                 {% else %}
                                     <img src="https://www.plotprojects.com/wp-content/uploads/2014/06/multiple-users.png" alt="">
                                 {% endif %}
                             </div>
                                 <div class="message-body">
                                     <div class="message-body-heading">
-                                        <h5>{{ chat.chat_name }}</h5>
-                                            <span>TIMESINCE</span>
+                                        
+                                        <h4>{{ chat.chat_name }}</h4>
+                                        {% if list.0.message %}
+                                            <span>{{ list.0.timestamp | timesince }} ago</span>
+                                        {% endif %}
                                     </div>
                                     <p></p>
 
                                 </div>
                                 <div class="message-body">
-                                    <div class="message-body-heading">
-                                        <h5>FROM USER</h5>
-                                    </div>
-                                    <p>SLICE 38</p>
-                                       
+                                    {% if list.0.message%}
+                                        <div class="message-body-heading">
+                                            <h6>{{ list.0.message }}</h6>
+                                        </div>
+                                        <p>by {{ list.0.msg_from_user}}</p>
+                                    {% else %}
+                                        <div class="message-body-heading">
+                                            <h6>There are no messages in the chat yet</h6>
+                                        </div>
+                                    {% endif %}
                                 </div>
+                        </a>
+                        <a href="{% url 'chat:leave-chat' chat.slug %}">
+                            <div style="text-align: right;">
+                                <div>   
+                                    <h6 style="display: inline;">Leave </h6>
+                                </div>
+                                <h4 style="display: inline;"><i class="fa fa-sign-out" aria-hidden="true"></i></h4>
+                            </div>
                         </a>
                     </li>
                 </ul>

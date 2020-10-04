@@ -26,12 +26,11 @@
                     </div>
                 </div>
             </div>
+            <!-- modal triger button -->
             <h3 type="button" style='display: inline; margin-left: 5%;' data-toggle="modal" data-target="#exampleModal"><i class="fa fa-envelope" aria-hidden="true" ></i></h3>
-
             <!-- modal triger button -->
+            
             <a href="{% url 'chat:group-chats' %}" style="color:inherit;"><h3 style="margin-left: 3%; display: inline;"><i class="fa fa-users" aria-hidden="true"></i></h3></a>
-            <!-- modal triger button -->
-
 
             <a href="{% url 'chat:create-group-chat' %}" style="color:inherit;"><h3 style="margin-left: 3%; display: inline;"><i class="fa fa-user-plus" aria-hidden="true"></i></h3></a>
 
@@ -54,8 +53,8 @@
                                 {{ form.message }}
                             </div>
 
-                        <label>To: </label>
-                        {{ form.to_user}}
+                        <label>Select your friend: </label>
+                        {{ form.to_user }}
 
                     <!-- Send button -->
                     

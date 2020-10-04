@@ -5,11 +5,15 @@
   <div class="container"> 
     <h1 class="mt-2">Create group chat</h1>
     <hr class="mt-0 mb-4">
-      <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+      <form class="form-horizontal" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
         {{ form.field_errors }}
         {{ form.errors }}
+
+        {{ form_photo.non_field_errors }}
+        {{ form_photo.field_errors }}
+        {{ form_photo.errors }}
 
         <div class='form-group row'>
           <div class="col-form-label col-sm-3 control-label">
@@ -34,7 +38,7 @@
           {{ form.chat_image.label }}
           </div>
           <div class="avatar avatar-xxl" style="margin-left: 1.5%;">
-            <img src="https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/10657202191586787135-512.png" alt="Default picture from" class="avatar-img rounded-circle" height="140" width="140" id="imgshow">
+            <img src="https://www.plotprojects.com/wp-content/uploads/2014/06/multiple-users.png" alt="Default picture from" class="avatar-img rounded-circle" height="140" width="140" id="imgshow">
           </div>
           
           <div class="col-sm-5" style="margin-top: 5%;">

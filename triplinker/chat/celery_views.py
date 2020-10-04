@@ -2,8 +2,8 @@ import json
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import (Message, GroupChat, GroupChatMessage, MessagePhoto,
-                     DialogPhoto)
+from .models import (Message, DialogPhoto, GroupChat, GroupChatMessage,
+                     GroupChatMessagePhoto)
 from accounts.models.TLAccount_frequest import TLAccount
 
 
@@ -45,9 +45,10 @@ def get_associated_messages_group_chat_celery(chat_name_slug):
     for message in mssges:
         image_or_none = 'no_img'
         try:
-            img_field = MessagePhoto.objects.get(message=message).image.url
-            index = img_field.rfind('/media')
-            image_or_none = img_field[index:]
+            # Image field
+            img_f = GroupChatMessagePhoto.objects.get(message=message).image.url
+            index = img_f.rfind('/media')
+            image_or_none = img_f[index:]
         except ObjectDoesNotExist:
             pass
 

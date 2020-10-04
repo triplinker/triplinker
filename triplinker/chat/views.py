@@ -1,12 +1,14 @@
 import os
 import json
 import base64
+import random
+
 from datetime import datetime
 
 from django.core.files.images import ImageFile
 from django.shortcuts import render, get_object_or_404
 from django.http import (HttpResponseNotFound, HttpResponseRedirect,
-                         JsonResponse)
+                         JsonResponse, HttpResponseBadRequest)
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.template.defaultfilters import slugify
@@ -15,11 +17,12 @@ from accounts.models.TLAccount_frequest import TLAccount
 from chat.tasks import (get_associated_messages_task,
                         get_associated_messages_group_chat_task)
 
-from .models import (Message, GroupChat, GroupChatMessage, MessagePhoto,
-                     DialogPhoto)
-from .helpers.get_last_mssges_with_friends import (get_last_mssges_from_dialogs,  # noqa: F401, E501
-                                                get_last_messges_of_group_chats)  # noqa: E128, E501
-from .forms import SendMessageForm, CreateGroupChatForm
+from .models import (Message, GroupChat, GroupChatMainPhoto,
+                     GroupChatMessage, GroupChatMessagePhoto, DialogPhoto)
+from .helpers.get_last_mssges_with_friends import get_last_mssges_from_dialogs  # noqa: F401, E501
+
+from .forms import (SendMessageForm, ChatWithMainPhotoForm,
+                    CreateGroupChatForm, InviteFriendToChatForm)
 
 
 def messages_page(request):
@@ -185,25 +188,19 @@ def get_all_messages(request, user_id):
 def create_group_chat(request):
     template = 'chat/create_group_chat.html'
     usr = TLAccount.objects.get(id=request.user.id)
-    context = {'form': CreateGroupChatForm(usr)}
+    context = {'form': CreateGroupChatForm(usr),
+               'form_photo': GroupChatMainPhoto()}
     if request.method == 'POST':
         get_file = request.FILES.get('chat_image', None)
-        init_inf: dict = {}
 
-        if get_file:
-            read_file = get_file.read()
-            init_inf['chat_image'] = read_file
-        else:
-            init_inf['chat_image'] = get_file
-
-        form = CreateGroupChatForm(usr, request.POST, initial=init_inf)
+        form = CreateGroupChatForm(usr, request.POST, request.FILES)
         if form.is_valid():
             final_form = form.save(commit=False)
             final_form.creator = usr
 
             cht_name = form.cleaned_data.get('chat_name')
 
-            final_form.slug = slugify(cht_name)
+            slug_of_chat = final_form.slug = slugify(cht_name)
             final_form.save()
 
             all_particapants = form.cleaned_data.get('participants')
@@ -217,11 +214,22 @@ def create_group_chat(request):
             final_form.participants.add(usr)
             final_form.save()
 
+            if get_file:
+                group_chat = GroupChat.objects.get(slug=slug_of_chat)
+                form_photo = ChatWithMainPhotoForm(request.POST, request.FILES)
+                if form_photo.is_valid():
+                    one_more_final_form = form_photo.save(commit=False)
+                    one_more_final_form.group_chat = group_chat
+                    one_more_final_form.save()
+                else:
+                    context['form'] = form
+                    context['form_photo'] = form_photo
+                    return render(request, template, context)
         else:
             context['form'] = form
             return render(request, template, context)
 
-        return HttpResponseRedirect(reverse('chat:messages-page'))
+        return HttpResponseRedirect(reverse('chat:group-chats'))
     else:
         return render(request, template, context)
 
@@ -230,10 +238,23 @@ def list_of_group_chats(request):
     usr = TLAccount.objects.get(id=request.user.id)
     order_v = '-timestamp'
     chts = GroupChat.objects.filter(participants=request.user).order_by(order_v)
+    chat_and_last_message = {}
+
+    P = '-timestamp'
+    for c in chts:
+        lstM = GroupChatMessage.objects.filter(group_chat=c).order_by(P).first()
+
+        chat_photo = None
+        try:
+            chat_photo = c.get_main_photo_of_chat.all().first()
+        except Exception:
+            pass
+
+        chat_and_last_message[c] = [lstM, chat_photo]
 
     context = {
-        'group_chats': chts,
-        'form': SendMessageForm(usr=usr)
+        'group_chats': chat_and_last_message,
+        'form': SendMessageForm(usr=usr)  # For little button with envelope
     }
     return render(request, 'chat/list_of_group_chats.html', context)
 
@@ -281,11 +302,13 @@ def send_message_in_group_chat(request, chat_name_slug):
         with open(new_path, 'wb') as f:
             f.write(decoding)
 
-        new_msge_with_pic = MessagePhoto.objects.create(message=new_message,
+        new_msge_with_pic = GroupChatMessagePhoto.objects.create(
+                                                        message=new_message,
                                                         name_of_file=poFileStr)
         new_msge_with_pic.image = ImageFile(open(new_path, "rb"))
         new_msge_with_pic.save()
-        get_msg_with_photo = MessagePhoto.objects.get(name_of_file=poFileStr)
+        get_msg_with_photo = GroupChatMessagePhoto.objects.get(
+                                                         name_of_file=poFileStr)
 
     json = {'author': str(new_message.msg_from_user),
             'message_id': str(new_message.id)}
@@ -305,3 +328,85 @@ def get_all_messages_for_group_chat(request, chat_name_slug):
     m = get_associated_messages_group_chat_task.delay(chat_name_slug)
     parsed_json = json.loads(m.get())
     return JsonResponse(parsed_json, safe=False)
+
+
+# GroupChat extra features
+def view_participants(request, chat_name_slug):
+    usr = TLAccount.objects.get(id=request.user.id)
+    chat = GroupChat.objects.get(slug=chat_name_slug)
+    chat_particapants = chat.participants.all()
+
+    context = {
+        'chat': chat,
+        'particapants': chat_particapants,
+        'form': InviteFriendToChatForm(usr, chat_name_slug)
+    }
+
+    if request.method == 'POST':
+        form = InviteFriendToChatForm(usr, chat_name_slug, request.POST)
+
+        if form.is_valid():
+            pass
+        else:
+            context['form'] = form
+            return render(request, 'chat/participants_list.html', context)
+    # If HTTP method is GET
+    else:
+        return render(request, 'chat/participants_list.html', context)
+
+
+def delete_user_from_chat(request, chat_name_slug, user_id):
+    current_usr = request.user
+    chat = GroupChat.objects.get(slug=chat_name_slug)
+    user_to_remove = TLAccount.objects.get(id=user_id)
+    chat.participants.remove(user_to_remove)
+
+    partipnts = chat.participants.all()
+    last_usr_in_partipnts = partipnts[0]
+    if len(partipnts) == 1 and last_usr_in_partipnts.email == current_usr.email:
+        chat.delete()
+        return HttpResponseRedirect(reverse('chat:group-chats'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def invite_to_chat(request, chat_name_slug):
+    chat = GroupChat.objects.get(slug=chat_name_slug)
+
+    chat_particapants = chat.participants.all()
+    form = InviteFriendToChatForm(request.user, chat_name_slug, request.POST)
+
+    if form.is_valid():
+        all_particapants = form.cleaned_data.get('participants')
+        for participant in all_particapants:
+            particapant = TLAccount.objects.get(id=int(participant))  # noqa: F841, E501
+
+            if participant not in chat_particapants:
+                chat.participants.add(participant)
+
+            else:
+                HttpResponseBadRequest()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+    else:
+        return HttpResponseBadRequest()
+
+
+def leave_chat(request, chat_name_slug):
+    # The user who is leaving chat
+    usr = TLAccount.objects.get(id=request.user.id)
+    chat = GroupChat.objects.get(slug=chat_name_slug)
+    chat.participants.remove(usr)
+
+    # New creator
+    amount_of_particapants = len(chat.participants.all())
+
+    if amount_of_particapants == 0:
+        chat.delete()
+    else:
+        if usr.email == chat.creator.email:
+            new_amount_ptnts = amount_of_particapants - 1
+            choice_random_participant = random.randint(0, new_amount_ptnts)
+            new_creator = chat.participants.all()[choice_random_participant]
+            chat.creator = new_creator
+            chat.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

@@ -42,9 +42,6 @@ class DialogPhoto(models.Model):
 # Models for group chatting
 class GroupChat(models.Model):
     chat_name = models.CharField("The name of group chat", max_length=25)
-    chat_image = models.ImageField('Main photo of chat',
-                                   upload_to='chat/main_chat_image',
-                                   null=True, blank=True)
     participants = models.ManyToManyField(TLAccount, blank=True, default=None,
                                           related_name='get_chat_partns')
     creator = models.ForeignKey(TLAccount, on_delete=models.CASCADE, null=True,
@@ -70,6 +67,21 @@ class GroupChat(models.Model):
         verbose_name_plural = 'GroupChats'
 
 
+class GroupChatMainPhoto(models.Model):
+    group_chat = models.ForeignKey(GroupChat, on_delete=models.CASCADE,
+                                   related_name='get_main_photo_of_chat',
+                                   blank=True)
+    chat_image = models.ImageField('Main photo of chat',
+                                   upload_to='chat/main_chat_image',
+                                   null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        app_label = 'chat'
+        verbose_name = 'GroupChatMainPhoto'
+        verbose_name_plural = 'GroupChatMainPhotos'
+
+
 class GroupChatMessage(models.Model):
     group_chat = models.ForeignKey(GroupChat, on_delete=models.CASCADE)
     relted_name_1 = 'group_chat_msges_from_user'
@@ -89,7 +101,7 @@ class GroupChatMessage(models.Model):
         verbose_name_plural = 'GroupChatMessages'
 
 
-class MessagePhoto(models.Model):
+class GroupChatMessagePhoto(models.Model):
     message = models.ForeignKey(GroupChatMessage, on_delete=models.CASCADE)
     image = models.ImageField('Picture of message',
                               upload_to='chat/pictures_of_messages',
@@ -101,8 +113,8 @@ class MessagePhoto(models.Model):
 
     class Meta:
         app_label = 'chat'
-        verbose_name = 'MessagePhoto'
-        verbose_name_plural = 'MessagePhotos'
+        verbose_name = 'GroupChatMessagePhoto'
+        verbose_name_plural = 'GroupChatMessagePhotos'
 
 
 # class WhoReadChatMessage:
