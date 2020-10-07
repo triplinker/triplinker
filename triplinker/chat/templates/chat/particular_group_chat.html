@@ -46,7 +46,7 @@
     <li class="message">
         <div class="message-avatar avatar" style="width: 54px;
     height: 54px;">
-            <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+            <img src="" alt="" id="user_avatar">
         </div>
         <div class="text_wrapper">
             <div class="text" style="word-wrap: break-word;"></div>
@@ -55,6 +55,15 @@
 </div>
 
 <!--- Messages-main logic and ajax requests [START] --->
+    {% if request.user.get_avatar.all.first.profile_image %}
+    <script>
+        var avatar_of_current_user = '{{request.user.get_avatar.all.first.profile_image.url}}';
+    </script>
+    {% else %}
+    <script>
+        var avatar_of_current_user = '';
+    </script>
+    {% endif %}
     <script>
 
         function check_image(){
@@ -73,12 +82,11 @@
 
         }
         var run = setInterval(check_image, 1000);        
-
         (function () {
         var Message;
         Message = function (arg) {
-            this.text = arg.text, this.message_side = arg.message_side;
-
+            this.text = arg.text, this.message_side = arg.message_side, this.author = arg.author;
+            var avatar = arg.avatar;
             if (arg.img){
                 this.img = arg.img;
                 this.draw = function (_this){
@@ -87,6 +95,21 @@
                         $message = $($('.message_template').clone().html());
                         image = '<div style="text-align: center;"><img src="' + _this.img + '" width="250" height="260" style ="object-fit: contain;"></div>'
                         $message.addClass(_this.message_side).find('.text').html(_this.text + '<br><br>' + image);
+
+                        if (_this.message_side == 'left'){
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }else{
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }
+
                         $('.messages').append($message);
                         return setTimeout(function () {
                             return $message.addClass('appeared');
@@ -99,6 +122,19 @@
                         var $message;
                         $message = $($('.message_template').clone().html());
                         $message.addClass(_this.message_side).find('.text').html(_this.text);
+                        if (_this.message_side == 'left'){
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }else{
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }
                         $('.messages').append($message);
                         return setTimeout(function () {
                             return $message.addClass('appeared');
@@ -128,7 +164,7 @@
 
             // Draw messages in dialog boxes, if the status is 'insert-message-into-db' then before drawing makes request to the server to insert a message into DB, if the status is 'get-messages-from-db' then make request to the server to get all messages from db of current dialog.
             let photo_URL;
-            sendMessage = function (text, status, author=null, photo=null, anim_speed=null) {
+            sendMessage = function (text, status, author=null, photo=null, anim_speed=null, avatar=null) {
                 if (status === 'insert-message-into-db'){
                     // Ajax request [START]
                     var inf = $.ajax({
@@ -166,14 +202,18 @@
                         message = new Message({
                         text: full_text,
                         message_side: 'right',
-                        img: photo_URL
+                        img: photo_URL,
+                        author:current_user,
+                        avatar:avatar_of_current_user
                         });
 
                     }else{
                         message = new Message({
                         text: full_text,
                         message_side: 'left',
-                        img: photo_URL
+                        img: photo_URL,
+                        author:current_user,
+                        avatar: avatar_of_current_user
                         });
                     }
 
@@ -197,13 +237,17 @@
                         message = new Message({
                         text: full_text,
                         message_side: 'right',
-                        img: photo
+                        img: photo,
+                        author:author,
+                        avatar: avatar
                         });
                     } else{
                         message = new Message({
                         text: full_text,
                         message_side: 'left',
-                        img: photo
+                        img: photo,
+                        author:author,
+                        avatar: avatar
                         });
                     }
                     message.draw();
@@ -228,7 +272,6 @@
                     return sendMessage(getMessageText(), 'insert-message-into-db');
                 }
             });
-
             // The loading of the conversation from DB then the dialog was opened.
             function get_comments(){
                 var date = new Date();
@@ -240,9 +283,9 @@
                     for (var message_id in data){
                         all_messages.push(message_id)
                     if (String(data[message_id][2]) == 'no_img'){
-                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=null)
+                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=null, avatar=data[message_id][3])
                     } else{
-                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2],anim_speed=null)
+                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2],anim_speed=null, avatar=data[message_id][3])
                     }
                 }
             
@@ -261,10 +304,10 @@
                         }else{
                             // Update the message dialog if there are new messages in DB which are connected with the current dialog.
                             if (String(data[message_id][2]) == 'no_img'){
-                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=300,)
+                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=300, avatar=data[message_id][3])
                                         all_messages.push(message_id)
                             }else{
-                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2], anim_speed=300)
+                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2], anim_speed=300, avatar=data[message_id][3])
                                         all_messages.push(message_id)    
                             }
                         }

@@ -12,6 +12,9 @@ urlpatterns = [
     # All users list.
     path('users/', views.all_users_list, name='all_users_list'),
 
+    # SetAvatar.
+    path('set-avatar/', views.set_avatar_view, name='set-avatar'),
+
     # A particular profile of user.
     path('users/<int:user_id>/', views.detail_profile,
          name="detail_profile"),

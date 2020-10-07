@@ -119,7 +119,6 @@ def detail_profile(request, user_id):
             else:
                 context['form'] = form
                 comment_form = AddCommentForm()
-
                 context['comment_form'] = comment_form
 
     else:

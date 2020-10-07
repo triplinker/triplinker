@@ -12,7 +12,7 @@ from crispy_forms.layout import (Submit, Field, Fieldset,  # noqa: F401
 
 import datetime
 
-from accounts.models.TLAccount_frequest import TLAccount
+from accounts.models.TLAccount_frequest import TLAccount, AvatarTLAccount
 
 
 class CreateUser(UserCreationForm):
@@ -203,3 +203,10 @@ class ProfileEditForm(UserChangeForm):
     def save(self, *args, **kwargs):
         super(ProfileEditForm, self).save(*args, **kwargs)
         return self
+
+
+class SetAvatarForm(forms.ModelForm):
+
+    class Meta:
+        model = AvatarTLAccount
+        exclude = ['timestamp', ]

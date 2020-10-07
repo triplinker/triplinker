@@ -42,7 +42,7 @@
     <li class="message">
         <div class="message-avatar avatar" style="width: 54px;
     height: 54px;">
-            <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+            <img src="" alt="" id="user_avatar">
         </div>
         <div class="text_wrapper">
             <div class="text" style="word-wrap: break-word;"></div>
@@ -83,6 +83,22 @@
                         $message = $($('.message_template').clone().html());
                         image = '<div style="text-align: center;"><img src="' + _this.img + '" width="250" height="260" style ="object-fit: contain;"></div>'
                         $message.addClass(_this.message_side).find('.text').html(_this.text + '<br><br>' + image);
+
+                        if (_this.message_side == 'left'){
+                            var avatar = '{{ message_to_user.get_avatar.all.first.profile_image.url }}';
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src','{{ message_to_user.get_avatar.all.first.profile_image.url }}')
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }else{
+                            var avatar = '{{ request.user.get_avatar.all.first.profile_image.url }}';
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }
                         $('.messages').append($message);
                         return setTimeout(function () {
                             return $message.addClass('appeared');
@@ -95,6 +111,22 @@
                         var $message;
                         $message = $($('.message_template').clone().html());
                         $message.addClass(_this.message_side).find('.text').html(_this.text);
+
+                        if (_this.message_side == 'left'){
+                            var avatar = '{{ message_to_user.get_avatar.all.first.profile_image.url }}';
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src','{{ message_to_user.get_avatar.all.first.profile_image.url }}')
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }else{
+                            var avatar = '{{ request.user.get_avatar.all.first.profile_image.url }}';
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }
                         $('.messages').append($message);
                         return setTimeout(function () {
                             return $message.addClass('appeared');

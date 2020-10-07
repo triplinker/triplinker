@@ -39,10 +39,6 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     country = models.CharField("Country", max_length=25, choices=COUNTRIES,
                                blank=True)
 
-    # Media
-    # profile_image = models.ImageField('Profile image',
-    #                             upload_to='accounts/user_main_photo',
-    #                             null=True, blank=True)
     # Additional information about user
     place_of_work = models.CharField("Place of work", max_length=70, blank=True)
     short_description = models.CharField("Short description", max_length=500,
@@ -123,6 +119,22 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
+
+
+class AvatarTLAccount(models.Model):
+    rlted_name = 'get_avatar'
+    user = models.ForeignKey(TLAccount,  on_delete=models.CASCADE,
+                             related_name=rlted_name, blank=True, null=True)
+    profile_image = models.ImageField('Profile image',
+                                      upload_to='accounts/user_main_photo')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Avatar of {self.user}'
+
+    class Meta:
+        verbose_name = 'AvatarTLAccount'
+        verbose_name_plural = 'AvatarsTLAccounts'
 
 
 class UserFilter(django_filters.FilterSet):

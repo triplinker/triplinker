@@ -80,7 +80,11 @@
                     <li>
                         <a href="{% url 'chat:messages-dialog' message.to_user.id %}">
                             <div class="message-avatar">
-                                <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+                                {% if message.to_user.get_avatar.all.first.profile_image %}
+                                    <img src="{{message.to_user.get_avatar.all.first.profile_image.url}}" alt="">
+                                {% else %}
+                                    <img src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="">
+                                {% endif %}
                             </div>
                             {% if request.user in message.to_user.friends.all %}
                             <div class="message-body">
@@ -113,7 +117,11 @@
                     <li>
                         <a href="{% url 'chat:messages-dialog' message.to_user.id %}">
                             <div class="message-avatar">
-                                <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+                                {% if message.to_user.get_avatar.all.first.profile_image %}
+                                    <img src="{{message.to_user.get_avatar.all.first.profile_image.url}}" alt="">
+                                {% else %}
+                                    <img src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="">
+                                {% endif %}
                             </div>
                             {% if request.user in message.to_user.friends.all %}
                                 <div class="message-body">
@@ -148,7 +156,11 @@
                     <li> 
                         <a href="{% url 'chat:messages-dialog' message.from_user.id %}">
                             <div class="message-avatar">
-                                <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+                                {% if message.from_user.get_avatar.all.first.profile_image %}
+                                    <img src="{{message.from_user.get_avatar.all.first.profile_image.url}}" alt="">
+                                {% else %}
+                                    <img src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="">
+                                {% endif %}
                             </div>
 
                             {% if request.user in message.from_user.friends.all %}
@@ -182,7 +194,11 @@
                     <li> 
                         <a href="{% url 'chat:messages-dialog' message.from_user.id %}">
                             <div class="message-avatar">
-                                <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+                                {% if message.from_user.get_avatar.all.first.profile_image %}
+                                    <img src="{{message.from_user.get_avatar.all.first.profile_image.url}}" alt="">
+                                {% else %}
+                                    <img src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="">
+                                {% endif %}
                             </div>
 
                             {% if request.user in message.from_user.friends.all %}
@@ -212,9 +228,7 @@
                             {% endif %}
                         </a>
                     </li>
-
                     {% endif %}
-
                     {% endif %}
                     {% endfor %}
                     {% elif not ordered_messages %}

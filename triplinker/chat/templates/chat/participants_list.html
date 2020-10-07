@@ -52,7 +52,12 @@
               <div class="nearby-user">
                 <div class="row">
                   <div class="col-md-2 col-sm-2">
-                    <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="user" class="profile-photo-lg">
+                    {% if participant.get_avatar.all.first.profile_image %}
+                      <img src="{{ participant.get_avatar.all.first.profile_image.url }}" alt="user" class="profile-photo-lg">
+                    {% else %}
+                      <img src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="user" class="profile-photo-lg">
+                    {% endif %}
+                    
                   </div>
                   <div class="col-md-7 col-sm-7">
                     <h5><a href="{% url 'accounts:detail_profile' participant.id %}" class="profile-link">{{ participant.email }}</a></h5>

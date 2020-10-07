@@ -10,3 +10,4 @@ from accounts.views.profile_views.additional_profile_views import *
 from accounts.views.profile_views.main_profile_views import *
 
 from accounts.views.reg_auth_acc_activate_views.views import *
+from accounts.views.set_avatar_view.view import *

@@ -35,6 +35,15 @@ def get_associated_messages_celery(from_user, to_user):
     return json.dumps(context)
 
 
+def get_avatar(message):
+    avtr = None
+    try:
+        avtr = message.msg_from_user.get_avatar.all().first().profile_image.url
+    except AttributeError:
+        pass
+    return avtr
+
+
 def get_associated_messages_group_chat_celery(chat_name_slug):
     # Chat
     c = GroupChat.objects.get(slug=chat_name_slug)
@@ -52,7 +61,8 @@ def get_associated_messages_group_chat_celery(chat_name_slug):
         except ObjectDoesNotExist:
             pass
 
+        avtr = get_avatar(message)
         context[message.id] = [message.msg_from_user.email, message.message,
-                               image_or_none]
+                               image_or_none, avtr]
 
     return json.dumps(context)

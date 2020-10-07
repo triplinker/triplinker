@@ -27,6 +27,12 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
                                              notification_post=True)
     posts = posts | notification_posts
 
+    user_avatar = None
+    try:
+        user_avatar = user_acc.get_avatar.all().first()
+    except Exception:
+        pass
+
     context = {
         'user_acc': user_acc,
         'who_makes_a_request': request.user.email,
@@ -34,5 +40,6 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
         'amount_of_frequests': amount_of_frequests,
         'status_between_users': status_between_users,
         'posts': posts,
+        'avatar': user_avatar
     }
     return context
