@@ -12,7 +12,8 @@ from crispy_forms.layout import (Submit, Field, Fieldset,  # noqa: F401
 
 import datetime
 
-from accounts.models.TLAccount_frequest import TLAccount, AvatarTLAccount
+from accounts.models.TLAccount_frequest import (TLAccount, AvatarTLAccount,
+                                                UserPhotoGallery)
 
 
 class CreateUser(UserCreationForm):
@@ -123,9 +124,11 @@ class AccountActivationForm(UserChangeForm):
             'sex',
             'date_of_birth',
             'country',
+            'qualities',
             'can_get_message_from',
             'place_of_work',
             'hobbies',
+            'motto',
             'short_description',
             'vkontakte',
             'twitter',
@@ -210,3 +213,10 @@ class SetAvatarForm(forms.ModelForm):
     class Meta:
         model = AvatarTLAccount
         exclude = ['timestamp', ]
+
+
+class AddPhotoToPlaceGalleryForm(forms.ModelForm):
+
+    class Meta:
+        model = UserPhotoGallery
+        fields = ['photo', 'author']

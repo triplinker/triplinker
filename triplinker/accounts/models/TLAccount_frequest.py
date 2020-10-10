@@ -9,6 +9,17 @@ from django_filters.widgets import RangeWidget
 import datetime
 
 
+class PersonalQualities(models.Model):
+    quality = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.quality}'
+
+    class Meta:
+        verbose_name = 'Quality'
+        verbose_name_plural = 'Qualities'
+
+
 class TLAccount(AbstractBaseUser, PermissionsMixin):
     """Main model in project.
     Model contains basic fields which are connected with user's info
@@ -38,12 +49,14 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField("Date of birth", blank=True, null=True)
     country = models.CharField("Country", max_length=25, choices=COUNTRIES,
                                blank=True)
+    qualities = models.ManyToManyField(PersonalQualities, blank=False)
 
     # Additional information about user
     place_of_work = models.CharField("Place of work", max_length=70, blank=True)
     short_description = models.CharField("Short description", max_length=500,
                                          blank=True)
     hobbies = models.CharField("Hobbies", max_length=250, blank=True)
+    motto = models.CharField("Motto", max_length=62, blank=True, null=True)
 
     # Social networks links
     vkontakte = models.URLField(verbose_name="VKontakte", blank=True, null=True)
@@ -135,6 +148,27 @@ class AvatarTLAccount(models.Model):
     class Meta:
         verbose_name = 'AvatarTLAccount'
         verbose_name_plural = 'AvatarsTLAccounts'
+
+
+class UserPhotoGallery(models.Model):
+    photo = models.ImageField('Photos of place',
+                              upload_to='accounts/user_gallery',
+                              null=True, blank=True)
+
+    author = models.ForeignKey(TLAccount, related_name='photos_of_user',
+                               blank=True, null=True, default=None,
+                               on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return "Place: {}, Author: {}, Photo: {}".format(self.place,
+                                                         self.author,
+                                                         self.photo)
+
+    class Meta:
+        ordering = ('-timestamp',)
+        verbose_name = 'UserPhoto (Gallery)'
+        verbose_name_plural = 'UserPhotos (Gallery)'
 
 
 class UserFilter(django_filters.FilterSet):

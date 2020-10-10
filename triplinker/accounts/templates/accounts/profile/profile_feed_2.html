@@ -10,10 +10,27 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="card-body">
-                            <div class="h5">@LeeCross</div>
-                            <div class="h7 text-muted">Fullname : Miracles Lee Cross</div>
-                            <div class="h7">Developer of web applications, JavaScript, PHP, Java, Python, Ruby, Java, Node.js,
-                                etc.
+                            <div class="h5">Personal qualities:</div>
+
+                            <div class="h6">
+                                    {% for quality in qualities %}
+                                        <div>· {{quality.quality}}</div>
+                                    {% endfor %}
+                                    {% if qualities_more_than_3 %}
+                                        <div class="dropdown">
+                                            <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" placeholder="View more qualities">
+                                                <i class="fa fa-ellipsis-h"></i>
+                                            </button>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
+                                        <div class="h6 dropdown-header">Other qualities</div>
+                                        <ul>
+                                        {% for quality in other_qualities%}
+                                            <li>{{quality.quality}}</li>
+                                        {% endfor %}
+                                        </ul>
+                                        </div>
+                                     </div>
+                                    {% endif %}
                             </div>
                         </div>
                         <ul class="list-group list-group-flush">
@@ -29,7 +46,12 @@
                                 <div class="h6 text-muted"><a href="{% url 'trip_places:favourite-places' user_acc.id %}">Favourite places</a></div>
                                 <div class="h5">{{ user.favourite_places.count }}</div>
                             </li>
-                            <li class="list-group-item">Vestibulum at eros</li>
+                            {% if user_acc.motto %}
+                            <li class="list-group-item">
+                                <div class="h5 text" style="text-align: center;">Motto</div>
+                                <div class="h6">{{ user_acc.motto }}</div>
+                            </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
@@ -106,23 +128,31 @@
     <!--- Right block of cards [START] --->
         <div class="col-md-3">
             <div class="card gedf-card">
+                {% if request.user.email == user_acc.email %}
                 <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'journeys:journey-list' user_acc.id%}"> Journeys</a></h5>
+                    <p class="card-text">Here you can check your list of journeys.</p>
+<!--                     <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a> -->
+                </div>
+                {% else %}
+                    <div class="card-body">
                     <h5 class="card-title"><a href="{% url 'journeys:journey-list' user_acc.id%}">Journeys of {{ user_acc.email }} </a></h5>
                     <p class="card-text">Here you can check the journeys' list where {{user_acc.email }} has participated.</p>
                     <a href="#" class="card-link">Card link</a>
                     <a href="#" class="card-link">Another link</a>
                 </div>
-            </div>
+                {% endif %}
+            </div>   
             <div class="card gedf-card">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                                card's content.</p>
-                            <a href="#" class="card-link">Card link</a>
-                            <a href="#" class="card-link">Another link</a>
-                        </div>
-                    </div>
+                        <h5 class="card-title"><a href="{% url 'accounts:user-photo-gallery' user_acc.id%}">Photos</a></h5>
+                    {% if request.user.email != user_acc.email %}
+                        <p class="card-text">View the gallery of photos of {{ user_acc.email }}!</p>
+                    {% else %}
+                        <p class="card-text">Your photo gallery is here! Share new photos with the whole world!</p>
+                    {% endif %}
+                </div>
             </div>
     <!--- Right block of cards [END] --->
 <!--- Feed [END] --->

@@ -33,6 +33,17 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
     except Exception:
         pass
 
+    qualities = user_acc.qualities.all()
+    qualities_3 = None
+    qualities_more_than_3 = False
+    other_qualities = None
+    if len(qualities) > 3:
+        qualities_more_than_3 = True
+        qualities_3 = qualities[:3]
+        other_qualities = qualities[3:]
+    else:
+        qualities_3 = qualities
+
     context = {
         'user_acc': user_acc,
         'who_makes_a_request': request.user.email,
@@ -40,6 +51,9 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
         'amount_of_frequests': amount_of_frequests,
         'status_between_users': status_between_users,
         'posts': posts,
-        'avatar': user_avatar
+        'avatar': user_avatar,
+        'qualities': qualities_3,
+        'qualities_more_than_3': qualities_more_than_3,
+        'other_qualities': other_qualities
     }
     return context
