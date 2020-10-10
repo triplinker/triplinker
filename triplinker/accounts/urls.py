@@ -16,7 +16,7 @@ urlpatterns = [
     path('set-avatar/', views.set_avatar_view, name='set-avatar'),
 
     # User's photo gallery.
-    path('users/<int:user_id>/photo-gallery/', views.photos_of_place,
+    path('users/<int:user_id>/photo-gallery/', views.photos_of_user,
          name='user-photo-gallery'),
 
     # A particular profile of user.

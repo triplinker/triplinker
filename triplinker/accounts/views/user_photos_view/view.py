@@ -5,7 +5,7 @@ from accounts.forms.forms import AddPhotoToPlaceGalleryForm
 from accounts.models.TLAccount_frequest import TLAccount
 
 
-def photos_of_place(request, user_id):
+def photos_of_user(request, user_id):
     template = 'accounts/profile/photos_gallery.html'
     user_acc = get_object_or_404(TLAccount, id=user_id)
 
