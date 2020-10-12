@@ -1,5 +1,9 @@
+# Django modules.
 from django.db import models
 
+# !Triplinker modules:
+
+# Another apps modules.
 from accounts.models.TLAccount_frequest import TLAccount
 from trip_places.models import Place
 

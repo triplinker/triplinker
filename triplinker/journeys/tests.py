@@ -1,9 +1,14 @@
+# Django modules.
 from django.urls import reverse
 from django.test import TestCase, Client
 
+# !Triplinker modules:
+
+# Another apps modules.
 from accounts.models.TLAccount_frequest import TLAccount
 from trip_places.models import Place
 
+# Current app modules.
 from .models import Journey, Participant
 
 

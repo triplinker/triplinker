@@ -1,7 +1,10 @@
+# Another app modules
 import pytest
 
+# Django modules.
 from django.urls import reverse
 
+# !Triplinker modules:
 from tests.helpers.create_user import new_user
 
 

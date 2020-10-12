@@ -1,5 +1,9 @@
+# Django modules.
 from django.urls import path
 
+# !Triplinker modules:
+
+# Current app modules.
 from . import views
 
 

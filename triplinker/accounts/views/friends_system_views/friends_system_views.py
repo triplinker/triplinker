@@ -1,6 +1,10 @@
+# Django modules.
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.models.TLAccount_frequest import TLAccount, FriendRequest
 
 

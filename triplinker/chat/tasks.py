@@ -1,3 +1,4 @@
+# Another project modules.
 from celery.decorators import task
 from .celery_views import (get_associated_messages_celery,
                            get_associated_messages_group_chat_celery)

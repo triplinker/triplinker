@@ -1,9 +1,12 @@
+# Python modules.
 import pytest
 
+# Django modules.
 from django.urls import reverse
-
-from tests.helpers.create_user import new_user
 from django.test import TestCase
+
+# !Triplinker modules:
+from tests.helpers.create_user import new_user
 
 
 @pytest.mark.django_db

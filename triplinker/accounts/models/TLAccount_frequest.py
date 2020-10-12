@@ -1,15 +1,25 @@
+# Python modules.
+import datetime
+
+# Another project modules.
+import django_filters
+
+# Django modules.
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
-from accounts.managers import TLAccountManager
 from django.db.models import Q
-
-import django_filters
 from django_filters.widgets import RangeWidget
-import datetime
+
+# !Triplinker modules:
+
+# Current app module.
+from accounts.managers import TLAccountManager
 
 
 class PersonalQualities(models.Model):
+    """Adds the possibility to create qualities for the field 'qualities' of
+       TLAccount model."""
     quality = models.CharField(max_length=50)
 
     def __str__(self):
@@ -135,6 +145,7 @@ class TLAccount(AbstractBaseUser, PermissionsMixin):
 
 
 class AvatarTLAccount(models.Model):
+    """Gives the possibility of storying an avatar of an user."""
     rlted_name = 'get_avatar'
     user = models.ForeignKey(TLAccount,  on_delete=models.CASCADE,
                              related_name=rlted_name, blank=True, null=True)
@@ -151,6 +162,7 @@ class AvatarTLAccount(models.Model):
 
 
 class UserPhotoGallery(models.Model):
+    """Gives the possibility to store user's photos from his gallery."""
     photo = models.ImageField('Photos of place',
                               upload_to='accounts/user_gallery',
                               null=True, blank=True)
@@ -172,6 +184,7 @@ class UserPhotoGallery(models.Model):
 
 
 class UserFilter(django_filters.FilterSet):
+    """Filtier for finding user(s) from the page with all_users (People)."""
     q = django_filters.CharFilter(
         method='full_name_filter',
         label='Name')
@@ -202,8 +215,7 @@ class UserFilter(django_filters.FilterSet):
 
 
 class FriendRequest(models.Model):
-    """Model for storing friend requests between users"""
-
+    """Model for storing friend requests between users."""
     from_user = models.ForeignKey(TLAccount,
                                   related_name='from_user',
                                   on_delete=models.CASCADE)

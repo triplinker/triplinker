@@ -1,12 +1,17 @@
+# Django modules.
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
+# !Triplinker modules:
+
+# Another apps modules.
 from accounts.models.TLAccount_frequest import TLAccount
 from feed.models import Post, Notification
 from feed.forms import AddPostToPlacePageForm, AddCommentForm
 
+# Current app modules.
 from .models import Place, PlaceFilter
 from .forms import (AddPlaceForm, AddPhotoToPlaceGalleryForm,
                     AddFeedbackForm)

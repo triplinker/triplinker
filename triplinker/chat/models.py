@@ -1,10 +1,14 @@
+# Django modules.
 from django.db import models
 
+# !Triplinker modules:
+
+# Another app modules.
 from accounts.models.TLAccount_frequest import TLAccount
 
 
-# Model for chatting one by one
 class Message(models.Model):
+    """Model for chatting one by one."""
     from_user = models.ForeignKey(TLAccount, on_delete=models.CASCADE,
                                   related_name='message_from_user')
     to_user = models.ForeignKey(TLAccount, on_delete=models.CASCADE,
@@ -24,6 +28,7 @@ class Message(models.Model):
 
 
 class DialogPhoto(models.Model):
+    """Gives the possibility of seding photo in dialogs."""
     message = models.ForeignKey('Message', on_delete=models.CASCADE)
     image = models.ImageField('Picture of message',
                               upload_to='chat/pictures_of_messages',
@@ -39,8 +44,8 @@ class DialogPhoto(models.Model):
         verbose_name_plural = 'DialogPhotos'
 
 
-# Models for group chatting
 class GroupChat(models.Model):
+    """Stores group chats."""
     chat_name = models.CharField("The name of group chat", max_length=25)
     participants = models.ManyToManyField(TLAccount, blank=True, default=None,
                                           related_name='get_chat_partns')
@@ -68,6 +73,7 @@ class GroupChat(models.Model):
 
 
 class GroupChatMainPhoto(models.Model):
+    """Stores avatars of group chats."""
     group_chat = models.ForeignKey(GroupChat, on_delete=models.CASCADE,
                                    related_name='get_main_photo_of_chat',
                                    blank=True)
@@ -83,6 +89,7 @@ class GroupChatMainPhoto(models.Model):
 
 
 class GroupChatMessage(models.Model):
+    """Stores messages in group chats."""
     group_chat = models.ForeignKey(GroupChat, on_delete=models.CASCADE)
     relted_name_1 = 'group_chat_msges_from_user'
     msg_from_user = models.ForeignKey(TLAccount, on_delete=models.CASCADE,
@@ -102,6 +109,7 @@ class GroupChatMessage(models.Model):
 
 
 class GroupChatMessagePhoto(models.Model):
+    """Stores images for messages in chat."""
     message = models.ForeignKey(GroupChatMessage, on_delete=models.CASCADE)
     image = models.ImageField('Picture of message',
                               upload_to='chat/pictures_of_messages',
@@ -115,7 +123,3 @@ class GroupChatMessagePhoto(models.Model):
         app_label = 'chat'
         verbose_name = 'GroupChatMessagePhoto'
         verbose_name_plural = 'GroupChatMessagePhotos'
-
-
-# class WhoReadChatMessage:
-#     user = models.ForeignKey(TLAccount, on_delete=models.CASCADE)

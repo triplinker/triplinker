@@ -1,7 +1,13 @@
+# !Triplinker modules:
+
+# Current app modules.
 from chat.models import Message
 
 
 def get_last_mssges_from_dialogs(usr) -> set:
+    """Gets last messages from dialogs with different users of the current user.
+    Needed to display last messages for messages page."""
+
     the_friends_of_user = usr.friends.all()
     strangers_of_user = usr.strangers.all()
 
@@ -22,7 +28,7 @@ def get_last_mssges_from_dialogs(usr) -> set:
 
     last_messages: list = list(filter(None, last_messages))
     if len(last_messages) != 0:
-        # Exclude the possibility of chatting user with himself
+        # Exclude the possibility of chatting user with himself.
         for message in last_messages:
             if (message.from_user.email == usr.email and
                usr.email == message.to_user.email):

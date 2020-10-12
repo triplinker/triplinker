@@ -1,5 +1,9 @@
+# Django modules.
 from django.contrib.auth.models import BaseUserManager
 
+# !Triplinker modules:
+
+# Current app modules.
 from .helpers.manager.create_users_func import create_acc
 
 

@@ -1,191 +1,34 @@
+# Python modules.
 import os
 import json
 import base64
 import random
-
 from datetime import datetime
 
+# Django Modules.
 from django.core.files.images import ImageFile
-from django.shortcuts import render, get_object_or_404
-from django.http import (HttpResponseNotFound, HttpResponseRedirect,
-                         JsonResponse, HttpResponseBadRequest)
+from django.shortcuts import render
+from django.http import (HttpResponseRedirect, JsonResponse,
+                         HttpResponseBadRequest)
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 
+# !Triplinker modules:
+
+# Another app module.
 from accounts.models.TLAccount_frequest import TLAccount
-from chat.tasks import (get_associated_messages_task,
-                        get_associated_messages_group_chat_task)
 
-from .models import (Message, GroupChat, GroupChatMainPhoto,
-                     GroupChatMessage, GroupChatMessagePhoto, DialogPhoto)
-from .helpers.get_last_mssges_with_friends import get_last_mssges_from_dialogs  # noqa: F401, E501
-
-from .forms import (SendMessageForm, ChatWithMainPhotoForm,
-                    CreateGroupChatForm, InviteFriendToChatForm)
+# Current app modules.
+from chat.tasks import get_associated_messages_group_chat_task
+from chat.models import (GroupChat, GroupChatMainPhoto, GroupChatMessage,
+                         GroupChatMessagePhoto)
+from chat.forms import (SendMessageForm, ChatWithMainPhotoForm,
+                        CreateGroupChatForm, InviteFriendToChatForm)
 
 
-def messages_page(request):
-    usr = get_object_or_404(TLAccount, id=request.user.id)
-    last_messages = get_last_mssges_from_dialogs(usr)
-
-    try:
-        msg = sorted(last_messages, key=lambda msg: msg.timestamp, reverse=True)
-        for message in msg:
-            if message.from_user.email == usr.email:
-                message.users_who_read_message.add(usr)
-
-    # If user doesn't have friends and list 'last_messages' is empty
-    except AttributeError:
-        msg = None
-
-    # group_chat = GroupChat.objects.filter(participants=usr)
-    # dict_ = {'user': usr}  #!
-    context = {
-        'ordered_messages': msg,
-        'form': SendMessageForm(usr=usr)
-    }
-    return render(request, 'chat/messages_page.html', context)
-
-
-def messages_dialog_page(request, user_id):
-    current_user = get_object_or_404(TLAccount, id=request.user.id)
-    message_to_user = get_object_or_404(TLAccount, id=user_id)
-
-    if current_user.id == message_to_user.id:
-        return HttpResponseNotFound()
-
-    elif message_to_user.can_get_message_from == 'All':
-        context = {
-            'message_to_user': message_to_user,
-        }
-        return render(request, 'chat/messages_dialog.html', context)
-
-    elif message_to_user.can_get_message_from == 'Friends':
-        if (current_user not in message_to_user.friends.all() and
-           message_to_user not in current_user.friends.all() and
-           current_user not in message_to_user.strangers.all() and
-           message_to_user not in current_user.strangers.all()):
-
-            context = {
-                'user_that_is_not_friend': message_to_user
-            }
-            return render(request, 'chat/message_error.html', context)
-
-        elif (current_user not in message_to_user.friends.all() and
-              message_to_user not in current_user.friends.all() and
-              current_user in message_to_user.strangers.all() and
-              message_to_user in current_user.strangers.all()):
-
-            context = {
-                'message_to_user': message_to_user,
-            }
-            return render(request, 'chat/messages_dialog.html', context)
-
-        context = {
-            'message_to_user': message_to_user,
-        }
-        return render(request, 'chat/messages_dialog.html', context)
-
-    else:
-        return HttpResponseNotFound()
-
-
-@csrf_exempt
-def send_message(request, user_id, dict_for_messages={}):
-    from_user = TLAccount.objects.get(id=request.user.id)
-    to_user = TLAccount.objects.get(id=user_id)
-    is_dialog_page = dict_for_messages.get('is_dialog_page', None)
-
-    if not is_dialog_page:
-        message = request.POST.get("message_body", "")
-    else:
-        message = dict_for_messages['message']
-
-    new_message = None
-    if from_user in to_user.friends.all():
-        new_message = Message.objects.create(
-            from_user=from_user,
-            to_user=to_user,
-            message=message
-        )
-    elif (from_user not in to_user.friends.all() and
-          to_user not in from_user.friends.all()):
-
-        from_user.strangers.add(to_user)
-        to_user.strangers.add(from_user)
-        new_message = Message.objects.create(
-            from_user=from_user,
-            to_user=to_user,
-            message=message
-        )
-
-    new_message.users_who_read_message.add(request.user)
-
-    get_msg_with_photo = None
-    imgs_url_for_fronted = None
-    image_base64 = request.POST.get("image_or_nothing", "").partition(",")[2]
-    if image_base64:
-        decoding = base64.b64decode(image_base64)
-        current_date = str(datetime.now())
-        poFileStr = str(request.user) + current_date + '.jpg'
-
-        cur_path = os.path.dirname(__file__)
-
-        additional_dirs = 'public/media/'
-
-    # .../triplinker/triplinker/public/media/chat/pictures_of_messages/image.jpg
-    # ... - means system dirctories which are not connected with the project
-    # Need to change cur_path.rstrip('chat') if the name of application will be
-    # changed!
-        new_path = cur_path.rstrip('chat') + additional_dirs + poFileStr
-        new_path = ''.join(new_path)
-
-        with open(new_path, 'wb') as f:
-            f.write(decoding)
-
-        new_msge_with_pic = DialogPhoto.objects.create(message=new_message,
-                                                       name_of_file=poFileStr)
-        new_msge_with_pic.image = ImageFile(open(new_path, "rb"))
-        new_msge_with_pic.save()
-        get_msg_with_photo = DialogPhoto.objects.get(name_of_file=poFileStr)
-
-    json = {'author': str(new_message.from_user),
-            'message_id': str(new_message.id)}
-
-    try:
-        image_url = get_msg_with_photo.image.url
-        index = image_url.rfind('/media')
-        imgs_url_for_fronted = image_url[index:]
-        json['image_url'] = imgs_url_for_fronted
-    except AttributeError:
-        pass
-
-    return JsonResponse(json, safe=False)
-
-
-def send_message_from_dialogs_page(request):
-    usr = get_object_or_404(TLAccount, id=request.user.id)
-    msg_to_another_user_form = SendMessageForm(usr, request.POST)
-    if msg_to_another_user_form.is_valid():
-        to_user = msg_to_another_user_form.cleaned_data.get('to_user')
-        msg = msg_to_another_user_form.cleaned_data.get('message')
-        another_user = TLAccount.objects.get(email=to_user)
-        another_user_id = another_user.id
-        dict_for_messages = {'message': msg, 'is_dialog_page': True}
-        send_message(request, another_user.id, dict_for_messages)
-        return HttpResponseRedirect(reverse('chat:messages-dialog',
-                                    kwargs={'user_id': another_user_id}))
-
-
-def get_all_messages(request, user_id):
-    messages = get_associated_messages_task.delay(request.user.id, user_id)
-    parsed_json = json.loads(messages.get())
-    return JsonResponse(parsed_json, safe=False)
-
-
-# Group Chats
 def create_group_chat(request):
+    """Displays the form to create group chat, creates group chat."""
     template = 'chat/create_group_chat.html'
     usr = TLAccount.objects.get(id=request.user.id)
     context = {'form': CreateGroupChatForm(usr),
@@ -235,6 +78,8 @@ def create_group_chat(request):
 
 
 def list_of_group_chats(request):
+    """Displays the list of groupchats where the current user is participating.
+    """
     usr = TLAccount.objects.get(id=request.user.id)
     order_v = '-timestamp'
     chts = GroupChat.objects.filter(participants=request.user).order_by(order_v)
@@ -260,6 +105,7 @@ def list_of_group_chats(request):
 
 
 def particular_group_chat(request, chat_name_slug):
+    """Shows the page with messages of a chat participants."""
     group_chat = GroupChat.objects.get(slug=chat_name_slug)
     context = {'group_chat': group_chat}
     return render(request, 'chat/particular_group_chat.html', context)
@@ -267,6 +113,7 @@ def particular_group_chat(request, chat_name_slug):
 
 @csrf_exempt
 def send_message_in_group_chat(request, chat_name_slug):
+    """Iserts message into db(ONLY FOR GROUPCHATS)"""
     current_user = TLAccount.objects.get(id=request.user.id)
     message = request.POST.get("message_body", "")
 
@@ -278,7 +125,6 @@ def send_message_in_group_chat(request, chat_name_slug):
         'message': message
     }
     new_message = GroupChatMessage.objects.create(**data)
-    # new_message_id = new_message.id
 
     get_msg_with_photo = None
     imgs_url_for_fronted = None
@@ -324,7 +170,11 @@ def send_message_in_group_chat(request, chat_name_slug):
 
 
 def get_all_messages_for_group_chat(request, chat_name_slug):
-    # Messages
+    """Celery used view. Returns json for a groupchat, which has following data:
+       context[message.id] = [message.msg_from_user.email, message.message,
+                               image_or_none, avtr]
+       context is dict-like object.
+    """
     m = get_associated_messages_group_chat_task.delay(chat_name_slug)
     parsed_json = json.loads(m.get())
     return JsonResponse(parsed_json, safe=False)
@@ -332,6 +182,7 @@ def get_all_messages_for_group_chat(request, chat_name_slug):
 
 # GroupChat extra features
 def view_participants(request, chat_name_slug):
+    """Displaying participants of a chat."""
     usr = TLAccount.objects.get(id=request.user.id)
     chat = GroupChat.objects.get(slug=chat_name_slug)
     chat_particapants = chat.participants.all()
@@ -356,6 +207,7 @@ def view_participants(request, chat_name_slug):
 
 
 def delete_user_from_chat(request, chat_name_slug, user_id):
+    """Deletes user from chat. Avaiable only for the creator of a chat."""
     current_usr = request.user
     chat = GroupChat.objects.get(slug=chat_name_slug)
     user_to_remove = TLAccount.objects.get(id=user_id)
@@ -370,6 +222,7 @@ def delete_user_from_chat(request, chat_name_slug, user_id):
 
 
 def invite_to_chat(request, chat_name_slug):
+    """Adds users to a chat. Avaiable for all participants of a chat."""
     chat = GroupChat.objects.get(slug=chat_name_slug)
 
     chat_particapants = chat.participants.all()
@@ -392,12 +245,16 @@ def invite_to_chat(request, chat_name_slug):
 
 
 def leave_chat(request, chat_name_slug):
-    # The user who is leaving chat
+    """Deletes the current user from chat. If there is only one user in the
+    participants list of a chat, then the chat will be deleted from DB. If
+    creator leaves the chat then new creator will be choisen randomly."""
+
+    # The user who is leaving chat.
     usr = TLAccount.objects.get(id=request.user.id)
     chat = GroupChat.objects.get(slug=chat_name_slug)
     chat.participants.remove(usr)
 
-    # New creator
+    # New creator.
     amount_of_particapants = len(chat.participants.all())
 
     if amount_of_particapants == 0:

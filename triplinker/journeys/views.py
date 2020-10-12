@@ -1,13 +1,19 @@
+# Django modules.
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
-from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey, Participant, Activity, Place
-from .forms import AddJourneyForm, AddActivityForm
 from django.core.exceptions import PermissionDenied
+
+# !Triplinker modules:
+
+# Another apps modules.
+from accounts.models.TLAccount_frequest import TLAccount
 from feed.models import Post, Notification
 
+# Current app modules.
+from .models import Journey, Participant, Activity, Place
+from .forms import AddJourneyForm, AddActivityForm
 from .helpers.views.get_allowed_journeys import get_allowed_journeys
 from .helpers.views.get_average_rating import get_rating
 

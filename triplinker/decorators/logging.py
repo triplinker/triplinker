@@ -1,8 +1,12 @@
+# Python modules.
 import os
 from datetime import datetime, date
 
 
-def log_decorator(log_level):
+# Logs the requests to views: creates dir: 'logs' -> triplinker/triplinker/logs.
+# Creates new file(txt) with logs every day.
+# There 2 log levels: INFO and DEBUG.
+def log_decorator(log_level: str):
     def dec(func):
         def wrapper(request, *args, **kwargs):
             cur_path_raw = os.path.dirname(__file__).rstrip('decorators')

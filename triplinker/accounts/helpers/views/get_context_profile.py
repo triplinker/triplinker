@@ -1,9 +1,15 @@
-from .status_between_users_definer import define_status
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.models.TLAccount_frequest import FriendRequest
 from accounts.feed_app_link import Post
 
+# Current dir modules.
+from .status_between_users_definer import define_status
+
 
 def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
+    """Gets information about the profile user_acc."""
     context = None
     status_between_users = None
     try:

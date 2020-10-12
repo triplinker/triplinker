@@ -1,5 +1,9 @@
-from accounts.models.TLAccount_frequest import TLAccount
+# Django modules.
 from django.test.client import Client
+
+# !Triplinker modules:
+from accounts.models.TLAccount_frequest import TLAccount
+
 
 
 def new_user():

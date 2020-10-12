@@ -1,7 +1,13 @@
+# Django modules.
 from django.urls import reverse
 from django.test import TestCase, Client
 
+# !Triplinker modules:
+
+# Another app modules.
 from accounts.models.TLAccount_frequest import TLAccount
+
+# Current app modules.
 from .models import Place
 
 

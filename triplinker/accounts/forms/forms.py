@@ -1,17 +1,20 @@
+# Python modules.
+import datetime
+
+# Another project modules.
+from crispy_forms import helper
+from crispy_forms.layout import Submit
+
+# Django modules.
 from django import forms
-from django.forms import widgets  # noqa: F401
 from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
                                        AuthenticationForm)
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from crispy_forms import helper
-from crispy_forms.layout import Layout  # noqa: F401
-from crispy_forms.layout import (Submit, Field, Fieldset,  # noqa: F401
-                                 ButtonHolder)  # noqa: F401
+# !Triplinker modules:
 
-import datetime
-
+# Current app module.
 from accounts.models.TLAccount_frequest import (TLAccount, AvatarTLAccount,
                                                 UserPhotoGallery)
 
@@ -87,6 +90,7 @@ class CreateUser(UserCreationForm):
 
 
 class SignUpForm(UserCreationForm):
+    """Only email and password are needed."""
     class Meta:
         model = TLAccount
         fields = ('email',)
@@ -115,6 +119,8 @@ class SignUpForm(UserCreationForm):
 
 
 class AccountActivationForm(UserChangeForm):
+    """The form to fill out some additional information about the current user.
+    """
     class Meta:
         model = TLAccount
         fields = (
@@ -154,6 +160,7 @@ class AccountActivationForm(UserChangeForm):
 
 
 class LoginForm(AuthenticationForm):
+    """Email and passwrod are needed."""
     class Meta:
         model = User
         fields = ('email', 'password',)
@@ -179,6 +186,8 @@ class LoginForm(AuthenticationForm):
 
 
 class ProfileEditForm(UserChangeForm):
+    """The possibility of editing information that was wrote down when the user
+    was going through the process of registration."""
     class Meta:
         model = TLAccount
         exclude = ('password', 'last_login', 'groups', 'user_permissions',
@@ -209,14 +218,15 @@ class ProfileEditForm(UserChangeForm):
 
 
 class SetAvatarForm(forms.ModelForm):
-
+    """Gives the possibility to set an avatar for user."""
     class Meta:
         model = AvatarTLAccount
         exclude = ['timestamp', ]
 
 
 class AddPhotoToPlaceGalleryForm(forms.ModelForm):
-
+    """The possibility of adding new photo to the gallery of the current user.
+    """
     class Meta:
         model = UserPhotoGallery
         fields = ['photo', 'author']

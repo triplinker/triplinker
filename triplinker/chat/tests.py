@@ -1,6 +1,10 @@
+# Django views.
 from django.urls import reverse
 from django.test import TestCase, Client
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.models.TLAccount_frequest import TLAccount
 
 

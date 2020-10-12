@@ -1,13 +1,20 @@
+# Django modules.
 from django import forms
 
+# !Triplinker modules:
+
+# Another app modules.
 from accounts.models.TLAccount_frequest import TLAccount
 
+# Current app modules.
 from .models import Message, GroupChat, GroupChatMainPhoto
 from .helpers.get_query_set_not_participants import get_friends_not_participants
 
 
 class SendMessageForm(forms.ModelForm):
-
+    """The form that gives possility to send messages from messages page.
+        chat:get-all-messages - view
+    """
     def __init__(self, usr={}, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = TLAccount.objects.get(id=usr.id)
@@ -26,6 +33,7 @@ class SendMessageForm(forms.ModelForm):
 
 
 class CreateGroupChatForm(forms.ModelForm):
+    """The form to create group chat."""
 
     def __init__(self, usr={}, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,13 +69,14 @@ class CreateGroupChatForm(forms.ModelForm):
 
 
 class ChatWithMainPhotoForm(forms.ModelForm):
-
+    """The form to set main image of chat."""
     class Meta:
         model = GroupChatMainPhoto
         exclude = ['timestamp', ]
 
 
 class InviteFriendToChatForm(forms.Form):
+    """Using in groupchats to invite friends to the chat."""
 
     def __init__(self, usr, chat_slug_name, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -79,9 +88,3 @@ class InviteFriendToChatForm(forms.Form):
     OPTIONS = (('n', 'none'))
     widget = forms.CheckboxSelectMultiple
     participants = forms.MultipleChoiceField(widget=widget, choices=OPTIONS)
-
-
-# class PinImageToMessageForm(forms.ModelForm):
-#     class Meta:
-#         model = MessagePhoto
-#         fields = '__all__'

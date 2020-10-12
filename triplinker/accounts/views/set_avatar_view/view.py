@@ -1,14 +1,19 @@
+# Django modules.
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.forms.forms import SetAvatarForm
 from accounts.models.TLAccount_frequest import TLAccount
 
 
 @require_http_methods(["GET", "POST"])
 def set_avatar_view(request):
+    """Displaying the page of changing an avatar and setting an avatar view."""
     usr = TLAccount.objects.get(id=request.user.id)
 
     if request.method == 'POST':

@@ -1,5 +1,9 @@
+# Python modules.
 from datetime import date
 
+# !Triplinker modules:
+
+# Another apps modules.
 from journeys.models import Journey
 from trip_places.models import Place
 

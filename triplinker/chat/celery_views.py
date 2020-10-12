@@ -1,13 +1,22 @@
+# Python modules.
 import json
+
+# Django modules.
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 
+# !Triplinker modules:
+
+# Another app modules.
 from .models import (Message, DialogPhoto, GroupChat, GroupChatMessage,
                      GroupChatMessagePhoto)
+
+# Current app modules.
 from accounts.models.TLAccount_frequest import TLAccount
 
 
 def get_associated_messages_celery(from_user, to_user):
+    """Gets all messages of the dialog between from_user and to_user."""
     from_user = get_object_or_404(TLAccount, id=from_user)
     to_user = get_object_or_404(TLAccount, id=to_user)
 
@@ -36,6 +45,7 @@ def get_associated_messages_celery(from_user, to_user):
 
 
 def get_avatar(message):
+    """Gets avatars of users for the dialog."""
     avtr = None
     try:
         avtr = message.msg_from_user.get_avatar.all().first().profile_image.url
@@ -45,8 +55,9 @@ def get_avatar(message):
 
 
 def get_associated_messages_group_chat_celery(chat_name_slug):
-    # Chat
-    c = GroupChat.objects.get(slug=chat_name_slug)
+    """Gets all messages from the chat (chat_name_slug)."""
+
+    c = GroupChat.objects.get(slug=chat_name_slug)  # Chat
     mssges = GroupChatMessage.objects.filter(group_chat=c).order_by('timestamp')
 
     context = {}

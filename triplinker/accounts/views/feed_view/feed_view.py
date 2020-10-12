@@ -1,16 +1,19 @@
+# Python modules.
 from datetime import timedelta
 
+# Django modules.
 from django.urls import reverse
 from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.models.TLAccount_frequest import TLAccount
-from accounts.feed_app_link import AddCommentForm
-from accounts.feed_app_link import Post
+from accounts.feed_app_link import AddCommentForm, Post
 
 
-# Feed
 def show_feed(request):
     """Shows all posts with comments from users which are in friend list of
     current user or which are followed by current user."""

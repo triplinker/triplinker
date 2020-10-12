@@ -1,9 +1,15 @@
+# !Triplinker modules:
+
+# Another app modules.
 from accounts.models.TLAccount_frequest import TLAccount
 
+# Current app modules.
 from chat.models import GroupChat
 
 
 def get_friends_not_participants(usr, chat_name_slug):
+    """Needed for inventeion form. To invite the friends of the current user who
+    are not participants of the current chat yet."""
     usr = TLAccount.objects.get(id=usr.id)
     friends_of_user = usr.friends.all()
     chat = GroupChat.objects.get(slug=chat_name_slug)

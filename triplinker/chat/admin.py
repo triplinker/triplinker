@@ -1,4 +1,9 @@
+# Django modules.
 from django.contrib import admin
+
+# !Triplinker modules:
+
+# Current app modules.
 from .models import (Message, DialogPhoto, GroupChat, GroupChatMainPhoto,
                      GroupChatMessage, GroupChatMessagePhoto)
 

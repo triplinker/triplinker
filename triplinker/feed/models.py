@@ -1,10 +1,18 @@
+# Python modules.
 import datetime
+
+# Django modules.
 from django.utils import timezone
 from django.db import models
 from django.core.validators import FileExtensionValidator
 
+# !Triplinker modules:
+
+# Another apps modules.
 from accounts.models.TLAccount_frequest import TLAccount
 from trip_places.models import Place
+
+# Current app modules.
 from journeys.models import Journey
 
 

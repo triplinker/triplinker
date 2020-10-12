@@ -15,7 +15,6 @@ class ProfileView(generic.ListView):
     profile if HTTP method is POST and rendering the final child of the chain of
     HTML documents for profile if HTTP method is GET.
     """
-
     context = None
     model = TLAccount
     template_name = 'accounts/profile/profile_final_child_5.html'

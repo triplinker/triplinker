@@ -1,11 +1,18 @@
+# Django modules.
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.forms.forms import AddPhotoToPlaceGalleryForm
 from accounts.models.TLAccount_frequest import TLAccount
 
 
 def photos_of_user(request, user_id):
+    """Displaying user's photo gallery and adding new photos to user's gellery
+    view.
+    """
     template = 'accounts/profile/photos_gallery.html'
     user_acc = get_object_or_404(TLAccount, id=user_id)
 

@@ -1,12 +1,22 @@
+# Django modules.
 from django.http import JsonResponse
-
-from accounts.models.TLAccount_frequest import TLAccount
-from .models import Post, Comment, Notification
 from django.shortcuts import render
+
+# !Triplinker modules:
+
+# Another app modules.
+from accounts.models.TLAccount_frequest import TLAccount
+
+# Current app modules.
+from .models import Post, Comment, Notification
 
 
 # Notifications
 def notifications_list(request):
+    """Renders page with notifications for user:
+    1) user's friend has joined a journey.
+    2) user's friend is following any news of a place.
+    """
     user = request.user
     notifications = Notification.objects.filter(users__in=[user])
     for n in notifications:

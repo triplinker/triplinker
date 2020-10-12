@@ -1,4 +1,9 @@
+# Django modules.
 from django.contrib import admin
+
+# !Triplinker modules
+
+# Current app modules.
 from .models.TLAccount_frequest import (TLAccount, FriendRequest,
                                         AvatarTLAccount, PersonalQualities)
 from .forms.forms import UserCreationForm, UserChangeForm
