@@ -1,7 +1,13 @@
-from django.db import models
+# Another project modules.
 import django_filters
+
+# Django modules.
+from django.db import models
 from django.db.models import Q
 
+# !Triplinker modules:
+
+# Another app modules.
 from accounts.models.TLAccount_frequest import TLAccount
 
 

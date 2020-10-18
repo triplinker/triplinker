@@ -12,6 +12,13 @@ urlpatterns = [
     # All users list.
     path('users/', views.all_users_list, name='all_users_list'),
 
+    # SetAvatar.
+    path('set-avatar/', views.set_avatar_view, name='set-avatar'),
+
+    # User's photo gallery.
+    path('users/<int:user_id>/photo-gallery/', views.photos_of_user,
+         name='user-photo-gallery'),
+
     # A particular profile of user.
     path('users/<int:user_id>/', views.detail_profile,
          name="detail_profile"),

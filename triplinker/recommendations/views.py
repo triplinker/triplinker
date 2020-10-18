@@ -1,8 +1,13 @@
+# Django modules.
 from django.shortcuts import render, get_object_or_404
 
+# !Triplinker modules:
+
+# Another apps modules.
 from accounts.models.TLAccount_frequest import TLAccount
 from journeys.models import Journey
 
+# Current app modules.
 from .helpers.views.recommendator import get_recommendations
 
 

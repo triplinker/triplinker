@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="chat_window">
+    <div class="top_menu">
+        <div class="title">
+            {{ group_chat.chat_name }} | <a href="{% url 'chat:participants' group_chat.slug %}" style="color: inherit;"><span style="text-align: left;">Participants</span></a></div>
+    </div>
+
+    <ul class="messages"></ul>
+    <div class="bottom_wrapper clearfix">
+        <form class="form-horizontal" method="post" enctype="multipart/form-data">
+            <input id="upload" type="file">
+
+        </form> 
+            <h5 id ='button_X'style="display: none;"><i class='fa fa-times' aria-hidden='true'></i></h5>
+            
+            <script type="text/javascript">
+            var image_base64 = null;
+            $(document).ready(function(){
+                $("#upload").on('change', function() {
+                $("#button_X").css("display", "block");
+                });
+                $("#button_X").on('click', function() {
+                    image_base64 = null;
+                    $( "#upload" ).val('');
+                    $('#button_X').css('display', 'none')
+                });
+            })
+        
+
+            </script>
+        
+        <div class="message_input_wrapper">
+            <input class="message_input" placeholder="Type your message here..." />
+
+        </div>
+        <div class="send_message">
+            <div class="icon"></div>
+            <div class="text">Send</div>
+        </div>
+    </div>
+</div>
+<div class="message_template">
+    <li class="message">
+        <div class="message-avatar avatar" style="width: 54px;
+    height: 54px;">
+            <img src="" alt="" id="user_avatar">
+        </div>
+        <div class="text_wrapper">
+            <div class="text" style="word-wrap: break-word;"></div>
+        </div>
+    </li>
+</div>
+
+<!--- Messages-main logic and ajax requests [START] --->
+    {% if request.user.get_avatar.all.first.profile_image %}
+    <script>
+        var avatar_of_current_user = '{{request.user.get_avatar.all.first.profile_image.url}}';
+    </script>
+    {% else %}
+    <script>
+        var avatar_of_current_user = '';
+    </script>
+    {% endif %}
+    <script>
+
+        function check_image(){
+            var reader = new FileReader();
+            var f = document.getElementById("upload").files;
+            
+            reader.onloadend = function () {
+            // console.log(reader.result);
+            image_base64 = String(reader.result)
+            }
+            try {
+                reader.readAsDataURL(f[0]);
+            } catch(error) {
+                var do_nothing = 1;
+            }
+
+        }
+        var run = setInterval(check_image, 1000);        
+        (function () {
+        var Message;
+        Message = function (arg) {
+            this.text = arg.text, this.message_side = arg.message_side, this.author = arg.author;
+            var avatar = arg.avatar;
+            if (arg.img){
+                this.img = arg.img;
+                this.draw = function (_this){
+                    return function () {
+                        var $message;
+                        $message = $($('.message_template').clone().html());
+                        image = '<div style="text-align: center;"><img src="' + _this.img + '" width="250" height="260" style ="object-fit: contain;"></div>'
+                        $message.addClass(_this.message_side).find('.text').html(_this.text + '<br><br>' + image);
+
+                        if (_this.message_side == 'left'){
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }else{
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }
+
+                        $('.messages').append($message);
+                        return setTimeout(function () {
+                            return $message.addClass('appeared');
+                        }, 0);
+                    };
+                }(this);
+            } else{
+                this.draw = function (_this){
+                    return function () {
+                        var $message;
+                        $message = $($('.message_template').clone().html());
+                        $message.addClass(_this.message_side).find('.text').html(_this.text);
+                        if (_this.message_side == 'left'){
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }else{
+                            if (avatar){
+                                $message.find('#user_avatar').attr('src', avatar)
+                            }else{
+                                $message.find('#user_avatar').attr('src','https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png')
+                            }
+                        }
+                        $('.messages').append($message);
+                        return setTimeout(function () {
+                            return $message.addClass('appeared');
+                        }, 0);
+                    };
+                }(this);
+            }
+            
+            image_base64 = null;
+                $("#upload").val('');
+                $("#button_X").css('display', 'none')
+            return this;
+        };
+
+        var all_messages = []; // This var is needed to sync the messages in the dialog boxes of two users. For example, if user1 wrote the message then user2 must be able to see the message just in seconds.
+        $(function () {
+
+            var getMessageText, message_side, sendMessage;
+            message_side = 'right';
+
+            // Gets the text of the message.
+            getMessageText = function () {
+                var $message_input;
+                $message_input = $('.message_input');
+                return $message_input.val();
+            };
+
+            // Draw messages in dialog boxes, if the status is 'insert-message-into-db' then before drawing makes request to the server to insert a message into DB, if the status is 'get-messages-from-db' then make request to the server to get all messages from db of current dialog.
+            let photo_URL;
+            sendMessage = function (text, status, author=null, photo=null, anim_speed=null, avatar=null) {
+                if (status === 'insert-message-into-db'){
+                    // Ajax request [START]
+                    var inf = $.ajax({
+                            type: "POST",
+                            url: "{% url 'chat:send-message-group-chat' group_chat.slug %}",
+                            async:false,
+                            global: false,
+                            data: {"message_body": text , 'csrfmiddlewaretoken': '{{ csrf_token }}', 'image_or_nothing': image_base64 },
+                            dataType: 'json',
+
+                            success: function(data){
+                                message_DB = data['author']
+                                all_messages.push(data['message_id'])
+                                img = data['image_url']
+                                return img
+
+                            }
+                        }).responseText;
+                    // Ajax request [END]
+
+                    var photo_URL = JSON.parse(inf)['image_url']
+                    var $messages, message;
+                    if (text.trim() === ''){
+                        return;
+                    }
+                    $('.message_input').val('');
+                    $messages = $('.messages');
+                    var message_side = null;
+
+                    var current_user = '{{ request.user.email }}';
+                    var full_text = current_user + "<hr>" + text;
+
+                    // If current user is author of message [ WARNING! LOGIC IS REVERSED!]
+                    if(current_user === message_DB){
+                        message = new Message({
+                        text: full_text,
+                        message_side: 'right',
+                        img: photo_URL,
+                        author:current_user,
+                        avatar:avatar_of_current_user
+                        });
+
+                    }else{
+                        message = new Message({
+                        text: full_text,
+                        message_side: 'left',
+                        img: photo_URL,
+                        author:current_user,
+                        avatar: avatar_of_current_user
+                        });
+                    }
+
+                    message.draw();
+                    return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+
+                }else if (status === 'get-messages-from-db'){
+                    var $messages, message, message_DB = author;
+                    if (text.trim() === '') {
+                        return;
+                    }
+
+                    $('.message_input').val('');
+                    $messages = $('.messages');
+                    var message_side = null;  // The side in message box where the message will be appeared
+
+                    var current_user = '{{ request.user.email }}';
+                    var full_text = String(author) + "<hr>" + text;
+
+                    if(current_user === message_DB){
+                        message = new Message({
+                        text: full_text,
+                        message_side: 'right',
+                        img: photo,
+                        author:author,
+                        avatar: avatar
+                        });
+                    } else{
+                        message = new Message({
+                        text: full_text,
+                        message_side: 'left',
+                        img: photo,
+                        author:author,
+                        avatar: avatar
+                        });
+                    }
+                    message.draw();
+
+                    if (anim_speed){
+                        return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300); // Animation speed is 300
+                    } else{
+                        return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 0); // There is no animation speed
+                        
+                    }
+                }
+            }
+
+            // If the button 'Send' was pressed, then the message will be sent.
+            $('.send_message').click(function (e) {
+                return sendMessage(getMessageText(),'insert-message-into-db');
+            });
+
+            // If keyboard key 'ENTER' was pressed, then the message will be sent.
+            $('.message_input').keyup(function (e) {
+                if (e.which === 13) {
+                    return sendMessage(getMessageText(), 'insert-message-into-db');
+                }
+            });
+            // The loading of the conversation from DB then the dialog was opened.
+            function get_comments(){
+                var date = new Date();
+                var milliseconds = date.getSeconds();
+                var url = "{% url 'chat:get-all-messages-group-chat' group_chat.slug %}";  
+                $.get(url,
+                function (data, textStatus) {  // success callback
+
+                    for (var message_id in data){
+                        all_messages.push(message_id)
+                    if (String(data[message_id][2]) == 'no_img'){
+                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=null, avatar=data[message_id][3])
+                    } else{
+                        sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2],anim_speed=null, avatar=data[message_id][3])
+                    }
+                }
+            
+            // The function that makes ajax requests every period of time to make sure that there are no new messages within the current dialog, if so then it updates the dialog window by adding new messages into it.
+            window.setInterval(function(){
+                var date = new Date();
+                var milliseconds = date.getSeconds();
+
+                var url = "{% url 'chat:get-all-messages-group-chat' group_chat.slug %}";
+                    axios.get(url).then((response) => {
+                    data = response.data
+                    for (var message_id in data){
+                        message_id = message_id.toString()
+                        if (all_messages.includes(message_id)){
+                            var nothing = 1;  // If so then do nothing
+                        }else{
+                            // Update the message dialog if there are new messages in DB which are connected with the current dialog.
+                            if (String(data[message_id][2]) == 'no_img'){
+                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=null, anim_speed=300, avatar=data[message_id][3])
+                                        all_messages.push(message_id)
+                            }else{
+                                sendMessage(data[message_id][1], 'get-messages-from-db', author=data[message_id][0], photo=data[message_id][2], anim_speed=300, avatar=data[message_id][3])
+                                        all_messages.push(message_id)    
+                            }
+                        }
+                    }
+            });                
+            current_msgs = [] // 
+        }
+        , 5000); // The interval between ajax requests.
+
+        });
+        };
+
+        get_comments()});
+    }.call(this));
+    </script>
+<!--- Messages-main logic and ajax requests [START] --->
+{% endblock %}

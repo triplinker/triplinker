@@ -1,5 +1,11 @@
+# Django modules.
 from django.contrib import admin
-from .models.TLAccount_frequest import TLAccount, FriendRequest
+
+# !Triplinker modules
+
+# Current app modules.
+from .models.TLAccount_frequest import (TLAccount, FriendRequest,
+                                        AvatarTLAccount, PersonalQualities)
 from .forms.forms import UserCreationForm, UserChangeForm
 
 admin.site.site_header = "TripLinker admin panel"
@@ -24,14 +30,15 @@ class TLAccountAdmin(admin.ModelAdmin):
         ('Main information', {
             'fields':
                 ('first_name', 'second_name', 'email', 'sex', 'date_of_birth',
-                 'country',
+                 'country', 'qualities'
                  )
         }
          ),
 
         ('Additional information', {
             'fields':
-                ('place_of_work', 'short_description', 'hobbies', 'date_joined'
+                ('place_of_work', 'short_description', 'hobbies', 'motto',
+                 'date_joined',
                  )
         }
          ),
@@ -58,3 +65,5 @@ class TLAccountAdmin(admin.ModelAdmin):
 
 admin.site.register(TLAccount, TLAccountAdmin)
 admin.site.register(FriendRequest)
+admin.site.register(AvatarTLAccount)
+admin.site.register(PersonalQualities)

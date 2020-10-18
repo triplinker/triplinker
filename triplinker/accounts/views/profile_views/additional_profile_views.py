@@ -1,10 +1,15 @@
+# Django modules.
 from django.views import generic
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.forms.forms import ProfileEditForm
 from accounts.models.TLAccount_frequest import TLAccount
 
 
 class ProfileEditView(generic.FormView):
+    """Gives the possibility of editing profile's data for current user."""
     model = TLAccount
     form_class = ProfileEditForm
     template_name = 'accounts/profile_edit.html'

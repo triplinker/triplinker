@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+
+  <div class="container"> 
+    <h1 class="mt-2">Set avatar</h1>
+    <hr class="mt-0 mb-4">
+      <form class="form-horizontal" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.field_errors }}
+        {{ form.errors }}
+
+        <div class='form-group row' style="margin-top: 2%;margin-bottom: 2%;">
+          <div class="col-form-label col-sm-3 control-label">
+          {{ form.profile_image.label }}
+          </div>
+          <div class="avatar avatar-xxl" style="margin-left: 1.5%;">
+            {% if avatar %}
+              <img class="rounded-circle" src="{{ avatar.profile_image.url }}" height="140" width="140" id="imgshow" alt="Current avatar">
+            {% else %}
+              <img class="rounded-circle" src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="Default picture from" class="avatar-img rounded-circle" height="140" width="140" id="imgshow" alt="Default avatar">
+            {% endif %}
+          </div>
+          
+          <div class="col-sm-5" style="margin-top: 5%;">
+            <input type="file" name="profile_image" id="imgload">
+          </div>
+
+        </div>
+
+        <!--- Update photo on the page [START] --->
+          <script type="text/javascript">
+            $('document').ready(function () {
+              $("#imgload").change(function () {
+                if (this.files && this.files[0]) {
+                  var reader = new FileReader();
+                  reader.onload = function (e) {
+                    $('#imgshow').attr('src', e.target.result);
+                    }
+                  reader.readAsDataURL(this.files[0]);
+                }
+              });
+            });
+          </script>
+        <!--- Update photo on the page [END] --->
+
+      <input type="submit" class="btn btn-primary" value="Set new avatar!" style="margin-left: 53.5%;margin-top: -1.5%;">
+    </form>
+  </div>
+{% endblock %}

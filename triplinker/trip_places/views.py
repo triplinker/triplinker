@@ -1,12 +1,20 @@
+# Python modules.
+import os
+
+# Django modules.
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
+# !Triplinker modules:
+
+# Another apps modules.
 from accounts.models.TLAccount_frequest import TLAccount
 from feed.models import Post, Notification
 from feed.forms import AddPostToPlacePageForm, AddCommentForm
 
+# Current app modules.
 from .models import Place, PlaceFilter
 from .forms import (AddPlaceForm, AddPhotoToPlaceGalleryForm,
                     AddFeedbackForm)
@@ -152,6 +160,11 @@ def edit_place_inf(request, place_id):
             place.location = request.POST.get("location", None)
 
             if new_photo:
+                try:
+                    old_photo_path_raw = place.place_pic.url
+                    os.remove('public' + old_photo_path_raw)
+                except ValueError:
+                    pass
                 place.place_pic = main_photo
 
             place.save()

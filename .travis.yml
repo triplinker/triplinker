@@ -28,5 +28,6 @@ env:
     - STATIC_URL=/static/
 
 script:
-  - pytest
+  - pytest tests
+  - python manage.py test
   - flake8

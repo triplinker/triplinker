@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+
+<div class="container" style="margin-left: 30%; margin-top: 2.2%;">
+<div class="row">
+
+<div class="col-md-8">
+
+    <div class="chat_container">
+        <div class="job-box">  
+            <div class="job-box-filter">
+                <div class="row">
+                    
+                    <div class="col-md-6 col-sm-6" style="margin-left: 50%;float: right">
+
+                        <div class="filter-search-box text-right">
+                            <label>Search:<input type="search" class="form-control input-sm" placeholder=""></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h3 type="button" style='display: inline; margin-left: 5%;' data-toggle="modal" data-target="#exampleModal"><i class="fa fa-envelope" aria-hidden="true" ></i></h3>
+
+            <!-- modal triger button -->
+            <h3 style="margin-left: 3%; display: inline;"><i class="fa fa-user-circle" aria-hidden="true"></i></h3>
+            <!-- modal triger button -->
+
+            <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Send message or create group chat</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form class="text-center border border-light p-6" method="post" style="margin-top: -2%;" action="{% url 'chat:send-message-from-dialogs-page' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Message: </label>
+                                {{ form.message }}
+                            </div>
+
+                        <label>To: </label>
+                        {{ form.to_user}}
+
+
+                        <hr>
+                        <h4><a href="{% url 'chat:create-group-chat' %}" style="text-align: center;" class="btn btn-primary">Create group chat</a></h4>
+
+                    <!-- Send button -->
+                    
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Send message">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </form>
+
+            <!-- modal -->
+
+            <hr>
+            <div class="inbox-message">
+                {% if group_chats %}
+                {% for chat in group_chats %}
+                <ul>
+                    <li> 
+                        <a href="{% url 'chat:'%}">
+                            <div class="message-avatar">
+                                <img src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+                            </div>
+                                <div class="message-body">
+                                    <div class="message-body-heading">
+                                        <h5>{{ chat.chat_name }}</h5>
+                                            <span>TIMESINCE</span>
+                                    </div>
+                                    <p></p>
+
+                                </div>
+                                <div class="message-body">
+                                    <div class="message-body-heading">
+                                        <h5>FROM USER</h5>
+                                    </div>
+                                    <p>SLICE 38</p>
+                                       
+                                </div>
+                        </a>
+                    </li>
+                </ul>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

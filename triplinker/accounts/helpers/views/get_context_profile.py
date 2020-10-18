@@ -1,9 +1,15 @@
-from .status_between_users_definer import define_status
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.models.TLAccount_frequest import FriendRequest
 from accounts.feed_app_link import Post
 
+# Current dir modules.
+from .status_between_users_definer import define_status
+
 
 def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
+    """Gets information about the profile user_acc."""
     context = None
     status_between_users = None
     try:
@@ -27,6 +33,23 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
                                              notification_post=True)
     posts = posts | notification_posts
 
+    user_avatar = None
+    try:
+        user_avatar = user_acc.get_avatar.all().first()
+    except Exception:
+        pass
+
+    qualities = user_acc.qualities.all()
+    qualities_3 = None
+    qualities_more_than_3 = False
+    other_qualities = None
+    if len(qualities) > 3:
+        qualities_more_than_3 = True
+        qualities_3 = qualities[:3]
+        other_qualities = qualities[3:]
+    else:
+        qualities_3 = qualities
+
     context = {
         'user_acc': user_acc,
         'who_makes_a_request': request.user.email,
@@ -34,5 +57,9 @@ def get_context_for_profile(request, user_acc, accType='another_user') -> dict:
         'amount_of_frequests': amount_of_frequests,
         'status_between_users': status_between_users,
         'posts': posts,
+        'avatar': user_avatar,
+        'qualities': qualities_3,
+        'qualities_more_than_3': qualities_more_than_3,
+        'other_qualities': other_qualities
     }
     return context

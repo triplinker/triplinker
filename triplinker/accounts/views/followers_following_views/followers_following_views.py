@@ -1,10 +1,13 @@
+# Django modules.
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.models.TLAccount_frequest import TLAccount
 
 
-# Followers
 def followers_list(request, user_id):
     """Shows the list of followers of user."""
     user_acc = get_object_or_404(TLAccount, id=user_id)

@@ -1,12 +1,13 @@
-from django.db.models import Q  # noqa: F401
-
-from django.views import generic  # noqa: F401
+# Django modules.
 from django.shortcuts import render
 
-from accounts.models.TLAccount_frequest import UserFilter
-from accounts.models.TLAccount_frequest import TLAccount
+# !Triplinker modules:
+
+# Current app modules.
+from accounts.models.TLAccount_frequest import TLAccount, UserFilter
 
 
 def all_users_list(request):
+    """Shows the list of all user (excluding current user)."""
     f = UserFilter(request.GET, queryset=TLAccount.objects.all())
     return render(request, 'accounts/all_users_list.html', {'filter': f})

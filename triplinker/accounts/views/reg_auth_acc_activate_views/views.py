@@ -1,3 +1,4 @@
+# Django modules.
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth import views, authenticate, login
@@ -7,10 +8,14 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
+# !Triplinker modules:
+
+# Current app modules.
 from accounts.forms.forms import SignUpForm, LoginForm, AccountActivationForm
 
 
 class SignUpView(generic.FormView):
+    """Provides user with authentication system"""
     form_class = SignUpForm
     success_url = reverse_lazy('accounts:activate')
     template_name = 'registration/signup.html'
@@ -41,6 +46,11 @@ class SignUpView(generic.FormView):
 
 
 class ActivateView(views.FormView):
+    """Gives to user the opportunity of adding some information for his acc:
+       first_name, second_name, sex, date_of_birth, country, qualities,
+       can_get_message_from, place_of_work, hobbies, motto, short_description,
+       vkontakte twitter and facebook.
+    """
     form_class = AccountActivationForm
     success_url = reverse_lazy('accounts:index')
     template_name = 'registration/activate.html'
@@ -60,6 +70,7 @@ class ActivateView(views.FormView):
 
 
 class LoginView(views.LoginView):
+    """Sign in for an user."""
     form_class = LoginForm
     success_url = reverse_lazy('accounts:profile')
     template_name = 'registration/login.html'
@@ -67,4 +78,5 @@ class LoginView(views.LoginView):
 
 
 class LogoutView(views.LogoutView):
+    """Log out for an user."""
     template_name = 'registration/logout.html'

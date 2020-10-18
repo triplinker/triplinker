@@ -135,12 +135,32 @@
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex justify-content-between align-items-center">
+                    {% if request.user.email == user_acc.email %}
+                    <a href="{% url 'accounts:set-avatar'%}">
                     <div class="mr-2">
-                        <img class="rounded-circle" width="45" src="https://yt3.ggpht.com/a/AATXAJwAYA_QZ3ZXrSS3CDD87Z7wcbvBrLpRq7TRIt_B=s900-c-k-c0xffffffff-no-rj-mo" alt="">
+                        {% if avatar %}
+                          <img class="rounded-circle" width="45" height="45" src="{{ avatar.profile_image.url }}" alt="picture">
+                        {% else %}
+                          <img class="rounded-circle" width="45" src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="avatar">
+                        {% endif%}
                     </div>
+                    </a>
+                    {% else %}
+                      <div class="mr-2">
+                        {% if avatar %}
+                          <img class="rounded-circle" width="45" height="45" src="{{ avatar.profile_image.url }}" alt="picture">
+                        {% else %}
+                          <img class="rounded-circle" width="45" src="https://www.xovi.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="avatar">
+                        {% endif%}
+                    </div>
+                    {% endif%}
                     <div class="ml-2">
                         <div class="h5 m-0">{{ user_acc.email }}</div>
-                        <div class="h7 text-muted">Miracles Lee Cross</div>
+                        {% if user_acc.motto%}
+                          <div class="h7 text-muted">{{user_acc.motto}}</div>
+                        {% else %}
+                          <div class="h7 text-muted">No motto</div>
+                        {% endif %}
                     </div>
                 </div>
                 <div>

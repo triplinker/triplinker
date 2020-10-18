@@ -1,12 +1,21 @@
+# Django modules.
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
-from accounts.models.TLAccount_frequest import TLAccount
-from .models import Journey, Participant
-from .forms import AddJourneyForm, AddActivityForm
+from django.core.exceptions import PermissionDenied
 
+# !Triplinker modules:
+
+# Another apps modules.
+from accounts.models.TLAccount_frequest import TLAccount
+from feed.models import Post, Notification
+
+# Current app modules.
+from .models import Journey, Participant, Activity, Place
+from .forms import AddJourneyForm, AddActivityForm
 from .helpers.views.get_allowed_journeys import get_allowed_journeys
+from .helpers.views.get_average_rating import get_rating
 
 
 def activity_form_api(request):
@@ -36,8 +45,62 @@ def journey_form_api(request):
             'journey_id': journey.id,
             'status': True,
         }
+        user = request.user
+        journey_to = request.POST["journey_to"]
+        journey_date = request.POST["date_of_start"]
+        place_to = Place.objects.get(id=request.POST["place_to"])
+        NEW_JOURNEY_POST_TEXT = f'I am starting a new journey to '\
+                                f'{journey_to} on {journey_date}.'
+        NEW_JOURNEY_NOTIF_TEXT = f'{user} is starting a new journey to '\
+                                 f'{journey_to} on {journey_date}.'
+        post = Post.objects.create(is_place=True, content=NEW_JOURNEY_POST_TEXT,
+                                   author=user, place=place_to, journey=journey,
+                                   notification_post=True)
+        post.save()
+        notification = Notification.objects.create(post=post,
+                                                   text=NEW_JOURNEY_NOTIF_TEXT,
+                                                   is_journey=True)
+        notification.users.set(user.friends.all())
+        notification.save()
         return JsonResponse(context, safe=False)
     return JsonResponse({'status': False}, safe=False)
+
+
+def edit_journey(request, journey_id):
+
+    journey = Journey.objects.get(pk=journey_id)
+
+    if journey.who_added_the_journey != request.user:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        form = AddJourneyForm(request.POST, instance=journey)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('journeys:journey-page',
+                                        kwargs={'journey_id': journey.id}))
+
+    form = AddJourneyForm(instance=journey)
+    return render(request, 'journeys/edit_journey.html', {'form': form})
+
+
+def edit_activity(request, activity_id):
+
+    activity = Activity.objects.get(pk=activity_id)
+
+    if activity.journey.who_added_the_journey != request.user:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        form = AddActivityForm(request.POST, instance=activity)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('journeys:journey-page',
+                                        kwargs={'journey_id':
+                                                activity.journey.id}))
+
+    form = AddActivityForm(instance=activity)
+    return render(request, 'journeys/edit_activity.html', {'form': form})
 
 
 def add_new_journey(request):
@@ -48,30 +111,7 @@ def add_new_journey(request):
         'form': AddJourneyForm(),
         'activity_form': AddActivityForm(),
     }
-
-    if request.method == 'POST':
-        form = AddJourneyForm(request.POST)
-        if form.is_valid():
-            final_form = form.save(commit=False)
-            final_form.who_added_the_journey = request.user
-            final_form.save()
-            journ = Journey.objects.filter(who_added_the_journey=request.user)
-            last_journey = journ.order_by('-timestamp').first()
-            partcpant = request.user
-            dflt_participant = Participant.objects.create(
-                                                          journey=last_journey,
-                                                          participant=partcpant)
-            dflt_participant.save()
-
-            return HttpResponseRedirect(
-                           reverse('journeys:journey-list',
-                                   kwargs={'user_id': request.user.id}))
-        else:
-            context['form'] = form
-            return render(request, 'journeys/add_journey_form.html', context)
-    # If HTTP method is GET...
-    else:
-        return render(request, 'journeys/add_journey_form.html', context)
+    return render(request, 'journeys/add_journey_form.html', context)
 
 
 def user_journey_list(request, user_id):
@@ -98,9 +138,13 @@ def journey_page(request, journey_id):
 
 def sort_journeys_by_rating_of_place(request, user_id):
     user = get_object_or_404(TLAccount, id=user_id)
-    journeys = Journey.objects.filter(particapants=user)
-    sort = sorted(journeys,
-                  key=lambda journey: journey.place.get_rating_of_place(),
+    journeys_raw = Participant.objects.filter(participant=user)
+
+    journeys = []
+    for participant_object in journeys_raw:
+        journeys.append(participant_object.journey)
+
+    sort = sorted(journeys, key=lambda journey: get_rating(journey),
                   reverse=False)
 
     context = {
@@ -112,10 +156,64 @@ def sort_journeys_by_rating_of_place(request, user_id):
 
 def sort_journeys_by_date(request, user_id):
     user = get_object_or_404(TLAccount, id=user_id)
-    jrnes = Journey.objects.filter(particapants=user).order_by("date_of_start")
+    journeys_raw = Participant.objects.filter(participant=user)
 
+    journeys = []
+    for participant_object in journeys_raw:
+        journeys.append(participant_object.journey)
+
+    sort = sorted(journeys, key=lambda journey: journey.date_of_start,
+                  reverse=False)
     context = {
         'user_acc': user,
-        'journeys': jrnes,
+        'journeys': sort,
     }
     return render(request, 'journeys/user_journeys_list.html', context)
+
+
+def join_journey(request, journey_id):
+    journey = Journey.objects.get(pk=journey_id)
+    journey.participants.add(request.user)
+    journey.save()
+
+    user = request.user
+    journey_to = journey.journey_to
+    journey_date = journey.date_of_start
+    NEW_JOURNEY_POST_TEXT = f'I am joining {journey.who_added_the_journey} ' \
+                            f'in a journey to ' \
+                            f'{journey_to} on {journey_date}.'
+    NEW_JOURNEY_NOTIF_TEXT = f'{user} is joining you in a journey to ' \
+                             f'{journey_to} on {journey_date}.'
+    post = Post.objects.create(is_place=True, content=NEW_JOURNEY_POST_TEXT,
+                               author=user, place=journey.place_to,
+                               journey=journey, notification_post=True)
+    post.save()
+    notification = Notification.objects.create(post=post,
+                                               text=NEW_JOURNEY_NOTIF_TEXT,
+                                               is_journey=True)
+    notification.users.set(user.friends.all())
+    notification.save()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                kwargs={'journey_id': journey_id}))
+
+
+def leave_journey(request, journey_id):
+    journey = Journey.objects.get(pk=journey_id)
+    journey.participants.remove(request.user)
+    journey.save()
+
+    post = Post.objects.filter(author=request.user, journey=journey)
+    post.delete()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                kwargs={'journey_id': journey_id}))
+
+
+def remove_from_journey(request, journey_id, user_id):
+    user = TLAccount.objects.get(pk=user_id)
+    journey = Journey.objects.get(pk=journey_id)
+    journey.participants.remove(user)
+    journey.save()
+    post = Post.objects.filter(author=user, journey=journey)
+    post.delete()
+    return HttpResponseRedirect(reverse('journeys:journey-page',
+                                kwargs={'journey_id': journey_id}))

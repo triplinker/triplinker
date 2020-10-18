@@ -1,5 +1,9 @@
-from accounts.models.TLAccount_frequest import TLAccount
+# Django modules.
 from django.test.client import Client
+
+# !Triplinker modules:
+from accounts.models.TLAccount_frequest import TLAccount
+
 
 
 def new_user():
@@ -8,10 +12,16 @@ def new_user():
                                   date_of_birth='2000-10-12', country='BY',
                                   password='secret')
 
+    TLAccount.objects.create(first_name='Nick', second_name='Yohanson',
+                             email='nick@test.com', sex='M', 
+                             date_of_birth='2000-10-12', country='BY',
+                             password='secret')
 
     current_user = TLAccount.objects.get(email='john@test.com')
+    another_user = TLAccount.objects.get(email='nick@test.com')
     client = Client()
     response = client.post('/login/', {'username':'john@test.com', 
                                        'password':'secret'})
 
-    return {'client':client, 'current_user': current_user}
+    return {'client':client, 'current_user': current_user, 
+            'another_user': another_user}
