@@ -1,6 +1,6 @@
 # TripLinker :octocat:
 
-[![Build Status](https://travis-ci.org/triplinker/triplinker.svg?branch=master)](https://travis-ci.org/github/triplinker/triplinker)
+[![Build Status](https://travis-ci.org/GonnaFlyMethod/triplinker.svg?branch=master)](https://travis-ci.org/github/triplinker/triplinker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/triplinker/triplinker/blob/master/LICENSE)
 
 ---
