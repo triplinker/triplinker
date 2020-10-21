@@ -224,7 +224,7 @@ class SetAvatarForm(forms.ModelForm):
         exclude = ['timestamp', ]
 
 
-class AddPhotoToPlaceGalleryForm(forms.ModelForm):
+class AddPhotoToUserGalleryForm(forms.ModelForm):
     """The possibility of adding new photo to the gallery of the current user.
     """
     class Meta:

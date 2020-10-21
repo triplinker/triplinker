@@ -7,7 +7,7 @@ app_name = 'accounts'
 
 urlpatterns = [
     # Home page.
-    path('', views.index_view, name='index'),
+    path('feed/', views.show_feed, name="feed"),
 
     # All users list.
     path('users/', views.all_users_list, name='all_users_list'),
@@ -50,9 +50,6 @@ urlpatterns = [
          name="followers-list"),
     path('users/<int:user_id>/following/', views.following_list,
          name="following-list"),
-
-    # Feed.
-    path('feed/', views.show_feed, name="feed"),
 
     # Profile, reg, auth.
     path('signup/', views.SignUpView.as_view(), name='signup'),

@@ -15,21 +15,20 @@
 
         </form> 
             <h5 id ='button_X'style="display: none;"><i class='fa fa-times' aria-hidden='true'></i></h5>
-            
-            <script type="text/javascript">
-            var image_base64 = null;
-            $(document).ready(function(){
-                $("#upload").on('change', function() {
-                $("#button_X").css("display", "block");
-                });
-                $("#button_X").on('click', function() {
-                    image_base64 = null;
-                    $( "#upload" ).val('');
-                    $('#button_X').css('display', 'none')
-                });
-            })
-        
 
+            <!-- Adds possibility to delete photo after pre-load   -->
+            <script type="text/javascript">
+                var image_base64 = null;
+                $(document).ready(function(){
+                    $("#upload").on('change', function() {
+                    $("#button_X").css("display", "block");
+                    });
+                    $("#button_X").on('click', function() {
+                        image_base64 = null;
+                        $( "#upload" ).val('');
+                        $('#button_X').css('display', 'none')
+                    });
+                })
             </script>
         
         <div class="message_input_wrapper">
@@ -65,7 +64,7 @@
     </script>
     {% endif %}
     <script>
-
+        // Checks if image was pinned by current user.
         function check_image(){
             var reader = new FileReader();
             var f = document.getElementById("upload").files;
@@ -81,9 +80,13 @@
             }
 
         }
-        var run = setInterval(check_image, 1000);        
+        var run = setInterval(check_image, 1000);
+
+        // Hook logic of messages      
         (function () {
         var Message;
+
+        // Creates new message in dialog box (HTML)
         Message = function (arg) {
             this.text = arg.text, this.message_side = arg.message_side, this.author = arg.author;
             var avatar = arg.avatar;
@@ -197,7 +200,7 @@
                     var current_user = '{{ request.user.email }}';
                     var full_text = current_user + "<hr>" + text;
 
-                    // If current user is author of message [ WARNING! LOGIC IS REVERSED!]
+                    // If current user is author of message
                     if(current_user === message_DB){
                         message = new Message({
                         text: full_text,
@@ -313,7 +316,7 @@
                         }
                     }
             });                
-            current_msgs = [] // 
+            current_msgs = []
         }
         , 5000); // The interval between ajax requests.
 

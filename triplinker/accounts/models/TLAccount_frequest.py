@@ -173,9 +173,7 @@ class UserPhotoGallery(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return "Place: {}, Author: {}, Photo: {}".format(self.place,
-                                                         self.author,
-                                                         self.photo)
+        return "Author: {}, Photo: {}".format(self.author, self.photo)
 
     class Meta:
         ordering = ('-timestamp',)

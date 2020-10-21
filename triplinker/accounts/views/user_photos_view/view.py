@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 # !Triplinker modules:
 
 # Current app modules.
-from accounts.forms.forms import AddPhotoToPlaceGalleryForm
+from accounts.forms.forms import AddPhotoToUserGalleryForm
 from accounts.models.TLAccount_frequest import TLAccount
 
 
@@ -31,7 +31,7 @@ def photos_of_user(request, user_id):
         initial = {
             'photo': request.FILES['user_gallery_photo']
         }
-        form = AddPhotoToPlaceGalleryForm(request.POST, initial)
+        form = AddPhotoToUserGalleryForm(request.POST, initial)
         if form.is_valid():
             final_form = form.save(commit=False)
             # final_form.place = place

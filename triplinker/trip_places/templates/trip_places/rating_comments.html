@@ -12,7 +12,7 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
 <div class="container" style="text-align: center;margin-top: 2%;margin-bottom: 0.5%;">
-<h1 class="mt-2">· {{ place.name_of_place}} · feedback</h1>
+<h1 class="mt-2"><a href="{% url 'trip_places:place-page' place.id %}" style="color: inherit;">· {{ place.name_of_place}} ·</a> feedback</h1>
 </div>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="text-align: center;">

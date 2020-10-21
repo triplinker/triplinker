@@ -1,3 +1,6 @@
+# Python modules.
+import os
+
 # Django modules.
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -20,7 +23,13 @@ def set_avatar_view(request):
         get_avatar = usr.get_avatar.all()
 
         if len(get_avatar) == 1:
-            get_avatar.first().delete()
+            particular_avatar = get_avatar.first()
+            # Delete from filestorage.
+            full_path = 'public' + particular_avatar.profile_image.url
+            os.remove(full_path)
+
+            # Delete from DB.
+            particular_avatar.delete()
 
         form = SetAvatarForm(request.POST, request.FILES)
         if form.is_valid():

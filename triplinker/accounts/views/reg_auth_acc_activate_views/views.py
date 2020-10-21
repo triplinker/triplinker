@@ -52,7 +52,7 @@ class ActivateView(views.FormView):
        vkontakte twitter and facebook.
     """
     form_class = AccountActivationForm
-    success_url = reverse_lazy('accounts:index')
+    success_url = reverse_lazy('accounts:feed')
     template_name = 'registration/activate.html'
     user = None
 
