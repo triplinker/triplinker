@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path, include
 
 from .views import all_views as views
 
@@ -59,4 +59,19 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/edit/', views.ProfileEditView.as_view(),
          name='profile_edit')
+
 ]
+
+
+# Rest API
+detail_profile_api_url = r'trip-linker-api/detail-profile/' \
+                         r'(?P<user_id>\d{1,30})/?'
+rest_api_patterns = [
+    path('api-auth/', include('rest_framework.urls'),
+         name='rest_framework'),
+    re_path(r'(detail|profile|detail-profile)/(?P<user_id>\d+)/?',
+            views.TLAccountDetail.as_view(),
+            name='detail-profile-api')
+]
+
+urlpatterns += rest_api_patterns
